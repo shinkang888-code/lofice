@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
+import type { PDFDocumentProxy, RenderTask } from "pdfjs-dist";
 import { Loader2 } from "lucide-react";
 
 interface Props {
@@ -23,9 +23,15 @@ export default function PdfPageCanvas({
 }: Props) {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const onRenderedRef = useRef(onRendered);
+  const renderTaskRef = useRef<RenderTask | null>(null);
   const [visible, setVisible] = useState(priority);
   const [rendered, setRendered] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    onRenderedRef.current = onRendered;
+  }, [onRendered]);
 
   useEffect(() => {
     if (priority) return;
@@ -45,47 +51,78 @@ export default function PdfPageCanvas({
     return () => observer.disconnect();
   }, [priority]);
 
+  // scale 변경 시 재렌더
+  useEffect(() => {
+    setRendered(false);
+    setError(null);
+  }, [scale, pageNumber, pdf]);
+
   useEffect(() => {
     if (!visible || rendered || error) return;
+
     let cancelled = false;
-    let page: PDFPageProxy | null = null;
 
     async function renderPage() {
       try {
-        page = await pdf.getPage(pageNumber);
-        if (cancelled) return;
+        const page = await pdf.getPage(pageNumber);
+        if (cancelled) {
+          page.cleanup();
+          return;
+        }
 
         const viewport = page.getViewport({ scale });
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas) {
+          page.cleanup();
+          return;
+        }
 
         const ctx = canvas.getContext("2d", { alpha: false });
-        if (!ctx) return;
+        if (!ctx) {
+          page.cleanup();
+          if (!cancelled) setError("캔버스를 초기화하지 못했습니다.");
+          return;
+        }
 
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas.width = Math.floor(viewport.width * dpr);
         canvas.height = Math.floor(viewport.height * dpr);
-        canvas.style.width = `${viewport.width}px`;
-        canvas.style.height = `${viewport.height}px`;
+        canvas.style.width = `${Math.floor(viewport.width)}px`;
+        canvas.style.height = `${Math.floor(viewport.height)}px`;
 
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        await page.render({ canvasContext: ctx, viewport }).promise;
+        const transform = dpr !== 1 ? ([dpr, 0, 0, dpr, 0, 0] as const) : undefined;
+        const task = page.render({
+          canvasContext: ctx,
+          viewport,
+          ...(transform ? { transform: [...transform] } : {}),
+        });
+        renderTaskRef.current = task;
+
+        await task.promise;
 
         if (!cancelled) {
           setRendered(true);
-          onRendered?.(pageNumber, viewport.height);
+          onRenderedRef.current?.(pageNumber, viewport.height);
         }
-      } catch {
-        if (!cancelled) setError(true);
+        page.cleanup();
+      } catch (e) {
+        if (!cancelled) {
+          const msg = e instanceof Error ? e.message : "알 수 없는 오류";
+          console.error(`PDF page ${pageNumber} render failed:`, e);
+          setError(msg);
+        }
+      } finally {
+        renderTaskRef.current = null;
       }
     }
 
     renderPage();
     return () => {
       cancelled = true;
-      page?.cleanup();
+      renderTaskRef.current?.cancel();
+      renderTaskRef.current = null;
     };
-  }, [visible, rendered, error, pdf, pageNumber, scale, onRendered]);
+  }, [visible, rendered, error, pdf, pageNumber, scale]);
 
   return (
     <div
@@ -103,13 +140,17 @@ export default function PdfPageCanvas({
         </div>
       )}
       {error && (
-        <div className="flex items-center justify-center bg-red-50 text-red-500 text-sm p-8" style={{ minHeight: 120 }}>
-          {pageNumber}페이지 렌더링 실패
+        <div
+          className="flex flex-col items-center justify-center bg-red-50 text-red-500 text-sm p-8 gap-1"
+          style={{ minHeight: 120, minWidth: 280 }}
+        >
+          <span>{pageNumber}페이지 렌더링 실패</span>
+          <span className="text-[10px] text-red-400 max-w-xs text-center">{error}</span>
         </div>
       )}
       <canvas
         ref={canvasRef}
-        className={`block ${rendered ? "" : "absolute opacity-0 pointer-events-none"}`}
+        className={`block ${rendered ? "" : "absolute opacity-0 pointer-events-none inset-0"}`}
       />
     </div>
   );

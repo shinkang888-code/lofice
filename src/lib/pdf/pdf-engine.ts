@@ -26,10 +26,11 @@ export async function openPdfDocument(buffer: ArrayBuffer): Promise<PDFDocumentP
   const pdfjs = await getPdfJs();
   const loadingTask = pdfjs.getDocument({
     data: toPdfBytes(buffer),
-    useSystemFonts: false,
+    useSystemFonts: true,
     disableAutoFetch: false,
     disableStream: false,
     isEvalSupported: false,
+    useWorkerFetch: false,
   });
   return loadingTask.promise;
 }

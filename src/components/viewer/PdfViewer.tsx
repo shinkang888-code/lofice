@@ -64,6 +64,10 @@ export default function PdfViewer({ buffer, fileName }: Props) {
 
   const toggleThumbnails = useCallback(() => setShowThumbnails((v) => !v), []);
 
+  const handleFirstPageRendered = useCallback((_: number, height: number) => {
+    setPageHeight(height);
+  }, []);
+
   // PDF 문서 열기 — 첫 페이지 메타만 즉시 로드
   useEffect(() => {
     let cancelled = false;
@@ -92,7 +96,7 @@ export default function PdfViewer({ buffer, fileName }: Props) {
         setBaseScale(fitted);
         setScale(fitted);
         setPageHeight(viewport.height * fitted);
-        first.cleanup();
+        // cleanup 하지 않음 — PdfPageCanvas가 동일 페이지를 렌더 (cleanup 시 레이스 가능)
       } catch (e) {
         if (!cancelled) {
           setError(e instanceof Error ? e.message : "PDF를 렌더링하지 못했습니다.");
@@ -248,13 +252,13 @@ export default function PdfViewer({ buffer, fileName }: Props) {
         <div className="mx-auto" style={{ width: "fit-content" }}>
           {pages.map((n) => (
             <PdfPageCanvas
-              key={`${n}-${scale.toFixed(3)}`}
+              key={n}
               pdf={pdf}
               pageNumber={n}
               scale={scale}
               estimatedHeight={pageHeight}
               priority={n === 1}
-              onRendered={n === 1 ? (_, h) => setPageHeight(h) : undefined}
+              onRendered={n === 1 ? handleFirstPageRendered : undefined}
             />
           ))}
         </div>
