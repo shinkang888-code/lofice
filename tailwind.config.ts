@@ -5,7 +5,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        lawbox: {
+        lofice: {
           navy: "#003377",
           gold: "#D4AF37",
           ribbon: "#1a4a7a",

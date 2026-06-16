@@ -112,8 +112,8 @@ async function createWindow() {
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    title: "OneOffice",
-    icon: path.join(__dirname, "../public/oneoffice-app-icon.png"),
+    title: "lofice",
+    icon: path.join(__dirname, "../public/lofice-icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,

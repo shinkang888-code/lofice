@@ -13,7 +13,7 @@ import SpreadsheetEditor from "@/components/editor/SpreadsheetEditor";
 import MarkdownEditor from "@/components/editor/MarkdownEditor";
 import HtmlEditor from "@/components/editor/HtmlEditor";
 import CodeEditor from "@/components/editor/CodeEditor";
-import LawboxLayout from "@/components/office/LawboxLayout";
+import LoficeLayout from "@/components/office/LoficeLayout";
 import type { DocumentType, XlsxContent } from "@/types/document";
 
 function EditorContent() {
@@ -105,7 +105,7 @@ function EditorContent() {
   const isRichText = isHancomType(fileType) || fileType === "docx" || fileType === "doc";
 
   return (
-    <LawboxLayout fileName={`편집: ${fileName}`} onSave={handleSave} saving={saving}>
+    <LoficeLayout fileName={`편집: ${fileName}`} onSave={handleSave} saving={saving}>
       <div className="h-full overflow-hidden bg-white">
         {isRichText && <DocxEditor initialHtml={docxHtml} onChange={setEditedHtml} />}
         {isSpreadsheet && editedXlsx && (
@@ -132,7 +132,7 @@ function EditorContent() {
           />
         )}
       </div>
-    </LawboxLayout>
+    </LoficeLayout>
   );
 }
 

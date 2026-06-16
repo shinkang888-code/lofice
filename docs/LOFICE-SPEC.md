@@ -1,4 +1,4 @@
-# LAWBOX 개발명세서 (심화 기획안)
+# lofice 개발명세서 (심화 기획안)
 
 > 버전 1.0 · 2026-06-14  
 > 기반 분석: [HANCOM 리포](https://github.com/shinkang888-code/HANCOM) (한컴오피스 2020 HOffice110)
@@ -9,25 +9,25 @@
 
 | 항목 | 내용 |
 |------|------|
-| 제품명 | **LAWBOX** |
+| 제품명 | **lofice** |
 | 유형 | 웹앱 기반 통합 문서 뷰어·편집기 (PWA) |
-| 배포 | Vercel — `lawbox.vercel.app` |
+| 배포 | Vercel — `lofice.vercel.app` |
 | 법적 원칙 | 한컴 **바이너리/DLL 미사용**, UI·UX만 참고한 **오픈소스 스택 재구현** |
 
 ### 1.1 목표
 
-한컴오피스(Hwp/Hword/HCell/HShow/Hpdf)의 **앱 분리 + 공통 필터 엔진 + UxXml 리본 UI** 패턴을 웹으로 전환하여, 브라우저·모바일에서 **거의 모든 문서 형식**을 열람·편집할 수 있는 LAWBOX를 구현한다.
+한컴오피스(Hwp/Hword/HCell/HShow/Hpdf)의 **앱 분리 + 공통 필터 엔진 + UxXml 리본 UI** 패턴을 웹으로 전환하여, 브라우저·모바일에서 **거의 모든 문서 형식**을 열람·편집할 수 있는 lofice를 구현한다.
 
-### 1.2 한컴 → LAWBOX 매핑
+### 1.2 한컴 → lofice 매핑
 
-| 한컴 모듈 | LAWBOX 웹 모듈 | 기술 |
+| 한컴 모듈 | lofice 웹 모듈 | 기술 |
 |-----------|----------------|------|
 | HNCFilter.dll | `document-router.ts` | 확장자·MIME 라우팅 |
 | Hwp.exe / HWP 엔진 | `hancom.ts` + HangulViewer | @ssabrojs/hwpxjs |
 | Hword.exe / HncOOXML | `docx.ts` + DocxEditor | mammoth + TipTap |
 | HCell.exe | `xlsx.ts` + SpreadsheetEditor | SheetJS |
 | Hpdf.exe | PdfViewer | iframe + Blob URL |
-| UxXml 리본 | `LawboxLayout.tsx` | React + Tailwind |
+| UxXml 리본 | `LoficeLayout.tsx` | React + Tailwind |
 | HncDrawingEngine | ScrollCanvas + CSS | 반응형 스크롤 캔버스 |
 | ImgFilters | ImageViewer | img + zoom/pan |
 
@@ -41,7 +41,7 @@ flowchart TB
         Home[홈 · 파일열기]
         Viewer[뷰어]
         Editor[편집기]
-        LawboxLayout[LawboxLayout 리본]
+        LoficeLayout[LoficeLayout 리본]
     end
 
     subgraph Router["document-router"]
@@ -63,8 +63,8 @@ flowchart TB
 
     Home --> Viewer
     Home --> Editor
-    Viewer --> LawboxLayout
-    Editor --> LawboxLayout
+    Viewer --> LoficeLayout
+    Editor --> LoficeLayout
     Viewer --> Router
     Editor --> Router
     Router --> Parsers
@@ -75,7 +75,7 @@ flowchart TB
 
 ### 2.1 반응형 UI (UxXml → 웹)
 
-- **타이틀바**: LAWBOX 네이비 `#003377` + 골드 악센트 `#D4AF37`
+- **타이틀바**: lofice 네이비 `#003377` + 골드 악센트 `#D4AF37`
 - **리본**: 파일 / 홈 / 보기 / 삽입 — 가로 `overflow-x-auto` (좁은 화면 횡스크롤)
 - **문서 영역**: `ScrollCanvas` — 내용에 따라 **상하·좌우 스크롤** 자동
 - **모바일**: safe-area, 터치 스크롤, 하단 네비게이션
@@ -124,8 +124,8 @@ flowchart TB
 |-------|------|------|
 | **0** | 명세·리브랜딩·아이콘·테마 | ✅ |
 | **1** | 형식 확장 (이미지/MD/HTML/JSON) | ✅ |
-| **2** | LawboxLayout + ScrollCanvas | ✅ |
-| **3** | 빌드·Vercel 배포 lawbox.vercel.app | 진행 |
+| **2** | LoficeLayout + ScrollCanvas | ✅ |
+| **3** | 빌드·Vercel 배포 lofice.vercel.app | 진행 |
 | **4** | E2E 테스트·커밋·푸시 | 진행 |
 
 ---
@@ -159,7 +159,7 @@ flowchart TB
 - [ ] 편집 가능 형식 저장 후 뷰어 재표시
 - [ ] 모바일 너비에서 리본 횡스크롤
 - [ ] 넓은 표/이미지에서 문서 영역 횡·종 스크롤
-- [ ] lawbox.vercel.app 접속
+- [ ] lofice.vercel.app 접속
 
 ---
 

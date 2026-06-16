@@ -1,11 +1,10 @@
 {
   "android": {
     "icon": {
-      "sources": [{ "src": "public/oneoffice-app-icon.png" }]
+      "sources": [{ "src": "public/lofice-icon.png" }]
     },
     "splash": {
-      "sources": [{ "src": "public/oneoffice-logo.png" }],
-      "backgroundColor": "#2563eb"
+      "sources": [{ "src": "public/lofice-icon.png" }]
     }
   }
 }

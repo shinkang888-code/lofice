@@ -26,9 +26,47 @@ const EXT_MAP: Record<string, DocumentType> = {
   svg: "image",
 };
 
+/** 지원 확장자 목록 (연결 프로그램·파일 선택용) */
+export const SUPPORTED_EXTENSIONS = Object.keys(EXT_MAP);
+
 export function getDocumentType(fileName: string): DocumentType {
   const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
   return EXT_MAP[ext] ?? "unknown";
+}
+
+/** 바이너리 시그니처로 형식 감지 (확장자 오류·누락 대비) */
+export function sniffDocumentType(buffer: ArrayBuffer): DocumentType | null {
+  const bytes = new Uint8Array(buffer.slice(0, 16));
+  const head = String.fromCharCode(...bytes.slice(0, 8));
+
+  if (head.startsWith("%PDF-")) return "pdf";
+  if (bytes[0] === 0x50 && bytes[1] === 0x4b) {
+    // ZIP — DOCX/XLSX/HWPX
+    return null; // 확장자로 구분
+  }
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) return "image"; // JPEG
+  if (bytes[0] === 0x89 && bytes[1] === 0x50) return "image"; // PNG
+  if (head.startsWith("GIF8")) return "image";
+  if (head.startsWith("<?xml") || head.startsWith("<")) return "xml";
+  if (head.trimStart().startsWith("{") || head.trimStart().startsWith("[")) return "json";
+
+  return null;
+}
+
+export function resolveDocumentType(fileName: string, buffer?: ArrayBuffer): DocumentType {
+  const byExt = getDocumentType(fileName);
+  if (byExt !== "unknown") return byExt;
+  if (buffer) {
+    const sniffed = sniffDocumentType(buffer);
+    if (sniffed) return sniffed;
+  }
+  return "unknown";
+}
+
+export function isSupportedFile(file: File): boolean {
+  if (getDocumentType(file.name) !== "unknown") return true;
+  const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "");
+  return ACCEPT_EXTENSIONS.split(",").includes(ext);
 }
 
 export function getDocumentExtension(type: DocumentType): string {
@@ -43,6 +81,12 @@ export function getDocumentExtension(type: DocumentType): string {
 
 export const ACCEPT_EXTENSIONS =
   ".hwpx,.hwp,.docx,.doc,.xlsx,.xls,.csv,.pdf,.txt,.rtf,.md,.markdown,.html,.htm,.json,.xml,.jpg,.jpeg,.png,.gif,.webp,.bmp,.svg";
+
+export const ACCEPT_MIME =
+  "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document," +
+  "application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet," +
+  "text/plain,text/csv,text/html,text/markdown,application/json,text/xml,application/xml," +
+  "image/jpeg,image/png,image/gif,image/webp,image/bmp,image/svg+xml,application/octet-stream";
 
 export const FORMAT_LABELS: Record<DocumentType, string> = {
   hwp: "한글 (HWP)",
@@ -73,3 +117,26 @@ export function isEditableType(type: DocumentType): boolean {
 export function isHancomType(type: DocumentType): boolean {
   return type === "hwp" || type === "hwpx";
 }
+
+/** PWA manifest file_handlers용 */
+export const PWA_FILE_ACCEPT: Record<string, string[]> = {
+  "application/pdf": [".pdf"],
+  "application/msword": [".doc"],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+  "application/vnd.ms-excel": [".xls"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+  "text/plain": [".txt", ".rtf", ".hwp", ".hwpx"],
+  "text/csv": [".csv"],
+  "text/html": [".html", ".htm"],
+  "text/markdown": [".md", ".markdown"],
+  "application/json": [".json"],
+  "text/xml": [".xml"],
+  "application/xml": [".xml"],
+  "image/jpeg": [".jpg", ".jpeg"],
+  "image/png": [".png"],
+  "image/gif": [".gif"],
+  "image/webp": [".webp"],
+  "image/bmp": [".bmp"],
+  "image/svg+xml": [".svg"],
+  "application/octet-stream": [".hwp", ".hwpx"],
+};

@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-export { getDocumentType, isEditableType, isHancomType, FORMAT_LABELS, ACCEPT_EXTENSIONS } from "@/lib/document-types";
+export { getDocumentType, resolveDocumentType, sniffDocumentType, isEditableType, isHancomType, FORMAT_LABELS, ACCEPT_EXTENSIONS } from "@/lib/document-types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

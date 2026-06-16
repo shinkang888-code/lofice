@@ -11,7 +11,7 @@ export function useCapacitorInit() {
     (async () => {
       try {
         await StatusBar.setStyle({ style: Style.Light });
-        await StatusBar.setBackgroundColor({ color: "#2563eb" });
+        await StatusBar.setBackgroundColor({ color: "#003377" });
         await SplashScreen.hide();
       } catch { /* web fallback */ }
     })();

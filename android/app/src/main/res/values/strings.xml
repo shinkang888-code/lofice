@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">OneOffice</string>
-    <string name="title_activity_main">OneOffice</string>
-    <string name="package_name">com.oneoffice.app</string>
-    <string name="custom_url_scheme">com.oneoffice.app</string>
+    <string name="app_name">lofice</string>
+    <string name="title_activity_main">lofice</string>
+    <string name="package_name">com.lofice.app</string>
+    <string name="custom_url_scheme">com.lofice.app</string>
 </resources>

@@ -1,4 +1,4 @@
--- OneOffice Supabase Storage Setup
+-- lofice Supabase Storage Setup
 -- Run this in Supabase SQL Editor
 
 INSERT INTO storage.buckets (id, name, public)

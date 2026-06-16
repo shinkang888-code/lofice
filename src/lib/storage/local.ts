@@ -1,4 +1,4 @@
-const DB_NAME = "lawbox";
+const DB_NAME = "lofice";
 const DB_VERSION = 1;
 const STORE = "files";
 
@@ -42,12 +42,28 @@ export async function saveFileLocal(file: File, id?: string): Promise<string> {
   });
 }
 
+function normalizeBuffer(data: unknown): ArrayBuffer {
+  if (data instanceof ArrayBuffer) return data;
+  if (ArrayBuffer.isView(data)) {
+    const view = data as ArrayBufferView;
+    return view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength) as ArrayBuffer;
+  }
+  throw new Error("Invalid file data in storage");
+}
+
 export async function getFileLocal(id: string): Promise<StoredFile | null> {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, "readonly");
     const req = tx.objectStore(STORE).get(id);
-    req.onsuccess = () => resolve(req.result ?? null);
+    req.onsuccess = () => {
+      const result = req.result as StoredFile | undefined;
+      if (!result) {
+        resolve(null);
+        return;
+      }
+      resolve({ ...result, data: normalizeBuffer(result.data) });
+    };
     req.onerror = () => reject(req.error);
   });
 }

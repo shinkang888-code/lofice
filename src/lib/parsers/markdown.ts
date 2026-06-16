@@ -6,7 +6,7 @@ export function parseMarkdownToHtml(md: string): string {
     .replace(/\*\*(.+?)\*\*/gim, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/gim, "<em>$1</em>")
     .replace(/`([^`]+)`/gim, "<code>$1</code>")
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" class="text-lawbox-navy underline">$1</a>');
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" class="text-lofice-navy underline">$1</a>');
 
   const lines = html.split("\n");
   const out: string[] = [];

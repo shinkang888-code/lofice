@@ -3,10 +3,10 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getFileLocal } from "@/lib/storage/local";
-import { getDocumentType } from "@/lib/utils";
+import { getDocumentType, resolveDocumentType } from "@/lib/utils";
 import { isEditableType } from "@/lib/document-types";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
-import LawboxLayout from "@/components/office/LawboxLayout";
+import LoficeLayout from "@/components/office/LoficeLayout";
 import type { DocumentType } from "@/types/document";
 
 function ViewerContent() {
@@ -26,7 +26,7 @@ function ViewerContent() {
       if (!file) { setError("문서를 찾을 수 없습니다."); setLoading(false); return; }
       setBuffer(file.data);
       setFileName(file.name);
-      setFileType(getDocumentType(file.name));
+      setFileType(resolveDocumentType(file.name, file.data));
       setLoading(false);
     });
   }, [id]);
@@ -61,7 +61,7 @@ function ViewerContent() {
   }
 
   return (
-    <LawboxLayout
+    <LoficeLayout
       fileName={fileName}
       canEdit={canEdit}
       editHref={id ? `/editor/?id=${id}` : undefined}
@@ -70,7 +70,7 @@ function ViewerContent() {
       {buffer && (
         <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
       )}
-    </LawboxLayout>
+    </LoficeLayout>
   );
 }
 

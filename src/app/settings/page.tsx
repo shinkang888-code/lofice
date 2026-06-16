@@ -1,10 +1,11 @@
 import AppHeader from "@/components/layout/AppHeader";
 import BottomNav from "@/components/layout/BottomNav";
+import DefaultAppGuide from "@/components/settings/DefaultAppGuide";
 import { Shield, Smartphone, Cloud, Ban } from "lucide-react";
 
 export default function SettingsPage() {
   const items = [
-    { icon: Shield, title: "광고 없음", desc: "LAWBOX는 광고나 추적 코드를 포함하지 않습니다." },
+    { icon: Shield, title: "광고 없음", desc: "lofice는 광고나 추적 코드를 포함하지 않습니다." },
     { icon: Ban, title: "텔레메트리 없음", desc: "사용 데이터를 수집하거나 전송하지 않습니다." },
     { icon: Smartphone, title: "오프라인 지원", desc: "문서는 기기에 로컬 저장됩니다." },
     { icon: Cloud, title: "클라우드 (선택)", desc: "Supabase 설정 시 클라우드 동기화 가능" },
@@ -15,7 +16,8 @@ export default function SettingsPage() {
       <AppHeader />
       <main className="flex-1 px-4 py-6 max-w-lg mx-auto w-full">
         <h1 className="text-xl font-bold text-gray-900 mb-6">설정</h1>
-        <div className="space-y-3">
+        <DefaultAppGuide />
+        <div className="space-y-3 mt-6">
           {items.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="flex gap-3 p-4 bg-white rounded-xl border border-gray-100">
               <Icon className="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
@@ -27,7 +29,7 @@ export default function SettingsPage() {
           ))}
         </div>
         <div className="mt-8 text-center text-xs text-gray-400">
-          <p>LAWBOX v1.0.0</p>
+          <p>lofice v1.0.0</p>
           <p className="mt-1">웹 기반 통합 문서 뷰어 & 편집기</p>
         </div>
       </main>

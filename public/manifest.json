@@ -1,13 +1,42 @@
 {
-  "name": "LAWBOX",
-  "short_name": "LAWBOX",
-  "description": "웹 기반 통합 문서 뷰어 & 편집기 — PDF, HWP, Word, Excel, Markdown, HTML, 이미지",
+  "name": "lofice",
+  "short_name": "lofice",
+  "description": "lofice(로피스) — 웹 기반 통합 문서 뷰어 & 편집기",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#003377",
   "theme_color": "#003377",
   "orientation": "any",
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "/lawbox-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "/lofice-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "application/pdf": [".pdf"],
+        "application/msword": [".doc"],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+        "application/vnd.ms-excel": [".xls"],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+        "text/plain": [".txt", ".rtf"],
+        "text/csv": [".csv"],
+        "text/html": [".html", ".htm"],
+        "text/markdown": [".md", ".markdown"],
+        "application/json": [".json"],
+        "text/xml": [".xml"],
+        "application/xml": [".xml"],
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/png": [".png"],
+        "image/gif": [".gif"],
+        "image/webp": [".webp"],
+        "image/bmp": [".bmp"],
+        "image/svg+xml": [".svg"],
+        "application/octet-stream": [".hwp", ".hwpx"]
+      }
+    }
   ]
 }

@@ -66,14 +66,14 @@ export async function parseHancomDocument(buffer: ArrayBuffer): Promise<HancomPa
 
 export async function saveHancomAsHwpx(html: string, title = "문서"): Promise<ArrayBuffer> {
   const { htmlToHwpx } = await import("@ssabrojs/hwpxjs");
-  const bytes = await htmlToHwpx(html, { title, creator: "LAWBOX" });
+  const bytes = await htmlToHwpx(html, { title, creator: "lofice" });
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 }
 
 export async function saveHancomAsHwpxFromText(text: string, title = "문서"): Promise<ArrayBuffer> {
   const { HwpxWriter } = await import("@ssabrojs/hwpxjs");
   const writer = new HwpxWriter();
-  const bytes = await writer.createFromPlainText(text, { title, creator: "LAWBOX" });
+  const bytes = await writer.createFromPlainText(text, { title, creator: "lofice" });
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
 }
 

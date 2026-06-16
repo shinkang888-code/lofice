@@ -23,14 +23,14 @@ export default function HtmlEditor({ initial, onChange }: Props) {
         <button
           type="button"
           onClick={() => setPreview(false)}
-          className={`flex items-center gap-1 px-3 py-1 text-xs rounded ${!preview ? "bg-lawbox-navy text-white" : "bg-white"}`}
+          className={`flex items-center gap-1 px-3 py-1 text-xs rounded ${!preview ? "bg-lofice-navy text-white" : "bg-white"}`}
         >
           <Code className="w-3.5 h-3.5" /> HTML 코드
         </button>
         <button
           type="button"
           onClick={() => setPreview(true)}
-          className={`flex items-center gap-1 px-3 py-1 text-xs rounded ${preview ? "bg-lawbox-navy text-white" : "bg-white"}`}
+          className={`flex items-center gap-1 px-3 py-1 text-xs rounded ${preview ? "bg-lofice-navy text-white" : "bg-white"}`}
         >
           <Eye className="w-3.5 h-3.5" /> 미리보기
         </button>

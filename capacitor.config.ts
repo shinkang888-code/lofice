@@ -1,17 +1,18 @@
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.oneoffice.app",
-  appName: "OneOffice",
+  appId: "com.lofice.app",
+  appName: "lofice",
   webDir: "out",
   server: { androidScheme: "https" },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
-      backgroundColor: "#2563eb",
+      backgroundColor: "#003377",
       showSpinner: false,
+      androidSplashResourceName: "splash",
     },
-    StatusBar: { style: "LIGHT", backgroundColor: "#2563eb" },
+    StatusBar: { style: "LIGHT", backgroundColor: "#003377" },
   },
   android: {
     allowMixedContent: false,

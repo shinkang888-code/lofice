@@ -4,8 +4,8 @@
 
 :root {
   --brand: #003377;
-  --lawbox-navy: #003377;
-  --lawbox-gold: #D4AF37;
+  --lofice-navy: #003377;
+  --lofice-gold: #D4AF37;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }

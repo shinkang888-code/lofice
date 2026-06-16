@@ -13,7 +13,7 @@ export default function MarkdownViewer({ html, fileName }: Props) {
       <div className="hancom-paper mx-auto bg-white shadow-lg min-h-[297mm] max-w-[210mm] w-full px-[20mm] py-[25mm]">
         <div
           className="hancom-content prose prose-sm max-w-none
-            prose-headings:text-lawbox-navy prose-a:text-lawbox-navy
+            prose-headings:text-lofice-navy prose-a:text-lofice-navy
             prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded"
           dangerouslySetInnerHTML={{ __html: html }}
         />

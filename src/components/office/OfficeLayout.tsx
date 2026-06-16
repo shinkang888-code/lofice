@@ -35,7 +35,7 @@ export default function OfficeLayout({
     <div className="flex flex-col h-screen bg-[#f3f3f3] select-none">
       {/* 타이틀 바 - 한컴 스타일 */}
       <div className="h-8 bg-[#1a3a6b] flex items-center px-3 text-white text-xs shrink-0 safe-top">
-        <span className="font-semibold tracking-wide">OneOffice</span>
+        <span className="font-semibold tracking-wide">lofice</span>
         <span className="mx-2 opacity-40">|</span>
         <span className="truncate opacity-90">{fileName}</span>
       </div>

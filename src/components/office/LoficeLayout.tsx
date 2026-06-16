@@ -21,7 +21,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function LawboxLayout({
+export default function LoficeLayout({
   fileName,
   canEdit,
   editHref,
@@ -42,15 +42,14 @@ export default function LawboxLayout({
 
   return (
     <div className="flex flex-col h-[100dvh] bg-[#f3f3f3] select-none">
-      {/* 타이틀 바 — LAWBOX 브랜드 */}
-      <div className="h-9 bg-lawbox-navy flex items-center px-3 text-white text-xs shrink-0 safe-top border-b-2 border-lawbox-gold">
-        <Image src="/lawbox-icon.png" alt="LAWBOX" width={20} height={20} className="w-5 h-5 rounded-sm mr-2" />
-        <span className="font-bold tracking-wider text-lawbox-gold">LAWBOX</span>
+      <div className="h-9 bg-lofice-navy flex items-center px-3 text-white text-xs shrink-0 safe-top border-b-2 border-lofice-gold">
+        <Image src="/lofice-icon.png" alt="lofice" width={20} height={20} className="w-5 h-5 rounded-sm mr-2" />
+        <span className="font-bold tracking-wider text-lofice-gold">lofice</span>
+        <span className="mx-1 opacity-60 text-[10px]">로피스</span>
         <span className="mx-2 opacity-40">|</span>
         <span className="truncate opacity-90 flex-1">{fileName}</span>
       </div>
 
-      {/* 리본 탭 — 횡스크롤 */}
       <div className="bg-[#1a4a7a] shrink-0">
         <div className="flex items-center px-2 h-9 gap-1 overflow-x-auto scrollbar-thin">
           <button onClick={() => router.back()} className="p-1.5 text-white/80 hover:bg-white/10 rounded shrink-0" title="뒤로">
@@ -61,7 +60,7 @@ export default function LawboxLayout({
               key={id}
               onClick={() => setTab(id)}
               className={`px-4 py-1 text-xs font-medium rounded-t transition-colors shrink-0 ${
-                tab === id ? "bg-[#f3f3f3] text-lawbox-navy" : "text-white/90 hover:bg-white/10"
+                tab === id ? "bg-[#f3f3f3] text-lofice-navy" : "text-white/90 hover:bg-white/10"
               }`}
             >
               {label}
@@ -72,7 +71,7 @@ export default function LawboxLayout({
             <button
               onClick={onSave}
               disabled={saving}
-              className="flex items-center gap-1 px-3 py-1 bg-lawbox-gold/90 hover:bg-lawbox-gold text-lawbox-navy text-xs font-semibold rounded shrink-0 disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1 bg-lofice-gold/90 hover:bg-lofice-gold text-lofice-navy text-xs font-semibold rounded shrink-0 disabled:opacity-50"
             >
               <Save className="w-3.5 h-3.5" /> {saving ? "저장 중" : "저장"}
             </button>
@@ -93,7 +92,6 @@ export default function LawboxLayout({
         </div>
       </div>
 
-      {/* 리본 도구 — 횡스크롤 */}
       <div className="bg-[#f3f3f3] border-b border-gray-300 px-3 py-2 shrink-0 min-h-[72px] overflow-x-auto">
         {tab === "file" && (
           <div className="flex gap-6 text-xs min-w-max">
