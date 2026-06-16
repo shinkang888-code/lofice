@@ -194,3 +194,63 @@ html[data-theme="dark"] .text-gray-600 {
 html[data-theme="light"] body {
   @apply bg-white text-gray-900;
 }
+
+/* lofice-14291513 랜딩 (Navy + Gold) — .loffice-site 스코프 */
+.loffice-site {
+  --radius: 0.875rem;
+  --background: oklch(0.985 0.005 240);
+  --foreground: oklch(0.18 0.04 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.04 255);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.04 255);
+  --primary: oklch(0.27 0.09 260);
+  --primary-foreground: oklch(0.985 0.01 95);
+  --secondary: oklch(0.96 0.012 250);
+  --secondary-foreground: oklch(0.22 0.06 258);
+  --muted: oklch(0.96 0.01 250);
+  --muted-foreground: oklch(0.5 0.03 255);
+  --accent: oklch(0.94 0.02 250);
+  --accent-foreground: oklch(0.22 0.06 258);
+  --gold: oklch(0.78 0.13 80);
+  --gold-foreground: oklch(0.2 0.05 60);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.92 0.015 250);
+  --input: oklch(0.92 0.015 250);
+  --ring: oklch(0.55 0.1 260);
+  --gradient-hero: radial-gradient(
+      ellipse 80% 60% at 50% 0%,
+      color-mix(in oklab, var(--gold) 18%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(180deg, oklch(0.98 0.01 250), var(--background));
+  --gradient-brand: linear-gradient(135deg, var(--primary), oklch(0.42 0.13 268));
+  --shadow-card: 0 1px 2px oklch(0.2 0.05 260 / 0.04),
+    0 8px 24px -12px oklch(0.2 0.05 260 / 0.12);
+  --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--primary) 45%, transparent);
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.loffice-site.dark {
+  --background: oklch(0.16 0.03 258);
+  --foreground: oklch(0.97 0.01 250);
+  --card: oklch(0.21 0.04 260);
+  --card-foreground: oklch(0.97 0.01 250);
+  --popover: oklch(0.21 0.04 260);
+  --popover-foreground: oklch(0.97 0.01 250);
+  --primary: oklch(0.78 0.13 80);
+  --primary-foreground: oklch(0.2 0.05 60);
+  --secondary: oklch(0.27 0.04 260);
+  --secondary-foreground: oklch(0.97 0.01 250);
+  --muted: oklch(0.27 0.04 260);
+  --muted-foreground: oklch(0.72 0.02 255);
+  --accent: oklch(0.3 0.05 260);
+  --accent-foreground: oklch(0.97 0.01 250);
+  --gold: oklch(0.82 0.14 82);
+  --gold-foreground: oklch(0.2 0.05 60);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.14);
+  --ring: oklch(0.7 0.1 80);
+}

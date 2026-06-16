@@ -19,6 +19,7 @@
 - **PPT AI (GPT Generator)**: GPT 슬라이드·키워드·Pexels·테마 (v2.9.0)
 - **PPT (PptxGenJS)**: 차트·테이블·도형·HTML→PPT·브라우저 네이티브 생성 (v2.10.0)
 - **TypeScript React 패턴**: typed CustomEvent · string literal · Props 타입 (v2.11.0)
+- **lofice-14291513 랜딩 UI**: Navy+Gold 마케팅 홈 · 도구 검색 · 파일 드롭존 연동 (v2.12.0)
 - **HWP/HWPX (폴백)**: hwpxjs HTML 뷰어
 - **DOCX 편집**: @eigenpal/docx-editor-react 1.x WYSIWYG (실제 DOCX 저장)
 - **한글 편집**: TipTap + 폴라리스 스타일 페이지 레이아웃, 리본 연동
@@ -360,6 +361,20 @@ dispatchLoficeEvent("lofice:pptGenerated", { fileName: "a.pptx", source: "pptxge
 // Android intent (기존 lofice:openFile) — 타입 안전 구독
 useLoficeEvent("lofice:openFile", (detail) => { /* detail.name, detail.data */ });
 ```
+
+## lofice-14291513 랜딩 UI (v2.12.0)
+
+[lofice-14291513](https://github.com/shinkang888-code/lofice-14291513) — Lovable 생성 Navy+Gold 마케팅 랜딩을 Next.js 홈(`/`)에 이식.
+
+| UI 요소 | lofice 연동 |
+|---------|-------------|
+| FileOpener 드롭존 | `saveFileLocal` → `/viewer/` · `/hwp-editor/` · `/ppt-editor/` · `/archive/` |
+| 도구 카드 4섹션 | `src/lib/lofficeUi/tools.ts` — 실제 라우트 href |
+| 검색 | 툴 이름·태그 필터 |
+| Quick Start | `/files/` · `/toolbox/` · `/ppt-ai/` · `/convert/` · `/hwp-ai/` |
+| 테마 토글 | `.loffice-site.dark` Navy+Gold 다크 모드 |
+
+`PolarisHomePage`는 유지 — 필요 시 `/settings/` 등에서 전환 가능.
 
 ## 오픈소스 통합 (v1.6.0)
 

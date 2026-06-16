@@ -22,3 +22,4 @@ releases/windows-package/
 .vercel
 __pycache__/
 *.pyc
+_import-lofice-ui/
