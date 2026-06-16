@@ -5,7 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getFileLocal } from "@/lib/storage/local";
 import { resolveDocumentType } from "@/lib/utils";
 import { isEditableType, ACCEPT_EXTENSIONS } from "@/lib/document-types";
+import { isOcrSupported } from "@/lib/documentOcr/types";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
+import OcrTextPanel from "@/components/ocr/OcrTextPanel";
 import LoficeLayout from "@/components/office/LoficeLayout";
 import { ViewerToolbarProvider } from "@/components/office/ViewerToolbarContext";
 import type { DocumentType } from "@/types/document";
@@ -19,8 +21,10 @@ function ViewerContent() {
   const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
   const [fileName, setFileName] = useState("");
   const [fileType, setFileType] = useState<DocumentType>("unknown");
+  const [mimeType, setMimeType] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showOcr, setShowOcr] = useState(params.get("tab") === "ocr");
 
   useEffect(() => {
     if (!id) { setError("문서 ID가 없습니다."); setLoading(false); return; }
@@ -28,12 +32,14 @@ function ViewerContent() {
       if (!file) { setError("문서를 찾을 수 없습니다."); setLoading(false); return; }
       setBuffer(file.data);
       setFileName(file.name);
+      setMimeType(file.type);
       setFileType(resolveDocumentType(file.name, file.data));
       setLoading(false);
     });
   }, [id]);
 
   const canEdit = isEditableType(fileType);
+  const ocrAvailable = buffer ? isOcrSupported(mimeType, fileName) : false;
 
   const handleShare = async () => {
     if (!buffer) return;
@@ -89,10 +95,26 @@ function ViewerContent() {
         editHref={id ? `/editor/?id=${id}` : undefined}
         onShare={handleShare}
         onOpenFile={handleOpenFile}
+        onOcr={ocrAvailable ? () => setShowOcr((v) => !v) : undefined}
+        ocrActive={showOcr}
       >
-        {buffer && (
-          <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
-        )}
+        <div className="flex h-full min-h-0">
+          <div className={`flex-1 min-w-0 min-h-0 ${showOcr ? "hidden md:block" : ""}`}>
+            {buffer && (
+              <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
+            )}
+          </div>
+          {showOcr && ocrAvailable && buffer && (
+            <div className="w-full md:w-[380px] shrink-0 min-h-0">
+              <OcrTextPanel
+                buffer={buffer}
+                fileName={fileName}
+                mimeType={mimeType}
+                onClose={() => setShowOcr(false)}
+              />
+            </div>
+          )}
+        </div>
       </LoficeLayout>
     </ViewerToolbarProvider>
   );

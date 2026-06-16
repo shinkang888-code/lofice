@@ -13,11 +13,22 @@
 - **DOCX 편집**: @eigenpal/docx-editor-react 1.x WYSIWYG (실제 DOCX 저장)
 - **한글 편집**: TipTap + 폴라리스 스타일 페이지 레이아웃, 리본 연동
 - **시트 편집**: 수식 입력줄(fx), A1 셀 참조, 시트 탭, 키보드 탐색
-- **폴라리스 스타일 UI**: 리본(파일/홈/삽입/보기), 상태바, 드래그앤드롭
+- **OCR 텍스트 추출**: PDF 텍스트 레이어 → Tesseract OCR (LawyGo 패턴, 클라이언트 전용)
+- **미리보기**: 파일 목록 인라인 패널 + 새 창 미리보기 (`/preview`)
 - **광고 없음**: 추적·광고·텔레메트리 코드 없음
 - **오프라인**: IndexedDB 로컬 저장
 - **안드로이드**: Capacitor 네이티브 앱
 - **Windows**: Electron 설치 프로그램 (.exe)
+
+## LawyGo에서 이식 (v1.7.0)
+
+| LawyGo | lofice | 비고 |
+|--------|--------|------|
+| `/api/document/ocr` | `extractDocumentTextClient` | static export → Tesseract.js 클라이언트 OCR |
+| `PdfCanvasViewer` | `DocumentViewer` + UDoc/PdfViewer | 기존 뷰어 활용 |
+| `DocumentPreviewPanel` | `components/preview/DocumentPreviewPanel` | IndexedDB 연동 |
+| `PreviewButton` | `components/preview/PreviewButton` | 파일 목록 미리보기 |
+| `pdfPreview.ts` | `lib/preview/documentPreview.ts` | `/preview` 새 창 |
 
 ## 오픈소스 통합 (v1.6.0)
 

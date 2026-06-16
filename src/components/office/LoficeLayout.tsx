@@ -8,7 +8,7 @@ import {
   ImageIcon, Table, FileCode, ZoomIn, ZoomOut, Maximize2,
   Download, Printer, ChevronLeft, ChevronRight, LayoutGrid,
   FolderOpen, Copy, Scissors, ClipboardPaste, Undo2, Redo2,
-  Link2, Minus, Plus,
+  Link2, Minus, Plus, ScanLine,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useViewerToolbarOptional } from "./ViewerToolbarContext";
@@ -26,6 +26,9 @@ interface Props {
   saving?: boolean;
   /** 내장 툴바 에디터(eigenpal) 사용 시 리본 숨김 */
   minimal?: boolean;
+  /** OCR 텍스트 추출 패널 토글 */
+  onOcr?: () => void;
+  ocrActive?: boolean;
   children: React.ReactNode;
 }
 
@@ -38,6 +41,8 @@ export default function LoficeLayout({
   onOpenFile,
   saving,
   minimal = false,
+  onOcr,
+  ocrActive = false,
   children,
 }: Props) {
   const router = useRouter();
@@ -180,6 +185,9 @@ export default function LoficeLayout({
               </RibbonGroup>
             )}
             <RibbonGroup label="창">
+              {onOcr && (
+                <RibbonBtn icon={ScanLine} label="OCR" onClick={onOcr} active={ocrActive} />
+              )}
               <RibbonBtn icon={Eye} label="읽기 모드" />
               <RibbonBtn icon={Home} label="홈" onClick={() => router.push("/")} />
             </RibbonGroup>
