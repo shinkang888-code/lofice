@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useViewerToolbarOptional } from "./ViewerToolbarContext";
+import { useEditorToolbarOptional } from "./EditorToolbarContext";
 
 type RibbonTab = "file" | "home" | "insert" | "view";
 
@@ -23,6 +24,8 @@ interface Props {
   onSave?: () => void;
   onOpenFile?: () => void;
   saving?: boolean;
+  /** 내장 툴바 에디터(eigenpal) 사용 시 리본 숨김 */
+  minimal?: boolean;
   children: React.ReactNode;
 }
 
@@ -34,13 +37,17 @@ export default function LoficeLayout({
   onSave,
   onOpenFile,
   saving,
+  minimal = false,
   children,
 }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<RibbonTab>("home");
   const toolbar = useViewerToolbarOptional();
+  const editorToolbar = useEditorToolbarOptional();
   const { state } = toolbar ?? { state: null };
-  const actions = state?.actions ?? {};
+  const viewActions = state?.actions ?? {};
+  const editActions = editorToolbar?.actions ?? {};
+  const actions = { ...viewActions, ...editActions };
   const isPdf = state?.docType === "pdf";
   const zoomPct = Math.round((state?.zoom ?? 1) * 100);
 
@@ -101,6 +108,7 @@ export default function LoficeLayout({
       </div>
 
       {/* 리본 패널 */}
+      {!minimal && (
       <div className="bg-[#f3f3f3] border-b border-gray-300 px-2 py-1.5 shrink-0 min-h-[76px] overflow-x-auto ribbon-panel">
         {tab === "file" && (
           <div className="flex gap-4 text-xs min-w-max">
@@ -119,23 +127,23 @@ export default function LoficeLayout({
         {tab === "home" && (
           <div className="flex gap-4 text-xs min-w-max">
             <RibbonGroup label="클립보드">
-              <RibbonBtn icon={Copy} label="복사" />
-              <RibbonBtn icon={Scissors} label="잘라내기" />
-              <RibbonBtn icon={ClipboardPaste} label="붙여넣기" />
+              <RibbonBtn icon={Copy} label="복사" onClick={actions.copy} />
+              <RibbonBtn icon={Scissors} label="잘라내기" onClick={actions.cut} />
+              <RibbonBtn icon={ClipboardPaste} label="붙여넣기" onClick={actions.paste} />
             </RibbonGroup>
             <RibbonGroup label="편집">
-              <RibbonBtn icon={Undo2} label="실행 취소" />
-              <RibbonBtn icon={Redo2} label="다시 실행" />
+              <RibbonBtn icon={Undo2} label="실행 취소" onClick={actions.undo} />
+              <RibbonBtn icon={Redo2} label="다시 실행" onClick={actions.redo} />
             </RibbonGroup>
             <RibbonGroup label="글꼴">
-              <RibbonBtn icon={Bold} label="굵게" />
-              <RibbonBtn icon={Italic} label="기울임" />
-              <RibbonBtn icon={Underline} label="밑줄" />
+              <RibbonBtn icon={Bold} label="굵게" onClick={actions.bold} />
+              <RibbonBtn icon={Italic} label="기울임" onClick={actions.italic} />
+              <RibbonBtn icon={Underline} label="밑줄" onClick={actions.underline} />
             </RibbonGroup>
             <RibbonGroup label="단락">
-              <RibbonBtn icon={AlignLeft} label="왼쪽" />
-              <RibbonBtn icon={AlignCenter} label="가운데" />
-              <RibbonBtn icon={AlignRight} label="오른쪽" />
+              <RibbonBtn icon={AlignLeft} label="왼쪽" onClick={actions.alignLeft} />
+              <RibbonBtn icon={AlignCenter} label="가운데" onClick={actions.alignCenter} />
+              <RibbonBtn icon={AlignRight} label="오른쪽" onClick={actions.alignRight} />
             </RibbonGroup>
             {canEdit && editHref && (
               <RibbonGroup label="모드">
@@ -177,6 +185,7 @@ export default function LoficeLayout({
           </div>
         )}
       </div>
+      )}
 
       <main className="flex-1 overflow-hidden min-h-0">{children}</main>
 

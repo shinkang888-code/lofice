@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import type { DocumentType, XlsxContent, PresentationContent } from "@/types/document";
 import { parseDocument } from "@/lib/parsers/document-router";
 import { resolveDocumentType } from "@/lib/document-types";
+import dynamic from "next/dynamic";
 import HangulViewer from "./HangulViewer";
 import DocxViewer from "./DocxViewer";
 import XlsxViewer from "./XlsxViewer";
@@ -16,6 +17,9 @@ import CodeViewer from "./CodeViewer";
 import PresentationViewer from "./PresentationViewer";
 import UnsupportedViewer from "./UnsupportedViewer";
 import { Loader2 } from "lucide-react";
+
+const RhwpViewer = dynamic(() => import("./RhwpViewer"), { ssr: false });
+const MicroscopeOfficeViewer = dynamic(() => import("./MicroscopeOfficeViewer"), { ssr: false });
 
 interface Props {
   buffer: ArrayBuffer;
@@ -42,6 +46,9 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   const [codeLanguage, setCodeLanguage] = useState<"json" | "xml" | "text">("text");
   const [resolvedType, setResolvedType] = useState<DocumentType>(fileType);
   const [pdfBuffer, setPdfBuffer] = useState<ArrayBuffer | null>(null);
+  const [officeBuffer, setOfficeBuffer] = useState<ArrayBuffer | null>(null);
+  const [rhwpFallback, setRhwpFallback] = useState(false);
+  const [microscopeFallback, setMicroscopeFallback] = useState(false);
   const [unsupported, setUnsupported] = useState(false);
   const objectUrlsRef = useRef<string[]>([]);
 
@@ -62,6 +69,9 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
       setLoading(true);
       setError(null);
       setPdfBuffer(null);
+      setOfficeBuffer(null);
+      setRhwpFallback(false);
+      setMicroscopeFallback(false);
       setHtml(null);
       setText(null);
       setXlsx(null);
@@ -82,6 +92,47 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
           if (!cancelled) {
             setResolvedType("pdf");
             setPdfBuffer(buffer);
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (type === "hwp" || type === "hwpx") {
+          if (!cancelled) {
+            setResolvedType(type);
+            setOfficeBuffer(buffer);
+            try {
+              const result = await parseDocument(buffer, fileName, type);
+              if (!cancelled) setHtml(result.html ?? null);
+            } catch { /* rhwp primary, html fallback optional */ }
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (type === "docx" || type === "doc" || type === "odt") {
+          if (!cancelled) {
+            setResolvedType(type);
+            setOfficeBuffer(buffer);
+            if (type === "docx" || type === "doc") {
+              parseDocument(buffer, fileName, type)
+                .then((r) => { if (!cancelled) setHtml(r.html ?? null); })
+                .catch(() => {});
+            } else {
+              const result = await parseDocument(buffer, fileName, type);
+              if (!cancelled) setHtml(result.html ?? null);
+            }
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (type === "xlsx" || type === "xls" || type === "ods" || type === "csv") {
+          if (!cancelled) {
+            setResolvedType(type);
+            setOfficeBuffer(buffer);
+            const result = await parseDocument(buffer, fileName, type);
+            if (!cancelled) setXlsx(result.xlsx ?? null);
             setLoading(false);
           }
           return;
@@ -151,13 +202,41 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
     return <PdfViewer buffer={pdfBuffer} fileName={fileName} />;
   }
 
-  if ((resolvedType === "hwp" || resolvedType === "hwpx") && html) {
+  if ((resolvedType === "hwp" || resolvedType === "hwpx") && officeBuffer) {
+    if (!rhwpFallback) {
+      return (
+        <RhwpViewer
+          buffer={officeBuffer}
+          fileName={fileName}
+          onFallback={() => setRhwpFallback(true)}
+        />
+      );
+    }
+    if (html) {
+      return (
+        <HangulViewer
+          html={html}
+          fileName={fileName}
+          formatLabel={resolvedType === "hwp" ? "HWP 문서" : "HWPX 문서"}
+        />
+      );
+    }
+  }
+
+  if ((resolvedType === "docx" || resolvedType === "doc") && officeBuffer && !microscopeFallback) {
     return (
-      <HangulViewer
-        html={html}
-        fileName={fileName}
-        formatLabel={resolvedType === "hwp" ? "HWP 문서" : "HWPX 문서"}
-      />
+      <div className="h-full relative">
+        <MicroscopeOfficeViewer buffer={officeBuffer} fileName={fileName} />
+        {html && (
+          <button
+            type="button"
+            onClick={() => setMicroscopeFallback(true)}
+            className="absolute bottom-3 right-3 text-[10px] bg-white/90 border px-2 py-1 rounded shadow"
+          >
+            기본 HTML 뷰어
+          </button>
+        )}
+      </div>
     );
   }
 
@@ -167,6 +246,10 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
 
   if ((resolvedType === "xlsx" || resolvedType === "xls" || resolvedType === "ods" || resolvedType === "csv") && xlsx) {
     return <XlsxViewer content={xlsx} />;
+  }
+
+  if ((resolvedType === "xlsx" || resolvedType === "xls" || resolvedType === "ods") && officeBuffer && !xlsx) {
+    return <MicroscopeOfficeViewer buffer={officeBuffer} fileName={fileName} />;
   }
 
   if (resolvedType === "presentation" && presentation) {

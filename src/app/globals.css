@@ -105,6 +105,20 @@ body {
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
 }
 
+.rhwp-page svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.eigenpal-editor,
+.microscope-viewer {
+  height: 100%;
+}
+
+.eigenpal-editor > div {
+  height: 100% !important;
+}
+
 @media print {
   header, footer, .ribbon-panel, [class*="ribbon"] {
     display: none !important;

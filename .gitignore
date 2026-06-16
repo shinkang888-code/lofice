@@ -8,6 +8,7 @@ android/capacitor-cordova-android-plugins/build/
 android/build/
 releases/*.zip
 releases/*.apk
+public/rhwp_bg.wasm
 releases/android-package/
 releases/windows-package/
 *.local

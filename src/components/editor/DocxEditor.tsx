@@ -4,6 +4,8 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
+import { useEffect } from "react";
+import { useEditorToolbarOptional } from "@/components/office/EditorToolbarContext";
 import {
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered,
   Heading1, Heading2, Undo, Redo,
@@ -15,6 +17,8 @@ interface Props {
 }
 
 export default function DocxEditor({ initialHtml, onChange }: Props) {
+  const toolbar = useEditorToolbarOptional();
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -22,13 +26,25 @@ export default function DocxEditor({ initialHtml, onChange }: Props) {
       Placeholder.configure({ placeholder: "내용을 입력하세요..." }),
     ],
     content: initialHtml,
-    onUpdate: ({ editor }) => onChange?.(editor.getHTML()),
+    onUpdate: ({ editor: ed }) => onChange?.(ed.getHTML()),
     editorProps: {
       attributes: {
         class: "prose prose-gray max-w-none min-h-[60vh] px-4 py-6 focus:outline-none",
       },
     },
   });
+
+  useEffect(() => {
+    if (!editor || !toolbar) return;
+    toolbar.register({
+      bold: () => editor.chain().focus().toggleBold().run(),
+      italic: () => editor.chain().focus().toggleItalic().run(),
+      underline: () => editor.chain().focus().toggleUnderline().run(),
+      undo: () => editor.chain().focus().undo().run(),
+      redo: () => editor.chain().focus().redo().run(),
+    });
+    return () => toolbar.reset();
+  }, [editor, toolbar]);
 
   if (!editor) return null;
 
