@@ -1,0 +1,8 @@
+node_modules
+.next
+dist
+releases
+android
+electron
+.git
+*.zip

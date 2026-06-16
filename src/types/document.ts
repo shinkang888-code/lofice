@@ -1,4 +1,20 @@
-export type DocumentType = "hwpx" | "docx" | "xlsx" | "pdf" | "txt" | "unknown";
+export type DocumentType =
+  | "hwp"
+  | "hwpx"
+  | "docx"
+  | "doc"
+  | "xlsx"
+  | "xls"
+  | "csv"
+  | "pdf"
+  | "txt"
+  | "rtf"
+  | "markdown"
+  | "html"
+  | "json"
+  | "xml"
+  | "image"
+  | "unknown";
 
 export interface DocumentFile {
   id: string;
@@ -9,19 +25,11 @@ export interface DocumentFile {
   source: "local" | "cloud";
 }
 
-export interface HwpxContent {
-  title: string;
-  sections: HwpxSection[];
-}
-
-export interface HwpxSection {
-  paragraphs: HwpxParagraph[];
-}
-
-export interface HwpxParagraph {
-  text: string;
-  style?: string;
-  align?: string;
+export interface ParsedDocument {
+  html?: string;
+  text?: string;
+  format: DocumentType;
+  title?: string;
 }
 
 export interface XlsxContent {

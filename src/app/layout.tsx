@@ -3,29 +3,28 @@ import CapacitorProvider from "@/components/CapacitorProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "OneOffice - 원오피스",
-  description: "광고 없는 무료 문서 뷰어 & 오피스. HWPX, DOCX, XLSX, PDF 지원",
+  title: "LAWBOX - 통합 문서 뷰어 & 편집기",
+  description: "PDF, HWP, Word, Excel, Markdown, HTML, 이미지 등 거의 모든 문서를 브라우저에서 열람·편집",
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/oneoffice-app-icon.png", sizes: "512x512", type: "image/png" },
-      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/lawbox-icon.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: "/oneoffice-app-icon.png",
+    apple: "/lawbox-icon.png",
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "OneOffice",
+    title: "LAWBOX",
   },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: "#2563eb",
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#003377",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

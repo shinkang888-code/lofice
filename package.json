@@ -1,8 +1,8 @@
 {
-  "name": "oneoffice",
-  "version": "0.1.0",
-  "description": "OneOffice - 광고 없는 무료 문서 뷰어 & 오피스",
-  "author": "OneOffice",
+  "name": "lawbox",
+  "version": "1.0.0",
+  "description": "LAWBOX - 웹 기반 통합 문서 뷰어 & 편집기",
+  "author": "LAWBOX",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -30,6 +30,7 @@
     "@capacitor/share": "^6.0.3",
     "@capacitor/splash-screen": "^6.0.3",
     "@capacitor/status-bar": "^6.0.2",
+    "@ssabrojs/hwpxjs": "^0.4.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.10",
     "@tiptap/extension-placeholder": "^2.11.5",
@@ -40,6 +41,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "fast-xml-parser": "^4.5.1",
+    "hwp.js": "^0.0.3",
     "jszip": "^3.10.1",
     "lucide-react": "^0.469.0",
     "mammoth": "^1.9.0",

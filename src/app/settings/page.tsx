@@ -4,7 +4,7 @@ import { Shield, Smartphone, Cloud, Ban } from "lucide-react";
 
 export default function SettingsPage() {
   const items = [
-    { icon: Shield, title: "광고 없음", desc: "OneOffice는 광고나 추적 코드를 포함하지 않습니다." },
+    { icon: Shield, title: "광고 없음", desc: "LAWBOX는 광고나 추적 코드를 포함하지 않습니다." },
     { icon: Ban, title: "텔레메트리 없음", desc: "사용 데이터를 수집하거나 전송하지 않습니다." },
     { icon: Smartphone, title: "오프라인 지원", desc: "문서는 기기에 로컬 저장됩니다." },
     { icon: Cloud, title: "클라우드 (선택)", desc: "Supabase 설정 시 클라우드 동기화 가능" },
@@ -27,8 +27,8 @@ export default function SettingsPage() {
           ))}
         </div>
         <div className="mt-8 text-center text-xs text-gray-400">
-          <p>OneOffice (원오피스) v0.1.0</p>
-          <p className="mt-1">광고 없는 무료 오피스</p>
+          <p>LAWBOX v1.0.0</p>
+          <p className="mt-1">웹 기반 통합 문서 뷰어 & 편집기</p>
         </div>
       </main>
       <BottomNav />

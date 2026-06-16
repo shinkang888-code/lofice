@@ -4,8 +4,9 @@ import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getFileLocal } from "@/lib/storage/local";
 import { getDocumentType } from "@/lib/utils";
+import { isEditableType } from "@/lib/document-types";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
-import { ArrowLeft, Edit3, Share2 } from "lucide-react";
+import LawboxLayout from "@/components/office/LawboxLayout";
 import type { DocumentType } from "@/types/document";
 
 function ViewerContent() {
@@ -30,7 +31,7 @@ function ViewerContent() {
     });
   }, [id]);
 
-  const canEdit = fileType === "docx" || fileType === "xlsx";
+  const canEdit = isEditableType(fileType);
 
   const handleShare = async () => {
     if (!buffer) return;
@@ -43,38 +44,33 @@ function ViewerContent() {
     }
   };
 
-  return (
-    <div className="flex flex-col h-screen bg-white">
-      <header className="flex items-center gap-2 px-3 h-12 bg-brand-600 text-white shrink-0 safe-top">
-        <button onClick={() => router.back()} className="p-2 -ml-1">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="flex-1 text-sm font-medium truncate">{fileName || "문서"}</h1>
-        {canEdit && (
-          <button
-            onClick={() => router.push(`/editor/?id=${id}`)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-white/20 rounded-lg text-xs font-medium"
-          >
-            <Edit3 className="w-3.5 h-3.5" /> 편집
-          </button>
-        )}
-        <button onClick={handleShare} className="p-2">
-          <Share2 className="w-4 h-4" />
-        </button>
-      </header>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-400 bg-[#f3f3f3]">
+        불러오는 중...
+      </div>
+    );
+  }
 
-      <main className="flex-1 overflow-auto">
-        {loading && (
-          <div className="flex items-center justify-center h-full text-gray-400 text-sm">불러오는 중...</div>
-        )}
-        {error && (
-          <div className="flex items-center justify-center h-full text-red-500 text-sm px-4 text-center">{error}</div>
-        )}
-        {buffer && !loading && !error && (
-          <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
-        )}
-      </main>
-    </div>
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen text-red-500 bg-[#f3f3f3] px-4 text-center">
+        {error}
+      </div>
+    );
+  }
+
+  return (
+    <LawboxLayout
+      fileName={fileName}
+      canEdit={canEdit}
+      editHref={id ? `/editor/?id=${id}` : undefined}
+      onShare={handleShare}
+    >
+      {buffer && (
+        <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
+      )}
+    </LawboxLayout>
   );
 }
 

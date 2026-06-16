@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { listFilesLocal } from "@/lib/storage/local";
 import { getDocumentType, formatFileSize, formatDate } from "@/lib/utils";
-import { FileText, Table, File, Trash2 } from "lucide-react";
+import type { DocumentType } from "@/types/document";
+import { FileText, Table, File, Trash2, ImageIcon, FileCode } from "lucide-react";
 import { deleteFileLocal } from "@/lib/storage/local";
 
 interface FileItem {
@@ -15,8 +16,11 @@ interface FileItem {
   size?: number;
 }
 
-const iconMap = {
-  hwpx: FileText, docx: FileText, xlsx: Table, pdf: File, txt: FileText, unknown: File,
+const iconMap: Record<DocumentType, typeof File> = {
+  hwp: FileText, hwpx: FileText, docx: FileText, doc: FileText,
+  xlsx: Table, xls: Table, csv: Table, pdf: File, txt: FileText,
+  rtf: FileText, markdown: FileCode, html: FileCode, json: FileCode, xml: FileCode,
+  image: ImageIcon, unknown: File,
 };
 
 export default function FileList() {

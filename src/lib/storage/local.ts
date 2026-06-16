@@ -1,4 +1,4 @@
-const DB_NAME = "oneoffice";
+const DB_NAME = "lawbox";
 const DB_VERSION = 1;
 const STORE = "files";
 

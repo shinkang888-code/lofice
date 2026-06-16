@@ -1,91 +1,133 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import type { DocumentType } from "@/types/document";
-import { parseHwpx } from "@/lib/parsers/hwpx";
-import { parseDocxToHtml } from "@/lib/parsers/docx";
-import { parseXlsx } from "@/lib/parsers/xlsx";
-import HwpxViewer from "./HwpxViewer";
-import DocxViewer from "./DocxViewer";
-import XlsxViewer from "./XlsxViewer";
-import PdfViewer from "./PdfViewer";
-import TxtViewer from "./TxtViewer";
-import { Loader2 } from "lucide-react";
-
-interface Props {
-  buffer: ArrayBuffer;
-  fileName: string;
-  fileType: DocumentType;
-}
-
-export default function DocumentViewer({ buffer, fileName, fileType }: Props) {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [hwpx, setHwpx] = useState<Awaited<ReturnType<typeof parseHwpx>> | null>(null);
-  const [docxHtml, setDocxHtml] = useState<string | null>(null);
-  const [xlsx, setXlsx] = useState<Awaited<ReturnType<typeof parseXlsx>> | null>(null);
-  const [txt, setTxt] = useState<string | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let url: string | null = null;
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        switch (fileType) {
-          case "hwpx":
-            setHwpx(await parseHwpx(buffer));
-            break;
-          case "docx":
-            setDocxHtml(await parseDocxToHtml(buffer));
-            break;
-          case "xlsx":
-            setXlsx(parseXlsx(buffer));
-            break;
-          case "pdf":
-            url = URL.createObjectURL(new Blob([buffer], { type: "application/pdf" }));
-            setPdfUrl(url);
-            break;
-          case "txt":
-            setTxt(new TextDecoder().decode(buffer));
-            break;
-          default:
-            setError(`지원하지 않는 형식입니다: ${fileName}`);
-        }
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "문서를 불러오지 못했습니다.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
-    return () => { if (url) URL.revokeObjectURL(url); };
-  }, [buffer, fileType, fileName]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-3">
-        <Loader2 className="w-8 h-8 text-brand-600 animate-spin" />
-        <p className="text-sm text-gray-500">문서 불러오는 중...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 gap-2 px-4">
-        <p className="text-red-500 font-medium">오류</p>
-        <p className="text-sm text-gray-500 text-center">{error}</p>
-      </div>
-    );
-  }
-
-  if (fileType === "hwpx" && hwpx) return <HwpxViewer content={hwpx} />;
-  if (fileType === "docx" && docxHtml) return <DocxViewer html={docxHtml} />;
-  if (fileType === "xlsx" && xlsx) return <XlsxViewer content={xlsx} />;
-  if (fileType === "pdf" && pdfUrl) return <PdfViewer url={pdfUrl} />;
-  if (fileType === "txt" && txt !== null) return <TxtViewer text={txt} />;
-
-  return null;
-}
+"use client";
+
+import { useEffect, useState } from "react";
+import type { DocumentType, XlsxContent } from "@/types/document";
+import { parseDocument } from "@/lib/parsers/document-router";
+import HangulViewer from "./HangulViewer";
+import DocxViewer from "./DocxViewer";
+import XlsxViewer from "./XlsxViewer";
+import PdfViewer from "./PdfViewer";
+import TxtViewer from "./TxtViewer";
+import ImageViewer from "./ImageViewer";
+import MarkdownViewer from "./MarkdownViewer";
+import HtmlViewer from "./HtmlViewer";
+import CodeViewer from "./CodeViewer";
+import { Loader2 } from "lucide-react";
+
+interface Props {
+  buffer: ArrayBuffer;
+  fileName: string;
+  fileType: DocumentType;
+}
+
+export default function DocumentViewer({ buffer, fileName, fileType }: Props) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [html, setHtml] = useState<string | null>(null);
+  const [text, setText] = useState<string | null>(null);
+  const [xlsx, setXlsx] = useState<XlsxContent | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageMime, setImageMime] = useState<string | undefined>();
+  const [code, setCode] = useState<string | null>(null);
+  const [codeLanguage, setCodeLanguage] = useState<"json" | "xml" | "text">("text");
+  const [resolvedType, setResolvedType] = useState<DocumentType>(fileType);
+
+  useEffect(() => {
+    let pdf: string | null = null;
+    let img: string | null = null;
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await parseDocument(buffer, fileName, fileType);
+        setResolvedType(result.type);
+        setHtml(result.html ?? null);
+        setText(result.text ?? null);
+        setXlsx(result.xlsx ?? null);
+        if (result.pdfUrl) {
+          pdf = result.pdfUrl;
+          setPdfUrl(result.pdfUrl);
+        }
+        if (result.imageUrl) {
+          img = result.imageUrl;
+          setImageUrl(result.imageUrl);
+          setImageMime(result.imageMime);
+        }
+        if (result.code) {
+          setCode(result.code);
+          setCodeLanguage(result.codeLanguage ?? "text");
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "문서를 불러오지 못했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      if (pdf) URL.revokeObjectURL(pdf);
+      if (img) URL.revokeObjectURL(img);
+    };
+  }, [buffer, fileType, fileName]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 bg-[#c8c8c8]">
+        <Loader2 className="w-8 h-8 text-lawbox-navy animate-spin" />
+        <p className="text-sm text-gray-600">문서 불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 px-6 bg-[#c8c8c8]">
+        <p className="text-red-600 font-medium">문서를 열 수 없습니다</p>
+        <p className="text-sm text-gray-600 text-center max-w-md">{error}</p>
+        <p className="text-xs text-gray-400 mt-2">
+          암호화된 HWP/HWPX 파일은 지원하지 않습니다.
+        </p>
+      </div>
+    );
+  }
+
+  if ((resolvedType === "hwp" || resolvedType === "hwpx") && html) {
+    return (
+      <HangulViewer
+        html={html}
+        fileName={fileName}
+        formatLabel={resolvedType === "hwp" ? "HWP 문서" : "HWPX 문서"}
+      />
+    );
+  }
+  if ((resolvedType === "docx" || resolvedType === "doc") && html) {
+    return <DocxViewer html={html} />;
+  }
+  if ((resolvedType === "xlsx" || resolvedType === "xls" || resolvedType === "csv") && xlsx) {
+    return <XlsxViewer content={xlsx} />;
+  }
+  if (resolvedType === "pdf" && pdfUrl) return <PdfViewer url={pdfUrl} />;
+  if ((resolvedType === "txt" || resolvedType === "rtf") && text !== null) {
+    return <TxtViewer text={text} />;
+  }
+  if (resolvedType === "markdown" && html) {
+    return <MarkdownViewer html={html} fileName={fileName} />;
+  }
+  if (resolvedType === "html" && html) {
+    return <HtmlViewer html={html} fileName={fileName} />;
+  }
+  if ((resolvedType === "json" || resolvedType === "xml") && code) {
+    return <CodeViewer code={code} fileName={fileName} language={codeLanguage} />;
+  }
+  if (resolvedType === "image" && imageUrl) {
+    return <ImageViewer url={imageUrl} fileName={fileName} mimeType={imageMime} />;
+  }
+
+  return (
+    <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+      표시할 내용이 없습니다.
+    </div>
+  );
+}
+

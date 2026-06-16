@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --brand: #2563eb;
+  --brand: #003377;
+  --lawbox-navy: #003377;
+  --lawbox-gold: #D4AF37;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -28,8 +30,32 @@ body {
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded; }
 
+.hancom-paper {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.hancom-content {
+  font-family: "맑은 고딕", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  color: #000;
+  line-height: 1.6;
+}
+
+.hancom-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.hancom-table td,
+.hancom-table th {
+  border: 1px solid #666;
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
 @media (max-width: 640px) {
-  .docx-viewer, .hwpx-viewer, .txt-viewer {
-    @apply px-3 py-4;
+  .hancom-paper {
+    padding: 16px !important;
+    min-height: auto !important;
   }
 }

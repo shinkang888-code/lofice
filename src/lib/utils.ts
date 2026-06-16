@@ -1,20 +1,10 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import type { DocumentType } from "@/types/document";
+
+export { getDocumentType, isEditableType, isHancomType, FORMAT_LABELS, ACCEPT_EXTENSIONS } from "@/lib/document-types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-export function getDocumentType(fileName: string): DocumentType {
-  const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
-  const map: Record<string, DocumentType> = {
-    hwpx: "hwpx", hwp: "hwpx",
-    docx: "docx", doc: "docx",
-    xlsx: "xlsx", xls: "xlsx", csv: "xlsx",
-    pdf: "pdf", txt: "txt",
-  };
-  return map[ext] ?? "unknown";
 }
 
 export function formatFileSize(bytes: number): string {
