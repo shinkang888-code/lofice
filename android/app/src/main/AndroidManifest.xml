@@ -77,6 +77,18 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
 
+            <!-- PowerPoint -->
+            <intent-filter android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="application/vnd.ms-powerpoint" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+                <data android:mimeType="application/vnd.oasis.opendocument.presentation" />
+            </intent-filter>
+
             <!-- HWP/HWPX 및 기타 (octet-stream) -->
             <intent-filter android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:priority="999">
                 <action android:name="android.intent.action.VIEW" />
@@ -122,7 +134,14 @@
                 <data android:pathPattern=".*\\.gif" />
                 <data android:pathPattern=".*\\.webp" />
                 <data android:pathPattern=".*\\.bmp" />
-                <data android:pathPattern=".*\\.svg" />
+                <data android:pathPattern=".*\\.pptx" />
+                <data android:pathPattern=".*\\.ppt" />
+                <data android:pathPattern=".*\\.odp" />
+                <data android:pathPattern=".*\\.odt" />
+                <data android:pathPattern=".*\\.ods" />
+                <data android:pathPattern=".*\\.mht" />
+                <data android:pathPattern=".*\\.docm" />
+                <data android:pathPattern=".*\\.xlsm" />
             </intent-filter>
 
             <!-- 공유 받기 -->

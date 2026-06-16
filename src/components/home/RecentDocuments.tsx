@@ -8,10 +8,11 @@ import { FileText, Table, File, ImageIcon, FileCode, Clock } from "lucide-react"
 import type { DocumentType } from "@/types/document";
 
 const iconMap: Record<DocumentType, typeof File> = {
-  hwp: FileText, hwpx: FileText, docx: FileText, doc: FileText,
-  xlsx: Table, xls: Table, csv: Table, pdf: File, txt: FileText,
-  rtf: FileText, markdown: FileCode, html: FileCode, json: FileCode, xml: FileCode,
-  image: ImageIcon, unknown: File,
+  hwp: FileText, hwpx: FileText, docx: FileText, doc: FileText, odt: FileText,
+  xlsx: Table, xls: Table, ods: Table, csv: Table, presentation: FileText,
+  pdf: File, txt: FileText, rtf: FileText, mhtml: FileCode,
+  markdown: FileCode, html: FileCode, json: FileCode, xml: FileCode,
+  image: ImageIcon, unsupported: File, unknown: File,
 };
 
 export default function RecentDocuments() {

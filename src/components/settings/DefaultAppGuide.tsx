@@ -2,7 +2,9 @@
 
 import { Smartphone, ExternalLink } from "lucide-react";
 import { isNativeApp } from "@/lib/capacitor";
-import { SUPPORTED_EXTENSIONS } from "@/lib/document-types";
+import { countBySupport } from "@/lib/msoffice/format-registry";
+
+const { full, partial, total } = countBySupport();
 
 export default function DefaultAppGuide() {
   const isAndroid = isNativeApp();
@@ -44,8 +46,8 @@ export default function DefaultAppGuide() {
         </button>
       )}
 
-      <p className="text-[10px] text-gray-400">
-        지원 형식: {SUPPORTED_EXTENSIONS.slice(0, 12).join(", ")}… 등 {SUPPORTED_EXTENSIONS.length}종
+        <p className="text-[10px] text-gray-400">
+        MS Office 호환 {total}종 (완전 {full} · 부분 {partial})
       </p>
     </div>
   );

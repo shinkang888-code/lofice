@@ -3,17 +3,22 @@ export type DocumentType =
   | "hwpx"
   | "docx"
   | "doc"
+  | "odt"
   | "xlsx"
   | "xls"
+  | "ods"
   | "csv"
+  | "presentation"
   | "pdf"
   | "txt"
   | "rtf"
+  | "mhtml"
   | "markdown"
   | "html"
   | "json"
   | "xml"
   | "image"
+  | "unsupported"
   | "unknown";
 
 export interface DocumentFile {
@@ -39,6 +44,10 @@ export interface XlsxContent {
 export interface XlsxSheet {
   name: string;
   rows: (string | number | null)[][];
+}
+
+export interface PresentationContent {
+  slides: import("@/lib/parsers/pptx").PptxSlide[];
 }
 
 export interface ViewerState {

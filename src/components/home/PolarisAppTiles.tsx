@@ -22,11 +22,10 @@ const APPS = [
   {
     id: "slide",
     label: "슬라이드",
-    desc: "PPTX (뷰어)",
+    desc: "PPT · PPTX · ODP",
     icon: Presentation,
     color: "from-[#d24726] to-[#a33b1e]",
-    formats: ".pptx",
-    soon: true as const,
+    formats: ".ppt .pptx .odp",
   },
   {
     id: "word",
@@ -53,7 +52,7 @@ interface Props {
 export default function PolarisAppTiles({ onOpen }: Props) {
   return (
     <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      {APPS.map(({ id, label, desc, icon: Icon, color, formats, soon }) => (
+      {APPS.map(({ id, label, desc, icon: Icon, color, formats }) => (
         <button
           key={id}
           type="button"
@@ -66,9 +65,6 @@ export default function PolarisAppTiles({ onOpen }: Props) {
           <p className="font-bold text-white text-sm">{label}</p>
           <p className="text-[11px] text-white/70 mt-0.5">{desc}</p>
           <p className="text-[10px] text-white/50 mt-2">{formats}</p>
-          {soon && (
-            <span className="inline-block mt-1 text-[9px] bg-white/20 text-white/80 px-1.5 py-0.5 rounded">준비 중</span>
-          )}
         </button>
       ))}
     </section>
