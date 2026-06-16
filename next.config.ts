@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@ssabrojs/hwpxjs",
     "pdfjs-dist",
-    "@eigenpal/docx-js-editor",
+    "@eigenpal/docx-editor-react",
+    "@docmentis/udoc-viewer",
     "@rhwp/core",
     "@microscope-js/react",
     "@microscope-js/core",

@@ -3,16 +3,16 @@
 import { useRef, forwardRef, useImperativeHandle } from "react";
 import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
-import type { DocxEditorRef } from "@eigenpal/docx-js-editor";
+import type { DocxEditorRef } from "@eigenpal/docx-editor-react";
 
 const DocxEditor = dynamic(
-  () => import("@eigenpal/docx-js-editor").then((m) => m.DocxEditor),
+  () => import("@eigenpal/docx-editor-react").then((m) => m.DocxEditor),
   {
     ssr: false,
     loading: () => (
       <div className="flex flex-col items-center justify-center h-full gap-2">
         <Loader2 className="w-8 h-8 animate-spin text-lofice-navy" />
-        <p className="text-sm text-gray-500">Word 에디터 로딩 (@eigenpal/docx-js-editor)...</p>
+        <p className="text-sm text-gray-500">Word 에디터 로딩...</p>
       </div>
     ),
   }
@@ -46,7 +46,6 @@ const EigenpalDocxEditor = forwardRef<EigenpalDocxEditorHandle, Props>(
           showToolbar={!readOnly}
           showRuler
           showZoomControl
-          showPrintButton
           initialZoom={1}
           className="h-full"
           style={{ height: "100%" }}

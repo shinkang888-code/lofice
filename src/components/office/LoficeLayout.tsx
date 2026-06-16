@@ -47,6 +47,7 @@ export default function LoficeLayout({
   const { state } = toolbar ?? { state: null };
   const viewActions = state?.actions ?? {};
   const editActions = editorToolbar?.actions ?? {};
+  const editMeta = editorToolbar?.meta ?? {};
   const actions = { ...viewActions, ...editActions };
   const isPdf = state?.docType === "pdf";
   const zoomPct = Math.round((state?.zoom ?? 1) * 100);
@@ -197,7 +198,12 @@ export default function LoficeLayout({
               페이지 {state.page} / {state.pageCount}
             </span>
           )}
-          <span className="opacity-70">{isPdf ? "PDF" : "문서"}</span>
+          {editMeta.docType === "spreadsheet" && editMeta.activeCell && (
+            <span>{editMeta.activeCell}{editMeta.sheetName ? ` · ${editMeta.sheetName}` : ""}</span>
+          )}
+          <span className="opacity-70">
+            {isPdf ? "PDF" : editMeta.docType === "spreadsheet" ? "시트" : editMeta.docType === "richtext" ? "한글" : "문서"}
+          </span>
         </div>
         <div className="flex items-center gap-3 opacity-90">
           <span>{zoomPct}%</span>

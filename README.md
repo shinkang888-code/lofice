@@ -7,27 +7,28 @@
 ## 기능
 
 - **뷰어**: HWPX, DOCX, XLSX, PDF, PPTX, ODT, TXT, 이미지, MD, HTML, JSON 등 (60+ 형식)
-- **고속 PDF**: 워커 프리로드 + 1페이지 우선 렌더링
+- **고속 WASM 뷰어**: @docmentis/udoc-viewer — PDF/DOCX 네이티브 렌더 (폴백: pdfjs / microscope-js)
+- **고속 PDF**: pdfjs 워커 프리로드 + 1페이지 우선 렌더링 (UDoc 폴백)
 - **HWP/HWPX**: @rhwp/core WASM 네이티브 렌더 (폴백: hwpxjs)
-- **DOCX/XLSX 뷰어**: microscope-js 클라이언트 전용 렌더러
-- **DOCX 편집**: @eigenpal/docx-js-editor WYSIWYG (실제 DOCX 저장)
-- **편집**: TipTap(한글·텍스트), XLSX 스프레드시트 에디터
+- **DOCX 편집**: @eigenpal/docx-editor-react 1.x WYSIWYG (실제 DOCX 저장)
+- **한글 편집**: TipTap + 폴라리스 스타일 페이지 레이아웃, 리본 연동
+- **시트 편집**: 수식 입력줄(fx), A1 셀 참조, 시트 탭, 키보드 탐색
 - **폴라리스 스타일 UI**: 리본(파일/홈/삽입/보기), 상태바, 드래그앤드롭
 - **광고 없음**: 추적·광고·텔레메트리 코드 없음
 - **오프라인**: IndexedDB 로컬 저장
 - **안드로이드**: Capacitor 네이티브 앱
 - **Windows**: Electron 설치 프로그램 (.exe)
 
-## 오픈소스 통합 (v1.5.0)
+## 오픈소스 통합 (v1.6.0)
 
 | 리포 | 패키지 | 활용 |
 |------|--------|------|
-| [shubham8550/microscope-js](https://github.com/shubham8550/microscope-js) | `@microscope-js/*` | 클라이언트 전용 DOCX/XLSX/PDF 뷰어, 트리셰이킹 |
-| [eigenpal/docx-editor](https://github.com/eigenpal/docx-editor) | `@eigenpal/docx-js-editor` | DOCX WYSIWYG 편집 |
-| [sechan9999/rhwp](https://github.com/sechan9999/rhwp) | `@rhwp/core` | HWP WASM 엔진·SVG 렌더 |
-| [docMentis/docmentis-udoc-viewer](https://github.com/docMentis/docmentis-udoc-viewer) | (다음 단계) | WASM 고속 PDF/DOCX 렌더 참고 |
+| [docMentis/docmentis-udoc-viewer](https://github.com/docMentis/docmentis-udoc-viewer) | `@docmentis/udoc-viewer` | WASM 고속 PDF/DOCX 뷰어 (1순위) |
+| [eigenpal/docx-editor](https://github.com/eigenpal/docx-editor) | `@eigenpal/docx-editor-react` | DOCX WYSIWYG 편집 (1.x) |
+| [shubham8550/microscope-js](https://github.com/shubham8550/microscope-js) | `@microscope-js/*` | DOCX/XLSX/PDF 폴백 뷰어 |
+| [sechan9999/rhwp](https://github.com/sechan9999/rhwp) | `@rhwp/core` | HWP WASM SVG 렌더 |
 
-`npm install` 시 `postinstall`이 `@rhwp/core`의 `rhwp_bg.wasm`을 `public/`으로 복사합니다.
+`npm install` 시 `postinstall`이 WASM/worker 파일을 `public/`으로 복사합니다.
 
 ## 시연 확인 포인트
 

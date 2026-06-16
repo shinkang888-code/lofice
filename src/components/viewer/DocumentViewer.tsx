@@ -18,6 +18,7 @@ import PresentationViewer from "./PresentationViewer";
 import UnsupportedViewer from "./UnsupportedViewer";
 import { Loader2 } from "lucide-react";
 
+const UDocViewerWrapper = dynamic(() => import("./UDocViewerWrapper"), { ssr: false });
 const RhwpViewer = dynamic(() => import("./RhwpViewer"), { ssr: false });
 const MicroscopeOfficeViewer = dynamic(() => import("./MicroscopeOfficeViewer"), { ssr: false });
 
@@ -47,6 +48,8 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   const [resolvedType, setResolvedType] = useState<DocumentType>(fileType);
   const [pdfBuffer, setPdfBuffer] = useState<ArrayBuffer | null>(null);
   const [officeBuffer, setOfficeBuffer] = useState<ArrayBuffer | null>(null);
+  const [udocPdfFallback, setUdocPdfFallback] = useState(false);
+  const [udocDocxFallback, setUdocDocxFallback] = useState(false);
   const [rhwpFallback, setRhwpFallback] = useState(false);
   const [microscopeFallback, setMicroscopeFallback] = useState(false);
   const [unsupported, setUnsupported] = useState(false);
@@ -70,6 +73,8 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
       setError(null);
       setPdfBuffer(null);
       setOfficeBuffer(null);
+      setUdocPdfFallback(false);
+      setUdocDocxFallback(false);
       setRhwpFallback(false);
       setMicroscopeFallback(false);
       setHtml(null);
@@ -199,6 +204,16 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   }
 
   if (resolvedType === "pdf" && pdfBuffer) {
+    if (!udocPdfFallback) {
+      return (
+        <UDocViewerWrapper
+          buffer={pdfBuffer}
+          fileName={fileName}
+          docType="pdf"
+          onFallback={() => setUdocPdfFallback(true)}
+        />
+      );
+    }
     return <PdfViewer buffer={pdfBuffer} fileName={fileName} />;
   }
 
@@ -221,6 +236,19 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
         />
       );
     }
+  }
+
+  if ((resolvedType === "docx" || resolvedType === "doc") && officeBuffer && !udocDocxFallback) {
+    return (
+      <div className="h-full relative">
+        <UDocViewerWrapper
+          buffer={officeBuffer}
+          fileName={fileName}
+          docType="docx"
+          onFallback={() => setUdocDocxFallback(true)}
+        />
+      </div>
+    );
   }
 
   if ((resolvedType === "docx" || resolvedType === "doc") && officeBuffer && !microscopeFallback) {

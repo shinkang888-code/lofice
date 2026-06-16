@@ -16,9 +16,16 @@ export interface EditorToolbarActions {
   paste?: () => void;
 }
 
+export interface EditorToolbarMeta {
+  docType?: "richtext" | "spreadsheet";
+  activeCell?: string;
+  sheetName?: string;
+}
+
 interface EditorToolbarContextValue {
   actions: EditorToolbarActions;
-  register: (actions: EditorToolbarActions) => void;
+  meta: EditorToolbarMeta;
+  register: (payload: EditorToolbarActions & EditorToolbarMeta) => void;
   reset: () => void;
 }
 
@@ -26,14 +33,20 @@ const EditorToolbarContext = createContext<EditorToolbarContextValue | null>(nul
 
 export function EditorToolbarProvider({ children }: { children: ReactNode }) {
   const [actions, setActions] = useState<EditorToolbarActions>({});
+  const [meta, setMeta] = useState<EditorToolbarMeta>({});
 
-  const register = useCallback((next: EditorToolbarActions) => {
-    setActions((prev) => ({ ...prev, ...next }));
+  const register = useCallback((payload: EditorToolbarActions & EditorToolbarMeta) => {
+    const { docType, activeCell, sheetName, ...nextActions } = payload;
+    setActions((prev) => ({ ...prev, ...nextActions }));
+    setMeta({ docType, activeCell, sheetName });
   }, []);
 
-  const reset = useCallback(() => setActions({}), []);
+  const reset = useCallback(() => {
+    setActions({});
+    setMeta({});
+  }, []);
 
-  const value = useMemo(() => ({ actions, register, reset }), [actions, register, reset]);
+  const value = useMemo(() => ({ actions, meta, register, reset }), [actions, meta, register, reset]);
 
   return <EditorToolbarContext.Provider value={value}>{children}</EditorToolbarContext.Provider>;
 }

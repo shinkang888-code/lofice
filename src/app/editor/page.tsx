@@ -16,7 +16,7 @@ import CodeEditor from "@/components/editor/CodeEditor";
 import LoficeLayout from "@/components/office/LoficeLayout";
 import { EditorToolbarProvider } from "@/components/office/EditorToolbarContext";
 import type { DocumentType, XlsxContent } from "@/types/document";
-import "@eigenpal/docx-js-editor/styles.css";
+import "@eigenpal/docx-editor-react/styles.css";
 
 function EditorContent() {
   const router = useRouter();
@@ -122,7 +122,7 @@ function EditorContent() {
           {isEigenpalDoc && fileBuffer && (
             <EigenpalDocxEditor ref={eigenpalRef} documentBuffer={fileBuffer} fileName={fileName} />
           )}
-          {isRichText && <DocxEditor initialHtml={docxHtml} onChange={setEditedHtml} />}
+          {isRichText && <DocxEditor initialHtml={docxHtml} onChange={setEditedHtml} ribbonMode />}
           {isSpreadsheet && editedXlsx && (
             <SpreadsheetEditor content={editedXlsx} onChange={setEditedXlsx} />
           )}
