@@ -1,0 +1,15 @@
+{
+  "name": "OneOffice - 원오피스",
+  "short_name": "OneOffice",
+  "description": "광고 없는 무료 문서 뷰어 & 오피스",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2563eb",
+  "theme_color": "#2563eb",
+  "orientation": "any",
+  "icons": [
+    { "src": "/oneoffice-app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/oneoffice-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

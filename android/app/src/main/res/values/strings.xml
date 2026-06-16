@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">OneOffice</string>
+    <string name="title_activity_main">OneOffice</string>
+    <string name="package_name">com.oneoffice.app</string>
+    <string name="custom_url_scheme">com.oneoffice.app</string>
+</resources>

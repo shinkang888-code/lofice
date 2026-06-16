@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+dist/
+android/app/build/
+android/.gradle/
+android/capacitor-cordova-android-plugins/build/
+android/build/
+releases/*.zip
+releases/android-package/
+releases/windows-package/
+*.local
+.DS_Store
+.env
+.env.*
+!.env.local.example
