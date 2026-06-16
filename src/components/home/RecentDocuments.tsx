@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { listFilesLocal } from "@/lib/storage/local";
 import { getDocumentType, formatFileSize, formatDate } from "@/lib/utils";
-import { FileText, Table, File, ImageIcon, FileCode, Clock } from "lucide-react";
+import { FileText, Table, File, ImageIcon, FileCode, Clock, Archive } from "lucide-react";
 import type { DocumentType } from "@/types/document";
 
 const iconMap: Record<DocumentType, typeof File> = {
@@ -12,7 +12,7 @@ const iconMap: Record<DocumentType, typeof File> = {
   xlsx: Table, xls: Table, ods: Table, csv: Table, presentation: FileText,
   pdf: File, txt: FileText, rtf: FileText, mhtml: FileCode,
   markdown: FileCode, html: FileCode, json: FileCode, xml: FileCode,
-  image: ImageIcon, unsupported: File, unknown: File,
+  image: ImageIcon, archive: Archive, unsupported: File, unknown: File,
 };
 
 export default function RecentDocuments() {

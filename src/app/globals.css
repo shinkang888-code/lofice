@@ -166,3 +166,31 @@ body {
     display: none !important;
   }
 }
+
+/* Office Tool Plus 테마 — lofice 환경설정 */
+html[data-theme="dark"] body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+html[data-theme="dark"] .bg-white {
+  @apply bg-gray-800 text-gray-100;
+}
+
+html[data-theme="dark"] .border-gray-100,
+html[data-theme="dark"] .border-gray-200 {
+  @apply border-gray-700;
+}
+
+html[data-theme="dark"] .text-gray-800,
+html[data-theme="dark"] .text-gray-900 {
+  @apply text-gray-100;
+}
+
+html[data-theme="dark"] .text-gray-500,
+html[data-theme="dark"] .text-gray-600 {
+  @apply text-gray-400;
+}
+
+html[data-theme="light"] body {
+  @apply bg-white text-gray-900;
+}

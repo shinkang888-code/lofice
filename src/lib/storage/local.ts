@@ -110,3 +110,26 @@ export async function updateFileLocal(id: string, data: ArrayBuffer, name?: stri
     tx.onerror = () => reject(tx.error);
   });
 }
+
+export async function clearAllFilesLocal(): Promise<number> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE, "readwrite");
+    const store = tx.objectStore(STORE);
+    const countReq = store.count();
+    countReq.onsuccess = () => {
+      const count = countReq.result;
+      store.clear();
+      tx.oncomplete = () => resolve(count);
+    };
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+export async function getStorageStats(): Promise<{ fileCount: number; totalBytes: number }> {
+  const files = await listFilesLocal();
+  return {
+    fileCount: files.length,
+    totalBytes: files.reduce((sum, f) => sum + (f.size ?? 0), 0),
+  };
+}

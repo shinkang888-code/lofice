@@ -1,4 +1,5 @@
 import type { DocumentType } from "@/types/document";
+import { isArchiveFileName } from "@/lib/archive/archive-types";
 import { MS_OFFICE_FORMATS } from "@/lib/msoffice/format-registry";
 
 /** MS Office + 한글 + 웹 형식 확장자 → DocumentType */
@@ -9,12 +10,19 @@ const EXT_MAP: Record<string, DocumentType> = Object.fromEntries(
 export const SUPPORTED_EXTENSIONS = [...new Set(MS_OFFICE_FORMATS.map((f) => f.ext))];
 
 export function getDocumentType(fileName: string): DocumentType {
+  const lower = fileName.toLowerCase();
+  for (const ext of ["tbz2", "txz", "tgz", "tar.gz", "tar.bz2", "tar.xz"]) {
+    if (lower.endsWith(ext)) return "archive";
+  }
   const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+  if (isArchiveFileName(fileName)) return "archive";
   return EXT_MAP[ext] ?? "unknown";
 }
 
 export function sniffDocumentType(buffer: ArrayBuffer): DocumentType | null {
   const bytes = new Uint8Array(buffer.slice(0, 16));
+  if (bytes[0] === 0x37 && bytes[1] === 0x7a && bytes[2] === 0xbc && bytes[3] === 0xaf) return "archive";
+  if (bytes[0] === 0x52 && bytes[1] === 0x61 && bytes[2] === 0x72 && bytes[3] === 0x21) return "archive";
   const head = String.fromCharCode(...bytes.slice(0, 8));
 
   if (head.startsWith("%PDF-")) return "pdf";
@@ -87,6 +95,7 @@ export const FORMAT_LABELS: Record<DocumentType, string> = {
   json: "JSON",
   xml: "XML",
   image: "이미지",
+  archive: "압축 파일",
   unsupported: "미지원 (Office 전용)",
   unknown: "알 수 없음",
 };
@@ -94,6 +103,7 @@ export const FORMAT_LABELS: Record<DocumentType, string> = {
 export function isEditableType(type: DocumentType): boolean {
   return [
     "hwp", "hwpx", "docx", "doc", "odt", "xlsx", "xls", "ods", "csv",
+    "presentation",
     "txt", "rtf", "markdown", "html", "json", "xml",
   ].includes(type);
 }

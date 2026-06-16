@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  hwpx-skill-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hwpx-skill-api
+    ports:
+      - "${HWPX_SKILL_PORT:-8100}:8100"
+    environment:
+      - HWPX_SKILL_DIR=/app/hwpx-skill
+      - HWPX_SKILL_HOST=0.0.0.0
+      - HWPX_SKILL_PORT=8100
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+    volumes:
+      - ${HWPX_SKILL_REPO:-../../hwpx-skill-temp}:/app/hwpx-skill:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

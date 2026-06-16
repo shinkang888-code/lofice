@@ -78,6 +78,23 @@ export const MS_OFFICE_FORMATS: FormatEntry[] = [
   // 한글
   { ext: "hwp", type: "hwp", app: "viewer", label: "한글 HWP", support: "full" },
   { ext: "hwpx", type: "hwpx", app: "viewer", label: "한글 HWPX", support: "full" },
+  // 7-Zip / 아카이브
+  { ext: "7z", type: "archive", app: "viewer", label: "7-Zip", support: "full" },
+  { ext: "zip", type: "archive", app: "viewer", label: "ZIP", support: "full" },
+  { ext: "rar", type: "archive", app: "viewer", label: "RAR", support: "full" },
+  { ext: "tar", type: "archive", app: "viewer", label: "TAR", support: "full" },
+  { ext: "gz", type: "archive", app: "viewer", label: "GZIP", support: "full" },
+  { ext: "tgz", type: "archive", app: "viewer", label: "TGZ", support: "full" },
+  { ext: "bz2", type: "archive", app: "viewer", label: "BZIP2", support: "full" },
+  { ext: "tbz2", type: "archive", app: "viewer", label: "TBZ2", support: "full" },
+  { ext: "xz", type: "archive", app: "viewer", label: "XZ", support: "full" },
+  { ext: "txz", type: "archive", app: "viewer", label: "TXZ", support: "full" },
+  { ext: "wim", type: "archive", app: "viewer", label: "WIM", support: "full" },
+  { ext: "iso", type: "archive", app: "viewer", label: "ISO", support: "full" },
+  { ext: "cab", type: "archive", app: "viewer", label: "CAB", support: "full" },
+  { ext: "deb", type: "archive", app: "viewer", label: "DEB", support: "full" },
+  { ext: "rpm", type: "archive", app: "viewer", label: "RPM", support: "full" },
+  { ext: "cpio", type: "archive", app: "viewer", label: "CPIO", support: "partial" },
   // 기타
   { ext: "md", type: "markdown", app: "viewer", label: "Markdown", support: "full" },
   { ext: "markdown", type: "markdown", app: "viewer", label: "Markdown", support: "full" },

@@ -3,23 +3,23 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { openFileFromBase64, openFileFromHandle } from "@/lib/file-open-handler";
+import { useLoficeEvent } from "@/lib/reactTypes/hooks";
 
 export function useAndroidFileIntent() {
   const router = useRouter();
 
-  useEffect(() => {
-    const handler = async (e: Event) => {
-      const detail = (e as CustomEvent).detail as { name: string; data: string };
+  useLoficeEvent(
+    "lofice:openFile",
+    async (detail) => {
       if (!detail?.data) return;
       try {
         await openFileFromBase64(detail.name, detail.data, router);
       } catch (err) {
         console.error("Failed to open file from intent:", err);
       }
-    };
-    window.addEventListener("lofice:openFile", handler);
-    return () => window.removeEventListener("lofice:openFile", handler);
-  }, [router]);
+    },
+    true,
+  );
 }
 
 export function usePwaFileLaunch() {

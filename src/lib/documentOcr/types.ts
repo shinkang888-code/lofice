@@ -3,7 +3,11 @@
 export type OcrMethod =
   | "pdf-text"
   | "tesseract"
+  | "ddddocr"
   | "pasted";
+
+/** OCR 엔진 선택 — auto: ddddocr 서버 우선, 없으면 Tesseract */
+export type OcrEngine = "auto" | "ddddocr" | "tesseract";
 
 export type DocumentOcrResult = {
   text: string;
@@ -50,5 +54,12 @@ export function needsOcrFallback(extracted: string, pageCount: number): boolean 
 export const METHOD_LABEL: Record<OcrMethod, string> = {
   "pdf-text": "PDF 텍스트 레이어",
   tesseract: "Tesseract OCR",
+  ddddocr: "ddddocr",
   pasted: "직접 입력",
+};
+
+export const ENGINE_LABEL: Record<OcrEngine, string> = {
+  auto: "자동 (ddddocr → Tesseract)",
+  ddddocr: "ddddocr",
+  tesseract: "Tesseract",
 };

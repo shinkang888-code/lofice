@@ -1,9 +1,18 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Copy, Loader2, ScanLine, X } from "lucide-react";
+import DdddOcrToolsPanel from "@/components/ocr/DdddOcrToolsPanel";
+import { checkDdddOcrHealth } from "@/lib/documentOcr/ddddocr-api";
+import { isDdddOcrServerAvailable } from "@/lib/documentOcr/ddddocr-config";
 import { extractDocumentTextClient } from "@/lib/documentOcr/extractDocumentTextClient";
-import { isOcrSupported, METHOD_LABEL, type DocumentOcrResult } from "@/lib/documentOcr/types";
+import {
+  ENGINE_LABEL,
+  isOcrSupported,
+  METHOD_LABEL,
+  type DocumentOcrResult,
+  type OcrEngine,
+} from "@/lib/documentOcr/types";
 
 interface Props {
   buffer: ArrayBuffer;
@@ -13,21 +22,32 @@ interface Props {
   className?: string;
 }
 
-/** LawyGo OCR 패널 — 클라이언트 pdfjs + Tesseract */
+/** LawyGo OCR 패널 — ddddocr(선택) + Tesseract 폴백 */
 export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, className = "" }: Props) {
   const [result, setResult] = useState<DocumentOcrResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [engine, setEngine] = useState<OcrEngine>("auto");
+  const [ddddocrOnline, setDdddocrOnline] = useState(false);
 
   const supported = isOcrSupported(mimeType, fileName);
+  const ddddocrConfigured = isDdddOcrServerAvailable();
+
+  useEffect(() => {
+    if (!ddddocrConfigured) {
+      setDdddocrOnline(false);
+      return;
+    }
+    void checkDdddOcrHealth().then(setDdddocrOnline);
+  }, [ddddocrConfigured]);
 
   const runOcr = useCallback(async () => {
     setLoading(true);
     setError(null);
     setResult(null);
     try {
-      const res = await extractDocumentTextClient(buffer, fileName, mimeType, (msg) => setProgress(msg));
+      const res = await extractDocumentTextClient(buffer, fileName, mimeType, (msg) => setProgress(msg), engine);
       setResult(res);
     } catch (e) {
       setError(e instanceof Error ? e.message : "OCR 실패");
@@ -35,7 +55,7 @@ export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, clas
       setLoading(false);
       setProgress("");
     }
-  }, [buffer, fileName, mimeType]);
+  }, [buffer, engine, fileName, mimeType]);
 
   const copyText = async () => {
     if (!result?.text) return;
@@ -60,15 +80,39 @@ export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, clas
         {!supported ? (
           <p className="text-xs text-amber-700">PDF·이미지 파일만 OCR을 지원합니다.</p>
         ) : (
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => void runOcr()}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-[#2b579a] text-white rounded-lg hover:bg-[#1e3f6f] disabled:opacity-50"
-          >
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanLine className="w-4 h-4" />}
-            {loading ? progress || "추출 중…" : "텍스트 추출 시작"}
-          </button>
+          <>
+            <label className="block text-[10px] text-gray-500">
+              OCR 엔진
+              <select
+                value={engine}
+                onChange={(e) => setEngine(e.target.value as OcrEngine)}
+                className="mt-1 w-full text-xs border border-gray-200 rounded px-2 py-1.5 bg-white"
+                disabled={loading}
+              >
+                {(Object.keys(ENGINE_LABEL) as OcrEngine[]).map((key) => (
+                  <option key={key} value={key}>
+                    {ENGINE_LABEL[key]}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {ddddocrConfigured && (
+              <p className={`text-[10px] ${ddddocrOnline ? "text-green-700" : "text-amber-700"}`}>
+                ddddocr 서버: {ddddocrOnline ? "연결됨" : "오프라인 — Tesseract로 폴백"}
+              </p>
+            )}
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => void runOcr()}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm bg-[#2b579a] text-white rounded-lg hover:bg-[#1e3f6f] disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanLine className="w-4 h-4" />}
+              {loading ? progress || "추출 중…" : "텍스트 추출 시작"}
+            </button>
+          </>
         )}
         {error && <p className="text-xs text-red-600">{error}</p>}
         {result && (
@@ -86,16 +130,22 @@ export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, clas
 
       <div className="flex-1 overflow-auto p-3">
         {result?.warnings?.map((w) => (
-          <p key={w} className="text-[10px] text-amber-700 mb-2">{w}</p>
+          <p key={w} className="text-[10px] text-amber-700 mb-2">
+            {w}
+          </p>
         ))}
         {result?.text ? (
           <pre className="text-xs whitespace-pre-wrap font-mono text-gray-800 leading-relaxed">{result.text}</pre>
         ) : (
           <p className="text-xs text-gray-400 text-center py-8">
-            스캔 PDF·이미지에서 텍스트를 추출합니다.
+            스캔 PDF·이미지·캡차에서 텍스트를 추출합니다.
             <br />
-            PDF 텍스트 레이어 → Tesseract OCR 순으로 시도합니다.
+            PDF 텍스트 레이어 → ddddocr / Tesseract OCR 순으로 시도합니다.
           </p>
+        )}
+
+        {ddddocrOnline && supported && (
+          <DdddOcrToolsPanel imageBuffer={buffer} className="mt-4" />
         )}
       </div>
     </div>

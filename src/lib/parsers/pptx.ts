@@ -5,6 +5,13 @@ export interface PptxSlide {
   index: number;
   title: string;
   html: string;
+  /** 발표자 노트 (PPT Master speaker notes) */
+  notes?: string;
+  /** data URL 또는 blob URL */
+  imageUrls?: string[];
+  /** SVG 슬라이드 (PPT Master svg_output) */
+  svg?: string;
+  desc?: string;
 }
 
 function escapeHtml(s: string): string {
@@ -36,6 +43,60 @@ async function tryOpenZip(buffer: ArrayBuffer): Promise<JSZip | null> {
   }
 }
 
+async function loadSlideRels(zip: JSZip, slideNum: number): Promise<Map<string, string>> {
+  const relPath = `ppt/slides/_rels/slide${slideNum}.xml.rels`;
+  const file = zip.file(relPath);
+  const map = new Map<string, string>();
+  if (!file) return map;
+  const xml = await file.async("string");
+  const parser = new XMLParser({ ignoreAttributes: false, removeNSPrefix: true });
+  const doc = parser.parse(xml);
+  const rels = doc?.Relationships?.Relationship;
+  const list = Array.isArray(rels) ? rels : rels ? [rels] : [];
+  for (const rel of list) {
+    const id = rel["@_Id"] ?? rel["@_id"];
+    const target = rel["@_Target"] ?? rel["@_target"];
+    if (id && target) map.set(id, target);
+  }
+  return map;
+}
+
+async function mediaToDataUrl(zip: JSZip, target: string): Promise<string | null> {
+  const path = target.startsWith("../") ? `ppt/${target.slice(3)}` : target.startsWith("ppt/") ? target : `ppt/${target}`;
+  const file = zip.file(path);
+  if (!file) return null;
+  const ext = path.split(".").pop()?.toLowerCase() ?? "png";
+  const mime = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "gif" ? "image/gif" : ext === "svg" ? "image/svg+xml" : "image/png";
+  const b64 = await file.async("base64");
+  return `data:${mime};base64,${b64}`;
+}
+
+function findEmbedIds(node: unknown, out: Set<string>): void {
+  if (node == null || typeof node !== "object") return;
+  if (Array.isArray(node)) {
+    node.forEach((n) => findEmbedIds(n, out));
+    return;
+  }
+  const rec = node as Record<string, unknown>;
+  for (const [k, v] of Object.entries(rec)) {
+    if (k.endsWith("embed") || k.endsWith("Embed")) {
+      if (typeof v === "string") out.add(v);
+    }
+    findEmbedIds(v, out);
+  }
+}
+
+async function parseNotes(zip: JSZip, slideNum: number): Promise<string | undefined> {
+  const notesPath = `ppt/notesSlides/notesSlide${slideNum}.xml`;
+  const file = zip.file(notesPath);
+  if (!file) return undefined;
+  const xml = await file.async("string");
+  const parser = new XMLParser({ ignoreAttributes: false, removeNSPrefix: true });
+  const texts: string[] = [];
+  collectTexts(parser.parse(xml), texts);
+  return texts.join("\n").trim() || undefined;
+}
+
 /** PPTX / PPTM / POTX 등 Open XML 프레젠테이션 */
 export async function parsePptx(buffer: ArrayBuffer): Promise<{ slides: PptxSlide[] }> {
   const zip = await tryOpenZip(buffer);
@@ -52,6 +113,7 @@ export async function parsePptx(buffer: ArrayBuffer): Promise<{ slides: PptxSlid
 
   const slides: PptxSlide[] = [];
   for (let i = 0; i < slidePaths.length; i++) {
+    const slideNum = parseInt(slidePaths[i].match(/\d+/)![0], 10);
     const xml = await zip.file(slidePaths[i])!.async("string");
     const doc = parser.parse(xml);
     const texts: string[] = [];
@@ -62,7 +124,29 @@ export async function parsePptx(buffer: ArrayBuffer): Promise<{ slides: PptxSlid
       body.length > 0
         ? body.map((t) => `<p class="mb-3 text-lg">${escapeHtml(t)}</p>`).join("")
         : `<p class="text-gray-400 italic">텍스트 없음</p>`;
-    slides.push({ index: i + 1, title, html });
+
+    const rels = await loadSlideRels(zip, slideNum);
+    const embedIds = new Set<string>();
+    findEmbedIds(doc, embedIds);
+    const imageUrls: string[] = [];
+    for (const id of embedIds) {
+      const target = rels.get(id);
+      if (target) {
+        const url = await mediaToDataUrl(zip, target);
+        if (url) imageUrls.push(url);
+      }
+    }
+
+    const notes = await parseNotes(zip, slideNum);
+
+    slides.push({
+      index: i + 1,
+      title,
+      html,
+      notes,
+      imageUrls: imageUrls.length ? imageUrls : undefined,
+      desc: body[0]?.slice(0, 80),
+    });
   }
 
   if (slides.length === 0) throw new Error("슬라이드를 찾을 수 없습니다.");

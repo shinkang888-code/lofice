@@ -9,7 +9,9 @@ android/build/
 releases/*.zip
 releases/*.apk
 public/rhwp_bg.wasm
+public/7z-wasm/
 public/udoc/
+public/vendor/
 releases/android-package/
 releases/windows-package/
 *.local
@@ -18,3 +20,5 @@ releases/windows-package/
 .env.*
 !.env.local.example
 .vercel
+__pycache__/
+*.pyc

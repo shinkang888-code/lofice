@@ -8,6 +8,7 @@ import { isHancomType } from "@/lib/parsers/hancom";
 import { parseHancomDocument, saveHancomAsHwpx } from "@/lib/parsers/hancom";
 import { parseXlsx } from "@/lib/parsers/xlsx";
 import DocxEditor from "@/components/editor/DocxEditor";
+import RhwpEditor, { type RhwpEditorHandle } from "@/components/hwp/RhwpEditor";
 import EigenpalDocxEditor, { type EigenpalDocxEditorHandle } from "@/components/editor/EigenpalDocxEditor";
 import SpreadsheetEditor from "@/components/editor/SpreadsheetEditor";
 import MarkdownEditor from "@/components/editor/MarkdownEditor";
@@ -23,6 +24,7 @@ function EditorContent() {
   const params = useSearchParams();
   const id = params.get("id");
   const eigenpalRef = useRef<EigenpalDocxEditorHandle>(null);
+  const rhwpRef = useRef<RhwpEditorHandle>(null);
 
   const [fileName, setFileName] = useState("");
   const [fileType, setFileType] = useState<DocumentType>("unknown");
@@ -72,6 +74,9 @@ function EditorContent() {
       if (isEigenpalDoc && fileBuffer && eigenpalRef.current) {
         const buf = await eigenpalRef.current.save();
         if (buf) await updateFileLocal(id, buf);
+      } else if (isHancomType(fileType) && rhwpRef.current) {
+        const buf = await rhwpRef.current.save();
+        if (buf) await updateFileLocal(id, buf, fileName);
       } else if (isHancomType(fileType) && editedHtml) {
         const buf = await saveHancomAsHwpx(editedHtml, fileName.replace(/\.[^.]+$/, ""));
         const newName = fileName.endsWith(".hwpx") ? fileName : fileName.replace(/\.hwp$/i, ".hwpx");
@@ -109,6 +114,7 @@ function EditorContent() {
 
   const isSpreadsheet = fileType === "xlsx" || fileType === "xls" || fileType === "csv" || fileType === "ods";
   const isRichText = isHancomType(fileType);
+  const isRhwpEditor = isRichText && fileBuffer;
 
   return (
     <EditorToolbarProvider>
@@ -116,13 +122,16 @@ function EditorContent() {
         fileName={`편집: ${fileName}`}
         onSave={handleSave}
         saving={saving}
-        minimal={!!isEigenpalDoc}
+        minimal={!!isEigenpalDoc || !!isRhwpEditor}
       >
         <div className="h-full overflow-hidden bg-white">
           {isEigenpalDoc && fileBuffer && (
             <EigenpalDocxEditor ref={eigenpalRef} documentBuffer={fileBuffer} fileName={fileName} />
           )}
-          {isRichText && <DocxEditor initialHtml={docxHtml} onChange={setEditedHtml} ribbonMode />}
+          {isRhwpEditor && (
+            <RhwpEditor ref={rhwpRef} buffer={fileBuffer} fileName={fileName} />
+          )}
+          {isRichText && !fileBuffer && <DocxEditor initialHtml={docxHtml} onChange={setEditedHtml} ribbonMode />}
           {isSpreadsheet && editedXlsx && (
             <SpreadsheetEditor content={editedXlsx} onChange={setEditedXlsx} />
           )}

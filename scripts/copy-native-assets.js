@@ -27,6 +27,12 @@ copyIfExists(
   "pdf.worker.min.mjs"
 );
 
+copyIfExists(
+  path.join(root, "node_modules/pptxgenjs/dist/pptxgen.bundle.js"),
+  path.join(root, "public/vendor/pptxgen.bundle.js"),
+  "pptxgen.bundle.js"
+);
+
 const udocSrc = path.join(root, "node_modules/@docmentis/udoc-viewer/dist/src");
 copyIfExists(path.join(udocSrc, "wasm/udoc_bg.wasm"), path.join(root, "public/udoc/udoc_bg.wasm"), "udoc_bg.wasm");
 copyIfExists(path.join(udocSrc, "worker/worker.js"), path.join(root, "public/udoc/worker.js"), "udoc worker.js");

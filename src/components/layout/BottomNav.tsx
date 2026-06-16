@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, FolderOpen, Settings } from "lucide-react";
+import { Home, FolderOpen, Wrench, Settings } from "lucide-react";
+import { OTP_NAV } from "@/lib/officeTool/strings-ko";
 
 const tabs = [
-  { href: "/", icon: Home, label: "홈" },
+  { href: "/", icon: Home, label: OTP_NAV.home },
   { href: "/files/", icon: FolderOpen, label: "문서" },
-  { href: "/settings/", icon: Settings, label: "설정" },
+  { href: "/toolbox/", icon: Wrench, label: OTP_NAV.toolbox },
+  { href: "/settings/", icon: Settings, label: OTP_NAV.settings },
 ];
 
 export default function BottomNav() {

@@ -14,13 +14,18 @@ import ImageViewer from "./ImageViewer";
 import MarkdownViewer from "./MarkdownViewer";
 import HtmlViewer from "./HtmlViewer";
 import CodeViewer from "./CodeViewer";
-import PresentationViewer from "./PresentationViewer";
 import UnsupportedViewer from "./UnsupportedViewer";
 import { Loader2 } from "lucide-react";
+import { isOfficeCryptoFileName, isOfficeEncrypted } from "@/lib/msoffice/office-crypto";
+import OfficeDecryptGate from "../msoffice/OfficeDecryptGate";
 
 const UDocViewerWrapper = dynamic(() => import("./UDocViewerWrapper"), { ssr: false });
+const RhwpCanvasViewer = dynamic(() => import("../hwp/RhwpCanvasViewer"), { ssr: false });
 const RhwpViewer = dynamic(() => import("./RhwpViewer"), { ssr: false });
+const PptMasterViewer = dynamic(() => import("../ppt/PptMasterViewer"), { ssr: false });
+const MicroscopePptxViewer = dynamic(() => import("../ppt/MicroscopePptxViewer"), { ssr: false });
 const MicroscopeOfficeViewer = dynamic(() => import("./MicroscopeOfficeViewer"), { ssr: false });
+const ArchivePanel = dynamic(() => import("../archive/ArchivePanel"), { ssr: false });
 
 interface Props {
   buffer: ArrayBuffer;
@@ -52,11 +57,45 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   const [udocDocxFallback, setUdocDocxFallback] = useState(false);
   const [rhwpFallback, setRhwpFallback] = useState(false);
   const [microscopeFallback, setMicroscopeFallback] = useState(false);
+  const [pptFallback, setPptFallback] = useState(false);
   const [unsupported, setUnsupported] = useState(false);
+  const [workBuffer, setWorkBuffer] = useState<ArrayBuffer | null>(null);
+  const [cryptoCheckDone, setCryptoCheckDone] = useState(false);
+  const [needsPassword, setNeedsPassword] = useState(false);
   const objectUrlsRef = useRef<string[]>([]);
 
   const buffer = useMemo(() => toArrayBuffer(rawBuffer), [rawBuffer]);
   const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+
+  useEffect(() => {
+    let cancelled = false;
+    setCryptoCheckDone(false);
+    setWorkBuffer(null);
+    setNeedsPassword(false);
+
+    async function checkEncryption() {
+      if (!isOfficeCryptoFileName(fileName)) {
+        if (!cancelled) {
+          setWorkBuffer(buffer);
+          setCryptoCheckDone(true);
+        }
+        return;
+      }
+      try {
+        const encrypted = await isOfficeEncrypted(buffer);
+        if (cancelled) return;
+        if (encrypted) setNeedsPassword(true);
+        else setWorkBuffer(buffer);
+      } catch {
+        if (!cancelled) setWorkBuffer(buffer);
+      } finally {
+        if (!cancelled) setCryptoCheckDone(true);
+      }
+    }
+
+    void checkEncryption();
+    return () => { cancelled = true; };
+  }, [buffer, fileName]);
 
   useEffect(() => {
     return () => {
@@ -66,6 +105,8 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   }, []);
 
   useEffect(() => {
+    if (!workBuffer) return;
+    const docBuffer = workBuffer;
     let cancelled = false;
 
     async function load() {
@@ -77,6 +118,7 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
       setUdocDocxFallback(false);
       setRhwpFallback(false);
       setMicroscopeFallback(false);
+      setPptFallback(false);
       setHtml(null);
       setText(null);
       setXlsx(null);
@@ -85,7 +127,7 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
       setCode(null);
       setUnsupported(false);
 
-      const type = resolveDocumentType(fileName, buffer);
+      const type = resolveDocumentType(fileName, docBuffer);
       if (type === "unknown") {
         setError(`지원하지 않는 형식입니다: ${fileName}`);
         setLoading(false);
@@ -96,7 +138,16 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
         if (type === "pdf") {
           if (!cancelled) {
             setResolvedType("pdf");
-            setPdfBuffer(buffer);
+            setPdfBuffer(docBuffer);
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (type === "archive") {
+          if (!cancelled) {
+            setResolvedType("archive");
+            setOfficeBuffer(docBuffer);
             setLoading(false);
           }
           return;
@@ -105,9 +156,9 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
         if (type === "hwp" || type === "hwpx") {
           if (!cancelled) {
             setResolvedType(type);
-            setOfficeBuffer(buffer);
+            setOfficeBuffer(docBuffer);
             try {
-              const result = await parseDocument(buffer, fileName, type);
+              const result = await parseDocument(docBuffer, fileName, type);
               if (!cancelled) setHtml(result.html ?? null);
             } catch { /* rhwp primary, html fallback optional */ }
             setLoading(false);
@@ -118,13 +169,13 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
         if (type === "docx" || type === "doc" || type === "odt") {
           if (!cancelled) {
             setResolvedType(type);
-            setOfficeBuffer(buffer);
+            setOfficeBuffer(docBuffer);
             if (type === "docx" || type === "doc") {
-              parseDocument(buffer, fileName, type)
+              parseDocument(docBuffer, fileName, type)
                 .then((r) => { if (!cancelled) setHtml(r.html ?? null); })
                 .catch(() => {});
             } else {
-              const result = await parseDocument(buffer, fileName, type);
+              const result = await parseDocument(docBuffer, fileName, type);
               if (!cancelled) setHtml(result.html ?? null);
             }
             setLoading(false);
@@ -135,15 +186,15 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
         if (type === "xlsx" || type === "xls" || type === "ods" || type === "csv") {
           if (!cancelled) {
             setResolvedType(type);
-            setOfficeBuffer(buffer);
-            const result = await parseDocument(buffer, fileName, type);
+            setOfficeBuffer(docBuffer);
+            const result = await parseDocument(docBuffer, fileName, type);
             if (!cancelled) setXlsx(result.xlsx ?? null);
             setLoading(false);
           }
           return;
         }
 
-        const result = await parseDocument(buffer, fileName, type);
+        const result = await parseDocument(docBuffer, fileName, type);
         if (cancelled) return;
 
         setResolvedType(result.type);
@@ -178,7 +229,29 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
 
     load();
     return () => { cancelled = true; };
-  }, [buffer, fileName, fileType]);
+  }, [workBuffer, fileName, fileType]);
+
+  if (!cryptoCheckDone) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 bg-[#c8c8c8]">
+        <Loader2 className="w-8 h-8 text-lofice-navy animate-spin" />
+        <p className="text-sm text-gray-600">문서 확인 중...</p>
+      </div>
+    );
+  }
+
+  if (needsPassword) {
+    return (
+      <OfficeDecryptGate
+        buffer={buffer}
+        fileName={fileName}
+        onDecrypted={(decrypted) => {
+          setNeedsPassword(false);
+          setWorkBuffer(decrypted);
+        }}
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -217,10 +290,14 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
     return <PdfViewer buffer={pdfBuffer} fileName={fileName} />;
   }
 
+  if (resolvedType === "archive" && officeBuffer) {
+    return <ArchivePanel buffer={officeBuffer} fileName={fileName} className="h-full" />;
+  }
+
   if ((resolvedType === "hwp" || resolvedType === "hwpx") && officeBuffer) {
     if (!rhwpFallback) {
       return (
-        <RhwpViewer
+        <RhwpCanvasViewer
           buffer={officeBuffer}
           fileName={fileName}
           onFallback={() => setRhwpFallback(true)}
@@ -281,7 +358,16 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   }
 
   if (resolvedType === "presentation" && presentation) {
-    return <PresentationViewer slides={presentation.slides} fileName={fileName} />;
+    if (pptFallback) {
+      return <MicroscopePptxViewer buffer={workBuffer ?? buffer} fileName={fileName} />;
+    }
+    return (
+      <PptMasterViewer
+        slides={presentation.slides}
+        fileName={fileName}
+        buffer={workBuffer ?? buffer}
+      />
+    );
   }
 
   if (resolvedType === "txt" && text !== null) {

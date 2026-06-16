@@ -5,7 +5,7 @@ import Link from "next/link";
 import { listFilesLocal } from "@/lib/storage/local";
 import { getDocumentType, formatFileSize, formatDate } from "@/lib/utils";
 import type { DocumentType } from "@/types/document";
-import { FileText, Table, File, Trash2, ImageIcon, FileCode, ScanLine } from "lucide-react";
+import { FileText, Table, File, Trash2, ImageIcon, FileCode, ScanLine, Archive } from "lucide-react";
 import { deleteFileLocal } from "@/lib/storage/local";
 import PreviewButton from "@/components/preview/PreviewButton";
 import DocumentPreviewPanel from "@/components/preview/DocumentPreviewPanel";
@@ -24,7 +24,7 @@ const iconMap: Record<DocumentType, typeof File> = {
   xlsx: Table, xls: Table, ods: Table, csv: Table, presentation: FileText,
   pdf: File, txt: FileText, rtf: FileText, mhtml: FileCode,
   markdown: FileCode, html: FileCode, json: FileCode, xml: FileCode,
-  image: ImageIcon, unsupported: File, unknown: File,
+  image: ImageIcon, archive: Archive, unsupported: File, unknown: File,
 };
 
 export default function FileList() {

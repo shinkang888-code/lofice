@@ -7,8 +7,10 @@ import { resolveDocumentType } from "@/lib/utils";
 import { isEditableType, ACCEPT_EXTENSIONS } from "@/lib/document-types";
 import { isOcrSupported } from "@/lib/documentOcr/types";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
+import HwpAiAssistant from "@/components/hwp/HwpAiAssistant";
 import OcrTextPanel from "@/components/ocr/OcrTextPanel";
 import LoficeLayout from "@/components/office/LoficeLayout";
+import { saveFileLocal } from "@/lib/storage/local";
 import { ViewerToolbarProvider } from "@/components/office/ViewerToolbarContext";
 import type { DocumentType } from "@/types/document";
 
@@ -25,6 +27,7 @@ function ViewerContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showOcr, setShowOcr] = useState(params.get("tab") === "ocr");
+  const [showHwpAi, setShowHwpAi] = useState(params.get("tab") === "hwp-ai");
 
   useEffect(() => {
     if (!id) { setError("문서 ID가 없습니다."); setLoading(false); return; }
@@ -40,6 +43,7 @@ function ViewerContent() {
 
   const canEdit = isEditableType(fileType);
   const ocrAvailable = buffer ? isOcrSupported(mimeType, fileName) : false;
+  const hwpAiAvailable = fileType === "hwp" || fileType === "hwpx";
 
   const handleShare = async () => {
     if (!buffer) return;
@@ -97,9 +101,14 @@ function ViewerContent() {
         onOpenFile={handleOpenFile}
         onOcr={ocrAvailable ? () => setShowOcr((v) => !v) : undefined}
         ocrActive={showOcr}
+        onHwpAi={hwpAiAvailable ? () => setShowHwpAi((v) => !v) : undefined}
+        hwpAiActive={showHwpAi}
+        pdfEditHref={fileType === "pdf" && id ? `/pdf-editor/?id=${id}` : undefined}
+        hwpEditHref={(fileType === "hwp" || fileType === "hwpx") && id ? `/hwp-editor/?id=${id}` : undefined}
+        pptEditHref={fileType === "presentation" && id ? `/ppt-editor/?id=${id}` : undefined}
       >
         <div className="flex h-full min-h-0">
-          <div className={`flex-1 min-w-0 min-h-0 ${showOcr ? "hidden md:block" : ""}`}>
+          <div className={`flex-1 min-w-0 min-h-0 ${showOcr || showHwpAi ? "hidden md:block" : ""}`}>
             {buffer && (
               <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
             )}
@@ -111,6 +120,20 @@ function ViewerContent() {
                 fileName={fileName}
                 mimeType={mimeType}
                 onClose={() => setShowOcr(false)}
+              />
+            </div>
+          )}
+          {showHwpAi && hwpAiAvailable && buffer && (
+            <div className="w-full md:w-[400px] shrink-0 min-h-0">
+              <HwpAiAssistant
+                buffer={buffer}
+                fileName={fileName}
+                onClose={() => setShowHwpAi(false)}
+                onDocumentCreated={async (data, name) => {
+                  const blob = new Blob([data], { type: "application/vnd.hancom.hwpx" });
+                  const id = await saveFileLocal(new File([blob], name));
+                  router.push(`/hwp-editor/?id=${id}`);
+                }}
               />
             </div>
           )}

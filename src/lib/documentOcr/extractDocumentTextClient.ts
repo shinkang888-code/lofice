@@ -1,26 +1,50 @@
 /**
  * LawyGo extractDocumentText.ts — lofice 클라이언트 전용
- * PDF: pdfjs 텍스트 → Tesseract OCR 폴백
- * 이미지: Tesseract OCR
+ * PDF: pdfjs 텍스트 → ddddocr / Tesseract OCR 폴백
+ * 이미지: ddddocr (서버) 또는 Tesseract OCR
  */
+import { checkDdddOcrHealth } from "./ddddocr-api";
+import { isDdddOcrServerAvailable } from "./ddddocr-config";
+import * as ddddocrOcr from "./ddddocrOcr";
 import { extractTextFromPdfBuffer } from "./pdfTextExtractClient";
-import { ocrPdfBuffer, ocrImageBlob } from "./tesseractOcr";
-import type { DocumentOcrResult } from "./types";
+import * as tesseractOcr from "./tesseractOcr";
+import type { DocumentOcrResult, OcrEngine } from "./types";
 import { isImageMime, isPdfMime, needsOcrFallback } from "./types";
 
 export const MAX_OCR_BYTES = 12 * 1024 * 1024;
+
+async function resolveEngine(engine: OcrEngine): Promise<"ddddocr" | "tesseract"> {
+  if (engine === "tesseract") return "tesseract";
+
+  if (engine === "ddddocr") {
+    if (!isDdddOcrServerAvailable()) {
+      throw new Error("ddddocr 서버 URL이 설정되지 않았습니다. NEXT_PUBLIC_DDDDOCR_URL을 확인하세요.");
+    }
+    const ok = await checkDdddOcrHealth();
+    if (!ok) throw new Error("ddddocr 서버에 연결할 수 없습니다.");
+    return "ddddocr";
+  }
+
+  if (isDdddOcrServerAvailable() && (await checkDdddOcrHealth())) {
+    return "ddddocr";
+  }
+  return "tesseract";
+}
 
 export async function extractDocumentTextClient(
   buffer: ArrayBuffer,
   fileName: string,
   mimeType: string,
-  onProgress?: (message: string, percent?: number) => void
+  onProgress?: (message: string, percent?: number) => void,
+  engine: OcrEngine = "auto",
 ): Promise<DocumentOcrResult> {
   if (buffer.byteLength > MAX_OCR_BYTES) {
     throw new Error("파일은 12MB 이하여야 합니다.");
   }
 
   const warnings: string[] = [];
+  const resolvedEngine = await resolveEngine(engine);
+  const ocrLabel = resolvedEngine === "ddddocr" ? "ddddocr" : "Tesseract";
 
   if (isPdfMime(mimeType, fileName)) {
     onProgress?.("PDF 텍스트 레이어 추출 중...", 10);
@@ -31,7 +55,7 @@ export async function extractDocumentTextClient(
       const extracted = await extractTextFromPdfBuffer(buffer);
       text = extracted.text;
       pageCount = extracted.pageCount;
-    } catch (e) {
+    } catch {
       warnings.push("PDF 텍스트 레이어 추출 실패 — OCR로 전환합니다.");
     }
 
@@ -39,17 +63,20 @@ export async function extractDocumentTextClient(
       return { text, method: "pdf-text", pageCount, charCount: text.length, warnings };
     }
 
-    warnings.push("스캔 PDF로 보입니다. Tesseract OCR을 실행합니다.");
-    onProgress?.("Tesseract OCR 실행 중...", 30);
+    warnings.push(`스캔 PDF로 보입니다. ${ocrLabel} OCR을 실행합니다.`);
+    onProgress?.(`${ocrLabel} OCR 실행 중...`, 30);
 
-    const ocrText = await ocrPdfBuffer(buffer, (page, total) => {
+    const ocrFn =
+      resolvedEngine === "ddddocr" ? ddddocrOcr.ocrPdfBuffer : tesseractOcr.ocrPdfBuffer;
+
+    const ocrText = await ocrFn(buffer, (page, total) => {
       onProgress?.(`OCR ${page}/${total} 페이지`, 30 + Math.round((page / total) * 60));
     });
 
     if (ocrText.trim()) {
       return {
         text: ocrText,
-        method: "tesseract",
+        method: resolvedEngine === "ddddocr" ? "ddddocr" : "tesseract",
         pageCount,
         charCount: ocrText.length,
         warnings,
@@ -65,11 +92,21 @@ export async function extractDocumentTextClient(
   }
 
   if (isImageMime(mimeType, fileName)) {
-    onProgress?.("이미지 OCR 실행 중...", 20);
+    onProgress?.(`${ocrLabel} OCR 실행 중...`, 20);
     const blob = new Blob([buffer], { type: mimeType.startsWith("image/") ? mimeType : "image/jpeg" });
-    const text = await ocrImageBlob(blob);
+
+    const text =
+      resolvedEngine === "ddddocr"
+        ? await ddddocrOcr.ocrImageBlob(blob)
+        : await tesseractOcr.ocrImageBlob(blob);
+
     if (!text.trim()) throw new Error("이미지 OCR 결과가 비어 있습니다.");
-    return { text, method: "tesseract", charCount: text.length, warnings };
+    return {
+      text,
+      method: resolvedEngine === "ddddocr" ? "ddddocr" : "tesseract",
+      charCount: text.length,
+      warnings,
+    };
   }
 
   throw new Error("PDF 또는 이미지(JPG, PNG, WEBP, TIFF)만 OCR 지원합니다.");

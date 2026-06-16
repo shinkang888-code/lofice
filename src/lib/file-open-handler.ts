@@ -1,8 +1,14 @@
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { dispatchLoficeEvent } from "@/lib/reactTypes/events";
 import { saveFileLocal } from "@/lib/storage/local";
 
 export async function openFileFromHandle(file: File, router: AppRouterInstance) {
   const id = await saveFileLocal(file);
+  dispatchLoficeEvent("lofice:documentOpened", {
+    fileName: file.name,
+    mimeType: file.type || undefined,
+    size: file.size,
+  });
   router.push(`/viewer/?id=${id}`);
 }
 

@@ -18,6 +18,7 @@ export type DocumentType =
   | "json"
   | "xml"
   | "image"
+  | "archive"
   | "unsupported"
   | "unknown";
 

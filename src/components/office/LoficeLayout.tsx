@@ -8,13 +8,14 @@ import {
   ImageIcon, Table, FileCode, ZoomIn, ZoomOut, Maximize2,
   Download, Printer, ChevronLeft, ChevronRight, LayoutGrid,
   FolderOpen, Copy, Scissors, ClipboardPaste, Undo2, Redo2,
-  Link2, Minus, Plus, ScanLine,
+  Link2, Minus, Plus, ScanLine, FileStack, Layers, ExternalLink, Bot,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useViewerToolbarOptional } from "./ViewerToolbarContext";
 import { useEditorToolbarOptional } from "./EditorToolbarContext";
 
-type RibbonTab = "file" | "home" | "insert" | "view";
+type RibbonTab = "file" | "home" | "insert" | "view" | "pdf";
+type PdfEditorMode = "tools" | "stirling" | "split";
 
 interface Props {
   fileName: string;
@@ -29,6 +30,26 @@ interface Props {
   /** OCR 텍스트 추출 패널 토글 */
   onOcr?: () => void;
   ocrActive?: boolean;
+  /** PDF 편집기 전용 레이아웃 */
+  pdfEditMode?: boolean;
+  pdfEditorMode?: PdfEditorMode;
+  onPdfEditorModeChange?: (mode: PdfEditorMode) => void;
+  stirlingAvailable?: boolean;
+  /** PDF 편집기 → 뷰어 */
+  viewerHref?: string;
+  /** PDF 뷰어 → 편집기 */
+  pdfEditHref?: string;
+  /** HWP 편집기 전용 (rhwp-studio iframe) */
+  hwpEditMode?: boolean;
+  /** HWP 뷰어 → hwpreader 편집기 */
+  hwpEditHref?: string;
+  /** PPT 편집기 전용 */
+  pptEditMode?: boolean;
+  /** PPT 뷰어 → ppt-master 편집기 */
+  pptEditHref?: string;
+  /** hwpx-skill AI 패널 토글 */
+  onHwpAi?: () => void;
+  hwpAiActive?: boolean;
   children: React.ReactNode;
 }
 
@@ -43,10 +64,22 @@ export default function LoficeLayout({
   minimal = false,
   onOcr,
   ocrActive = false,
+  pdfEditMode = false,
+  pdfEditorMode = "tools",
+  onPdfEditorModeChange,
+  stirlingAvailable = false,
+  viewerHref,
+  pdfEditHref,
+  hwpEditMode = false,
+  hwpEditHref,
+  pptEditMode = false,
+  pptEditHref,
+  onHwpAi,
+  hwpAiActive = false,
   children,
 }: Props) {
   const router = useRouter();
-  const [tab, setTab] = useState<RibbonTab>("home");
+  const [tab, setTab] = useState<RibbonTab>(pdfEditMode ? "pdf" : "home");
   const toolbar = useViewerToolbarOptional();
   const editorToolbar = useEditorToolbarOptional();
   const { state } = toolbar ?? { state: null };
@@ -55,14 +88,22 @@ export default function LoficeLayout({
   const editMeta = editorToolbar?.meta ?? {};
   const actions = { ...viewActions, ...editActions };
   const isPdf = state?.docType === "pdf";
+  const isHwp = state?.docType === "hwp";
+  const isPpt = state?.docType === "presentation";
   const zoomPct = Math.round((state?.zoom ?? 1) * 100);
 
-  const tabs: { id: RibbonTab; label: string }[] = [
-    { id: "file", label: "파일" },
-    { id: "home", label: "홈" },
-    { id: "insert", label: "삽입" },
-    { id: "view", label: "보기" },
-  ];
+  const tabs: { id: RibbonTab; label: string }[] = pdfEditMode
+    ? [
+        { id: "file", label: "파일" },
+        { id: "pdf", label: "PDF" },
+        { id: "view", label: "보기" },
+      ]
+    : [
+        { id: "file", label: "파일" },
+        { id: "home", label: "홈" },
+        { id: "insert", label: "삽입" },
+        { id: "view", label: "보기" },
+      ];
 
   return (
     <div className="flex flex-col h-[100dvh] bg-[#f3f3f3] select-none">
@@ -108,6 +149,38 @@ export default function LoficeLayout({
               className="flex items-center gap-1 px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-xs rounded shrink-0"
             >
               <Edit3 className="w-3.5 h-3.5" /> 편집
+            </button>
+          )}
+          {pdfEditHref && !pdfEditMode && (
+            <button
+              onClick={() => router.push(pdfEditHref)}
+              className="flex items-center gap-1 px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-xs rounded shrink-0"
+            >
+              <FileStack className="w-3.5 h-3.5" /> PDF 편집
+            </button>
+          )}
+          {hwpEditHref && !hwpEditMode && (
+            <button
+              onClick={() => router.push(hwpEditHref)}
+              className="flex items-center gap-1 px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-xs rounded shrink-0"
+            >
+              <Edit3 className="w-3.5 h-3.5" /> HWP 편집
+            </button>
+          )}
+          {pptEditHref && !pptEditMode && (
+            <button
+              onClick={() => router.push(pptEditHref)}
+              className="flex items-center gap-1 px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-xs rounded shrink-0"
+            >
+              <Edit3 className="w-3.5 h-3.5" /> PPT 편집
+            </button>
+          )}
+          {viewerHref && (pdfEditMode || hwpEditMode || pptEditMode) && (
+            <button
+              onClick={() => router.push(viewerHref)}
+              className="flex items-center gap-1 px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-xs rounded shrink-0"
+            >
+              <Eye className="w-3.5 h-3.5" /> 뷰어
             </button>
           )}
         </div>
@@ -171,25 +244,66 @@ export default function LoficeLayout({
         )}
         {tab === "view" && (
           <div className="flex gap-4 text-xs min-w-max">
-            <RibbonGroup label="확대/축소">
-              <RibbonBtn icon={ZoomOut} label="축소" onClick={actions.zoomOut} disabled={!actions.zoomOut} />
-              <RibbonBtn icon={ZoomIn} label="확대" onClick={actions.zoomIn} disabled={!actions.zoomIn} />
-              <RibbonBtn icon={Maximize2} label="페이지 맞춤" onClick={actions.zoomFit} disabled={!actions.zoomFit} />
-              <RibbonBtn icon={Plus} label="125%" onClick={actions.zoomReset} disabled={!actions.zoomReset} />
-            </RibbonGroup>
-            {isPdf && state?.canPageNav && (
-              <RibbonGroup label="페이지">
-                <RibbonBtn icon={ChevronLeft} label="이전" onClick={actions.prevPage} />
-                <RibbonBtn icon={ChevronRight} label="다음" onClick={actions.nextPage} />
-                <RibbonBtn icon={LayoutGrid} label="썸네일" onClick={actions.toggleThumbnails} active={state.showThumbnails} />
-              </RibbonGroup>
+            {!pdfEditMode && (
+              <>
+                <RibbonGroup label="확대/축소">
+                  <RibbonBtn icon={ZoomOut} label="축소" onClick={actions.zoomOut} disabled={!actions.zoomOut} />
+                  <RibbonBtn icon={ZoomIn} label="확대" onClick={actions.zoomIn} disabled={!actions.zoomIn} />
+                  <RibbonBtn icon={Maximize2} label="페이지 맞춤" onClick={actions.zoomFit} disabled={!actions.zoomFit} />
+                  <RibbonBtn icon={Plus} label="125%" onClick={actions.zoomReset} disabled={!actions.zoomReset} />
+                </RibbonGroup>
+                {(isPdf || isHwp || isPpt) && state?.canPageNav && (
+                  <RibbonGroup label="페이지">
+                    <RibbonBtn icon={ChevronLeft} label="이전" onClick={actions.prevPage} />
+                    <RibbonBtn icon={ChevronRight} label="다음" onClick={actions.nextPage} />
+                    {isPdf && (
+                      <RibbonBtn icon={LayoutGrid} label="썸네일" onClick={actions.toggleThumbnails} active={state.showThumbnails} />
+                    )}
+                  </RibbonGroup>
+                )}
+              </>
             )}
             <RibbonGroup label="창">
               {onOcr && (
                 <RibbonBtn icon={ScanLine} label="OCR" onClick={onOcr} active={ocrActive} />
               )}
+              {pdfEditHref && isPdf && (
+                <RibbonBtn icon={FileStack} label="PDF 편집" onClick={() => router.push(pdfEditHref)} />
+              )}
+              {hwpEditHref && isHwp && (
+                <RibbonBtn icon={Edit3} label="HWP 편집" onClick={() => router.push(hwpEditHref)} />
+              )}
+              {onHwpAi && isHwp && (
+                <RibbonBtn icon={Bot} label="한글 AI" onClick={onHwpAi} active={hwpAiActive} />
+              )}
+              {pptEditHref && isPpt && (
+                <RibbonBtn icon={Edit3} label="PPT 편집" onClick={() => router.push(pptEditHref)} />
+              )}
+              {viewerHref && (
+                <RibbonBtn icon={Eye} label="뷰어" onClick={() => router.push(viewerHref)} />
+              )}
               <RibbonBtn icon={Eye} label="읽기 모드" />
               <RibbonBtn icon={Home} label="홈" onClick={() => router.push("/")} />
+            </RibbonGroup>
+          </div>
+        )}
+        {tab === "pdf" && pdfEditMode && (
+          <div className="flex gap-4 text-xs min-w-max">
+            <RibbonGroup label="Stirling-PDF">
+              <RibbonBtn
+                icon={Layers}
+                label="페이지 도구"
+                active={pdfEditorMode === "tools"}
+                onClick={() => onPdfEditorModeChange?.("tools")}
+              />
+              {stirlingAvailable && (
+                <RibbonBtn
+                  icon={ExternalLink}
+                  label="Stirling UI"
+                  active={pdfEditorMode === "stirling"}
+                  onClick={() => onPdfEditorModeChange?.("stirling")}
+                />
+              )}
             </RibbonGroup>
           </div>
         )}
@@ -206,11 +320,21 @@ export default function LoficeLayout({
               페이지 {state.page} / {state.pageCount}
             </span>
           )}
+          {isHwp && state && (
+            <span>
+              페이지 {state.page} / {state.pageCount}
+            </span>
+          )}
+          {isPpt && state && (
+            <span>
+              슬라이드 {state.page} / {state.pageCount}
+            </span>
+          )}
           {editMeta.docType === "spreadsheet" && editMeta.activeCell && (
             <span>{editMeta.activeCell}{editMeta.sheetName ? ` · ${editMeta.sheetName}` : ""}</span>
           )}
           <span className="opacity-70">
-            {isPdf ? "PDF" : editMeta.docType === "spreadsheet" ? "시트" : editMeta.docType === "richtext" ? "한글" : "문서"}
+            {isPdf ? "PDF" : isHwp ? "HWP" : isPpt ? "PPT" : editMeta.docType === "spreadsheet" ? "시트" : editMeta.docType === "richtext" ? "한글" : "문서"}
           </span>
         </div>
         <div className="flex items-center gap-3 opacity-90">

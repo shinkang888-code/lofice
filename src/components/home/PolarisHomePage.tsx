@@ -9,6 +9,7 @@ import { isSupportedFile, ACCEPT_EXTENSIONS } from "@/lib/document-types";
 import PolarisOpenButton from "@/components/home/PolarisOpenButton";
 import PolarisAppTiles from "@/components/home/PolarisAppTiles";
 import RecentDocuments from "@/components/home/RecentDocuments";
+import { getOfficeToolGreeting } from "@/lib/officeTool/greetings";
 import { Settings, FolderOpen } from "lucide-react";
 
 export default function PolarisHomePage() {
@@ -73,6 +74,7 @@ export default function PolarisHomePage() {
 
       <main className="flex-1 px-4 py-8 max-w-3xl mx-auto w-full">
         <section className="text-center mb-10">
+          <p className="text-sm text-lofice-gold mb-2">{getOfficeToolGreeting()}</p>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
             브라우저에서 무료로 사용하는
             <br />
