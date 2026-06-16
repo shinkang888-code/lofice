@@ -59,3 +59,54 @@ body {
     min-height: auto !important;
   }
 }
+
+/* 폴라리스 오피스 웹 스타일 홈 */
+.polaris-home {
+  background: linear-gradient(160deg, #1a3a6b 0%, #2b579a 40%, #1e3f6f 100%);
+  min-height: 100dvh;
+}
+
+.polaris-home.polaris-dragging::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 87, 154, 0.3);
+  border: 3px dashed rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  z-index: 50;
+}
+
+.polaris-open-btn {
+  @apply flex flex-col items-center justify-center w-full max-w-md py-8 px-6 rounded-2xl;
+  background: linear-gradient(135deg, #3b7dd8 0%, #2b579a 100%);
+  color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.polaris-open-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.polaris-app-tile {
+  @apply p-4 rounded-xl border border-white/10 backdrop-blur-sm;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.polaris-app-tile:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.ribbon-panel {
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+@media print {
+  header, footer, .ribbon-panel, [class*="ribbon"] {
+    display: none !important;
+  }
+}

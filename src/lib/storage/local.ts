@@ -68,7 +68,7 @@ export async function getFileLocal(id: string): Promise<StoredFile | null> {
   });
 }
 
-export async function listFilesLocal(): Promise<Omit<StoredFile, "data">[]> {
+export async function listFilesLocal(): Promise<Array<Omit<StoredFile, "data"> & { size?: number }>> {
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, "readonly");

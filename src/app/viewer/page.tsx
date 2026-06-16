@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getFileLocal } from "@/lib/storage/local";
-import { getDocumentType, resolveDocumentType } from "@/lib/utils";
-import { isEditableType } from "@/lib/document-types";
+import { resolveDocumentType } from "@/lib/utils";
+import { isEditableType, ACCEPT_EXTENSIONS } from "@/lib/document-types";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
 import LoficeLayout from "@/components/office/LoficeLayout";
+import { ViewerToolbarProvider } from "@/components/office/ViewerToolbarContext";
 import type { DocumentType } from "@/types/document";
 
 function ViewerContent() {
   const router = useRouter();
   const params = useSearchParams();
   const id = params.get("id");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
   const [fileName, setFileName] = useState("");
@@ -44,6 +46,14 @@ function ViewerContent() {
     }
   };
 
+  const handleOpenFile = useCallback(() => fileInputRef.current?.click(), []);
+
+  const handleNewFile = async (file: File) => {
+    const { saveFileLocal } = await import("@/lib/storage/local");
+    const newId = await saveFileLocal(file);
+    router.push(`/viewer/?id=${newId}`);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen text-gray-400 bg-[#f3f3f3]">
@@ -61,16 +71,30 @@ function ViewerContent() {
   }
 
   return (
-    <LoficeLayout
-      fileName={fileName}
-      canEdit={canEdit}
-      editHref={id ? `/editor/?id=${id}` : undefined}
-      onShare={handleShare}
-    >
-      {buffer && (
-        <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
-      )}
-    </LoficeLayout>
+    <ViewerToolbarProvider>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPT_EXTENSIONS}
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleNewFile(file);
+          e.target.value = "";
+        }}
+      />
+      <LoficeLayout
+        fileName={fileName}
+        canEdit={canEdit}
+        editHref={id ? `/editor/?id=${id}` : undefined}
+        onShare={handleShare}
+        onOpenFile={handleOpenFile}
+      >
+        {buffer && (
+          <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
+        )}
+      </LoficeLayout>
+    </ViewerToolbarProvider>
   );
 }
 

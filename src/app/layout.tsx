@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import CapacitorProvider from "@/components/CapacitorProvider";
+import PdfWorkerPreload from "@/components/pwa/PdfWorkerPreload";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,7 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body className="min-h-screen">
-        <CapacitorProvider>{children}</CapacitorProvider>
+        <CapacitorProvider>
+          <PdfWorkerPreload />
+          {children}
+        </CapacitorProvider>
       </body>
     </html>
   );

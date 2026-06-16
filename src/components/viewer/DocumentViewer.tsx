@@ -141,19 +141,12 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
       try {
 
         if (type === "pdf") {
-
           if (!cancelled) {
-
             setResolvedType("pdf");
-
-            setPdfBuffer(buffer.slice(0));
-
+            setPdfBuffer(buffer);
             setLoading(false);
-
           }
-
           return;
-
         }
 
 
