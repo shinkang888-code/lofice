@@ -1,13 +1,11 @@
 "use client";
 
-import { useRef, useState, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ACCEPT_EXTENSIONS } from "@/lib/document-types";
-import { openLocalDocument } from "@/lib/lofficeUi/routes";
 import LofficeFileOpener from "@/components/home/LofficeFileOpener";
 import LofficeToolSection from "@/components/home/LofficeToolSection";
+import LofficeWorkspaceCard from "@/components/home/LofficeWorkspaceCard";
 import {
   ALL_LOFFICE_TOOLS,
   LOFFICE_DOC_TOOLS,
@@ -16,36 +14,19 @@ import {
   LOFFICE_ANALYZE_TOOLS,
   filterTools,
 } from "@/lib/lofficeUi/tools";
-
-const QUICK_CARDS = [
-  {
-    tag: "보안 AI",
-    title: "나만의 보안 AI 채팅",
-    icon: "💬",
-    desc: "HWP AI·PPT AI로 문서 작업을 브라우저에서 처리합니다.",
-    href: "/hwp-ai/",
-  },
-  {
-    tag: "AI 요약",
-    title: "PPT AI 생성",
-    icon: "✨",
-    desc: "GPT·PptxGenJS로 슬라이드를 자동 생성합니다.",
-    href: "/ppt-ai/",
-  },
-  {
-    tag: "변환",
-    title: "문서 변환 도구",
-    icon: "↔️",
-    desc: "Office Tool Plus 패턴으로 포맷 간 변환합니다.",
-    href: "/convert/",
-  },
-] as const;
+import {
+  LOFFICE_HEADER_NAV,
+  LOFFICE_FOOTER_NAV,
+  LOFFICE_NOVA,
+  LOFFICE_QUICK_CARDS,
+  LOFFICE_UPDATES,
+  LOFFICE_BLOG_POSTS,
+} from "@/lib/lofficeUi/nav";
 
 export default function LofficeLandingPage() {
-  const router = useRouter();
-  const workspaceInputRef = useRef<HTMLInputElement>(null);
   const [search, setSearch] = useState("");
   const [dark, setDark] = useState(false);
+  const [lang, setLang] = useState("ko");
 
   const filtered = useMemo(() => filterTools(search, ALL_LOFFICE_TOOLS), [search]);
   const showAllSections = !search.trim();
@@ -54,8 +35,6 @@ export default function LofficeLandingPage() {
   const aiTools = showAllSections ? LOFFICE_AI_TOOLS : filtered.filter((t) => t.category === "ai");
   const convertTools = showAllSections ? LOFFICE_CONVERT_TOOLS : filtered.filter((t) => t.category === "convert");
   const analyzeTools = showAllSections ? LOFFICE_ANALYZE_TOOLS : filtered.filter((t) => t.category === "analyze");
-
-  const openWorkspacePicker = useCallback(() => workspaceInputRef.current?.click(), []);
 
   return (
     <div className={`loffice-site min-h-screen bg-background ${dark ? "dark" : ""}`}>
@@ -69,15 +48,15 @@ export default function LofficeLandingPage() {
             </span>
           </Link>
           <nav className="hidden items-center gap-1 md:flex">
-            <Link className="rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-secondary" href="#tools">
-              📚 로피스 오피스 툴즈
-            </Link>
-            <Link className="rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-secondary" href="/files/">
-              📁 내 문서
-            </Link>
-            <Link className="rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-secondary" href="/settings/">
-              ⚙️ 설정
-            </Link>
+            {LOFFICE_HEADER_NAV.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-md px-3 py-2 text-sm text-foreground/80 hover:bg-secondary"
+              >
+                {item.label}
+              </Link>
+            ))}
             <div className="ml-3 flex items-center gap-2">
               <button
                 type="button"
@@ -87,6 +66,16 @@ export default function LofficeLandingPage() {
               >
                 {dark ? "☀️" : "🌙"}
               </button>
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                className="rounded-md border border-border bg-background px-2 py-1.5 text-sm"
+                aria-label="언어"
+              >
+                <option value="ko">한국어</option>
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+              </select>
             </div>
           </nav>
         </div>
@@ -143,47 +132,7 @@ export default function LofficeLandingPage() {
         </p>
 
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-lo-card">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Workspace</p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">편집부터 시작</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              문서를 열고 바로 편집을 이어갑니다. 보기, 주석, 서식, 내보내기까지 한 화면에서.
-            </p>
-            <button
-              type="button"
-              onClick={openWorkspacePicker}
-              className="mt-5 flex h-44 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-secondary/40 text-sm text-muted-foreground transition hover:border-primary/40 hover:bg-secondary/60"
-            >
-              <span className="text-3xl">☁️</span>
-              <p className="mt-2">클릭하거나 드래그하여 업로드</p>
-            </button>
-            <input
-              ref={workspaceInputRef}
-              type="file"
-              accept={ACCEPT_EXTENSIONS}
-              className="hidden"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) await openLocalDocument(file, router.push);
-                e.target.value = "";
-              }}
-            />
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={openWorkspacePicker}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lo-glow transition hover:opacity-95"
-              >
-                Loffice 열기
-              </button>
-              <Link
-                href="#tools"
-                className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-secondary"
-              >
-                편집 도구 보기
-              </Link>
-            </div>
-          </div>
+          <LofficeWorkspaceCard />
 
           <div
             className="relative overflow-hidden rounded-2xl p-6 text-primary-foreground shadow-lo-glow"
@@ -193,25 +142,34 @@ export default function LofficeLandingPage() {
               ✦
             </div>
             <p className="text-xs font-semibold uppercase tracking-wider opacity-80">LOFFICE NOVA</p>
-            <h3 className="mt-2 text-xl font-bold">도구 상자</h3>
-            <p className="mt-2 text-sm opacity-90">Office Tool Plus 패턴 해시·설정·변환 도구를 한곳에서.</p>
+            <h3 className="mt-2 text-xl font-bold">LOFFICE NOVA</h3>
+            <p className="mt-2 text-sm opacity-90">더 많은 문서·업무 기능을 새 창에서 바로 시작할 수 있습니다.</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              {["변환", "암호화", "마이그레이션"].map((p) => (
-                <span key={p} className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
-                  {p}
-                </span>
+              {LOFFICE_NOVA.tags.map((t) => (
+                <Link
+                  key={t.label}
+                  href={t.href}
+                  className="rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur hover:bg-white/25"
+                >
+                  {t.label}
+                </Link>
               ))}
             </div>
             <div className="mt-10 flex items-center justify-between text-sm">
               <span className="opacity-80">lofice</span>
-              <Link href="/toolbox/" className="rounded-full bg-white px-4 py-2 font-semibold text-primary hover:bg-white/90">
-                도구 상자 열기 ↗
+              <Link
+                href={LOFFICE_NOVA.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-white px-4 py-2 font-semibold text-primary hover:bg-white/90"
+              >
+                새 창에서 열기 ↗
               </Link>
             </div>
           </div>
 
           <div className="grid grid-rows-3 gap-5">
-            {QUICK_CARDS.map((c) => (
+            {LOFFICE_QUICK_CARDS.map((c) => (
               <Link
                 key={c.title}
                 href={c.href}
@@ -221,7 +179,7 @@ export default function LofficeLandingPage() {
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{c.tag}</p>
                   <h4 className="mt-1 text-base font-bold text-foreground">{c.title}</h4>
                   <p className="mt-1 text-sm text-muted-foreground">{c.desc}</p>
-                  <p className="mt-3 text-sm font-semibold text-primary group-hover:underline">바로가기 →</p>
+                  <p className="mt-3 text-sm font-semibold text-primary group-hover:underline">{c.cta} →</p>
                 </div>
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-lg">
                   {c.icon}
@@ -253,7 +211,7 @@ export default function LofficeLandingPage() {
         id="ai"
         emoji="🤖"
         title={showAllSections ? "AI 도구" : "검색 결과 — AI"}
-        description="PPT AI, HWP AI, Office 암호화 등 작업을 가속하는 기능."
+        description="요약, 번역, 문서 기반 채팅까지 — 작업을 가속하는 AI 기능."
         tools={aiTools}
       />
       <LofficeToolSection
@@ -267,11 +225,50 @@ export default function LofficeLandingPage() {
         id="analyze"
         emoji="🔬"
         title={showAllSections ? "문서 분석" : "검색 결과 — 분석"}
-        description="메타·도구 상자·마이그레이션까지 문서를 깊이 있게 살펴봅니다."
+        description="구조·메타·보안까지 문서를 깊이 있게 살펴봅니다."
         tools={analyzeTools}
       />
 
-      <footer className="mt-24 border-t border-border bg-secondary/40 safe-bottom">
+      <section id="updates" className="mx-auto max-w-7xl px-6 pt-16">
+        <h2 className="text-2xl font-bold text-foreground">
+          <span className="mr-2">📋</span>업데이트 노트
+        </h2>
+        <ul className="mt-6 space-y-4">
+          {LOFFICE_UPDATES.map((u) => (
+            <li key={u.version} className="rounded-xl border border-border bg-card p-4 shadow-lo-card">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">
+                  {u.version}
+                </span>
+                <span className="text-xs text-muted-foreground">{u.date}</span>
+              </div>
+              <p className="mt-2 text-sm text-foreground">{u.text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="blog" className="mx-auto max-w-7xl px-6 pt-16 pb-8">
+        <h2 className="text-2xl font-bold text-foreground">
+          <span className="mr-2">✍️</span>블로그
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">lofice 기능 가이드와 활용 팁</p>
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {LOFFICE_BLOG_POSTS.map((post) => (
+            <Link
+              key={post.title}
+              href={post.href}
+              className="group rounded-xl border border-border bg-card p-5 shadow-lo-card transition hover:border-primary/30"
+            >
+              <span className="text-xs font-semibold text-muted-foreground">{post.tag}</span>
+              <h3 className="mt-2 font-semibold text-foreground group-hover:text-primary">{post.title}</h3>
+              <p className="mt-2 text-sm text-primary group-hover:underline">자세히 보기 →</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <footer className="mt-16 border-t border-border bg-secondary/40 safe-bottom">
         <div className="mx-auto max-w-7xl px-6 py-10">
           <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
             <div className="flex items-center gap-3">
@@ -282,15 +279,11 @@ export default function LofficeLandingPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-5 text-sm text-muted-foreground">
-              <Link href="/files/" className="hover:text-foreground">
-                내 문서
-              </Link>
-              <Link href="/toolbox/" className="hover:text-foreground">
-                도구 상자
-              </Link>
-              <Link href="/settings/" className="hover:text-foreground">
-                설정
-              </Link>
+              {LOFFICE_FOOTER_NAV.map((item) => (
+                <Link key={item.href + item.label} href={item.href} className="hover:text-foreground">
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
           <p className="mt-6 text-xs text-muted-foreground">© {new Date().getFullYear()} Loffice. 모든 권리 보유.</p>

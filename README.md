@@ -20,6 +20,7 @@
 - **PPT (PptxGenJS)**: 차트·테이블·도형·HTML→PPT·브라우저 네이티브 생성 (v2.10.0)
 - **TypeScript React 패턴**: typed CustomEvent · string literal · Props 타입 (v2.11.0)
 - **lofice-14291513 랜딩 UI**: Navy+Gold 마케팅 홈 · 도구 검색 · 파일 드롭존 연동 (v2.12.0)
+- **랜딩 메뉴 전체 연동**: 네비·퀵카드·NOVA·업데이트·블로그 → lofice 라우트 (v2.13.0)
 - **HWP/HWPX (폴백)**: hwpxjs HTML 뷰어
 - **DOCX 편집**: @eigenpal/docx-editor-react 1.x WYSIWYG (실제 DOCX 저장)
 - **한글 편집**: TipTap + 폴라리스 스타일 페이지 레이아웃, 리본 연동
