@@ -22,6 +22,7 @@ export const LOFFICE_DOC_TOOLS: LofficeTool[] = [
 ];
 
 export const LOFFICE_CONVERT_TOOLS: LofficeTool[] = [
+  { id: "loficePro", icon: "⚡", name: "lofice Pro", desc: "LibreOffice Pro 엔진 — 레거시·ODF·HWPX 고품질 변환.", tags: "#Pro #LibreOffice #변환", href: "/pro/", category: "convert" },
   { id: "docConvert", icon: "↔️", name: "문서 변환", desc: "Office Tool Plus 패턴 문서 변환 도구.", tags: "#변환", href: "/convert/", category: "convert" },
   { id: "pdfToExcel", icon: "📈", name: "PDF → Excel", desc: "표 구조 인식·시트 편집으로 이어집니다.", tags: "#변환 #PDF #Excel", href: "/convert/", category: "convert" },
   { id: "imageViewer", icon: "🖼️", name: "이미지 뷰어", desc: "PNG·JPG·GIF 등 이미지 문서 열람.", tags: "#이미지", href: "/viewer/", category: "convert" },
