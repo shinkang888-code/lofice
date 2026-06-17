@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useViewerToolbarOptional } from "./ViewerToolbarContext";
 import { useEditorToolbarOptional } from "./EditorToolbarContext";
+import { copySelectionToClipboard, printDocument } from "@/lib/office/ribbon-defaults";
 
 type RibbonTab = "file" | "home" | "insert" | "view" | "pdf";
 type PdfEditorMode = "tools" | "stirling" | "split";
@@ -86,7 +87,28 @@ export default function LoficeLayout({
   const viewActions = state?.actions ?? {};
   const editActions = editorToolbar?.actions ?? {};
   const editMeta = editorToolbar?.meta ?? {};
-  const actions = { ...viewActions, ...editActions };
+  const actions = {
+    copy: viewActions.copy ?? editActions.copy ?? copySelectionToClipboard,
+    cut: viewActions.cut ?? editActions.cut,
+    paste: viewActions.paste ?? editActions.paste,
+    undo: viewActions.undo ?? editActions.undo,
+    redo: viewActions.redo ?? editActions.redo,
+    bold: viewActions.bold ?? editActions.bold,
+    italic: viewActions.italic ?? editActions.italic,
+    underline: viewActions.underline ?? editActions.underline,
+    alignLeft: viewActions.alignLeft ?? editActions.alignLeft,
+    alignCenter: viewActions.alignCenter ?? editActions.alignCenter,
+    alignRight: viewActions.alignRight ?? editActions.alignRight,
+    zoomIn: viewActions.zoomIn,
+    zoomOut: viewActions.zoomOut,
+    zoomFit: viewActions.zoomFit,
+    zoomReset: viewActions.zoomReset,
+    prevPage: viewActions.prevPage,
+    nextPage: viewActions.nextPage,
+    download: viewActions.download,
+    print: viewActions.print ?? printDocument,
+    toggleThumbnails: viewActions.toggleThumbnails,
+  };
   const isPdf = state?.docType === "pdf";
   const isHwp = state?.docType === "hwp";
   const isPpt = state?.docType === "presentation";

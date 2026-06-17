@@ -54,7 +54,9 @@ const libs = [
   "src/lib/pptxGenJS/client.ts",
   "src/lib/reactTypes/events.ts",
   "src/lib/lofficeUi/tools.ts",
-  "src/lib/lofficeUi/nav.ts",
+  "src/lib/buffer.ts",
+  "src/lib/office/ribbon-defaults.ts",
+  "docs/LOFFICE_UPGRADE_SPEC.md",
   "src/components/home/LofficeLandingPage.tsx",
   "src/lib/lofficeUi/routes.ts",
   "src/components/home/LofficeWorkspaceCard.tsx",
@@ -73,8 +75,8 @@ if (existsSync(join(root, "public/vendor/pptxgen.bundle.js"))) {
 // package version
 try {
   const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
-  if (pkg.version === "2.13.0") ok(`version ${pkg.version}`);
-  else bad(`version expected 2.13.0 got ${pkg.version}`);
+  if (pkg.version === "2.14.0") ok(`version ${pkg.version}`);
+  else bad(`version expected 2.14.0 got ${pkg.version}`);
 } catch (e) {
   bad("package.json", e.message);
 }

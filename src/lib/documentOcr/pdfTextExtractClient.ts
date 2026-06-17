@@ -1,5 +1,6 @@
 /** LawyGo pdfTextExtract.ts — lofice pdf-engine 연동 */
 import { getPdfJs } from "@/lib/pdf/pdf-engine";
+import { cloneArrayBuffer } from "@/lib/buffer";
 
 export async function extractTextFromPdfBuffer(buffer: ArrayBuffer): Promise<{ text: string; pageCount: number }> {
   if (typeof window === "undefined") {
@@ -7,7 +8,8 @@ export async function extractTextFromPdfBuffer(buffer: ArrayBuffer): Promise<{ t
   }
 
   const pdfjs = await getPdfJs();
-  const pdf = await pdfjs.getDocument({ data: new Uint8Array(buffer) }).promise;
+  const data = cloneArrayBuffer(buffer);
+  const pdf = await pdfjs.getDocument({ data: new Uint8Array(data) }).promise;
   const pages: string[] = [];
 
   for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {

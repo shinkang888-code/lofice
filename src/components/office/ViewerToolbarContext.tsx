@@ -13,6 +13,17 @@ export interface ViewerToolbarActions {
   download?: () => void;
   print?: () => void;
   toggleThumbnails?: () => void;
+  copy?: () => void;
+  cut?: () => void;
+  paste?: () => void;
+  undo?: () => void;
+  redo?: () => void;
+  bold?: () => void;
+  italic?: () => void;
+  underline?: () => void;
+  alignLeft?: () => void;
+  alignCenter?: () => void;
+  alignRight?: () => void;
 }
 
 export interface ViewerToolbarState {

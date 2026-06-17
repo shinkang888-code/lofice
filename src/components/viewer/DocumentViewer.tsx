@@ -357,17 +357,39 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
     return <MicroscopeOfficeViewer buffer={officeBuffer} fileName={fileName} />;
   }
 
-  if (resolvedType === "presentation" && presentation) {
-    if (pptFallback) {
-      return <MicroscopePptxViewer buffer={workBuffer ?? buffer} fileName={fileName} />;
+  if (resolvedType === "presentation" && (workBuffer || buffer)) {
+    const pptBuf = workBuffer ?? buffer;
+    if (!pptFallback) {
+      return (
+        <div className="h-full relative flex flex-col">
+          <MicroscopePptxViewer buffer={pptBuf} fileName={fileName} />
+          {presentation && (
+            <button
+              type="button"
+              onClick={() => setPptFallback(true)}
+              className="absolute bottom-3 right-3 z-10 text-[10px] bg-[#16161a]/90 text-[#e6e6e9] border border-[#26262a] px-2 py-1 rounded shadow"
+            >
+              텍스트·발표자 노트 보기
+            </button>
+          )}
+        </div>
+      );
     }
-    return (
-      <PptMasterViewer
-        slides={presentation.slides}
-        fileName={fileName}
-        buffer={workBuffer ?? buffer}
-      />
-    );
+    if (presentation) {
+      return (
+        <div className="h-full relative">
+          <PptMasterViewer slides={presentation.slides} fileName={fileName} buffer={pptBuf} />
+          <button
+            type="button"
+            onClick={() => setPptFallback(false)}
+            className="absolute bottom-3 right-3 z-10 text-[10px] bg-white/90 border px-2 py-1 rounded shadow"
+          >
+            슬라이드 레이아웃 보기
+          </button>
+        </div>
+      );
+    }
+    return <MicroscopePptxViewer buffer={pptBuf} fileName={fileName} />;
   }
 
   if (resolvedType === "txt" && text !== null) {

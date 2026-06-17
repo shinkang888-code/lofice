@@ -1,5 +1,6 @@
 /** Tesseract.js 브라우저 OCR — LawyGo 서버 OCR의 클라이언트 대체 */
 import { getPdfJs } from "@/lib/pdf/pdf-engine";
+import { cloneArrayBuffer } from "@/lib/buffer";
 import type { Worker } from "tesseract.js";
 
 let workerInstance: Worker | null = null;
@@ -29,7 +30,8 @@ export async function ocrPdfBuffer(
   onProgress?: (page: number, total: number) => void
 ): Promise<string> {
   const pdfjs = await getPdfJs();
-  const pdf = await pdfjs.getDocument({ data: new Uint8Array(buffer) }).promise;
+  const data = cloneArrayBuffer(buffer);
+  const pdf = await pdfjs.getDocument({ data: new Uint8Array(data) }).promise;
   const total = Math.min(pdf.numPages, 30);
   const parts: string[] = [];
 

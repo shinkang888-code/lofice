@@ -21,6 +21,7 @@
 - **TypeScript React 패턴**: typed CustomEvent · string literal · Props 타입 (v2.11.0)
 - **lofice-14291513 랜딩 UI**: Navy+Gold 마케팅 홈 · 도구 검색 · 파일 드롭존 연동 (v2.12.0)
 - **랜딩 메뉴 전체 연동**: 네비·퀵카드·NOVA·업데이트·블로그 → lofice 라우트 (v2.13.0)
+- **문서 엔진 업그레이드**: PPT microscope 우선·OCR buffer 수정·리본·HWP same-origin (v2.14.0)
 - **HWP/HWPX (폴백)**: hwpxjs HTML 뷰어
 - **DOCX 편집**: @eigenpal/docx-editor-react 1.x WYSIWYG (실제 DOCX 저장)
 - **한글 편집**: TipTap + 폴라리스 스타일 페이지 레이아웃, 리본 연동
@@ -376,6 +377,20 @@ useLoficeEvent("lofice:openFile", (detail) => { /* detail.name, detail.data */ }
 | 테마 토글 | `.loffice-site.dark` Navy+Gold 다크 모드 |
 
 `PolarisHomePage`는 유지 — 필요 시 `/settings/` 등에서 전환 가능.
+
+## lofice-14291513 메뉴 연동 (v2.13.0)
+
+| 원본 UI | lofice 연결 |
+|---------|-------------|
+| 문서 열기 / Workspace | `saveFileLocal` → PDF·DOCX 등 `/viewer/`, HWP `/hwp-editor/`, PPT `/ppt-editor/` |
+| LOFFICE NOVA | `/files/` 새 창 · AI채팅 `/hwp-ai/` · 변환 `/convert/` |
+| 보안 AI 채팅 | `/hwp-ai/` |
+| AI 문서 요약 | `/viewer/` |
+| PDF ↔ Word 변환 | `/convert/` |
+| 도구 카드 4섹션 | `src/lib/lofficeUi/tools.ts` |
+| 업데이트 노트 / 블로그 | `#updates` · `#blog` 앵커 섹션 |
+
+PDF 열기 검증: `node scripts/test-pdf-open.mjs [pdf-path]`
 
 ## 오픈소스 통합 (v1.6.0)
 

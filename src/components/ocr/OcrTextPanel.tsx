@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { Copy, Loader2, ScanLine, X } from "lucide-react";
 import DdddOcrToolsPanel from "@/components/ocr/DdddOcrToolsPanel";
 import { checkDdddOcrHealth } from "@/lib/documentOcr/ddddocr-api";
 import { isDdddOcrServerAvailable } from "@/lib/documentOcr/ddddocr-config";
 import { extractDocumentTextClient } from "@/lib/documentOcr/extractDocumentTextClient";
+import { cloneArrayBuffer } from "@/lib/buffer";
 import {
   ENGINE_LABEL,
   isOcrSupported,
@@ -24,6 +25,7 @@ interface Props {
 
 /** LawyGo OCR 패널 — ddddocr(선택) + Tesseract 폴백 */
 export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, className = "" }: Props) {
+  const ocrBuffer = useMemo(() => cloneArrayBuffer(buffer), [buffer]);
   const [result, setResult] = useState<DocumentOcrResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState("");
@@ -47,7 +49,7 @@ export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, clas
     setError(null);
     setResult(null);
     try {
-      const res = await extractDocumentTextClient(buffer, fileName, mimeType, (msg) => setProgress(msg), engine);
+      const res = await extractDocumentTextClient(ocrBuffer, fileName, mimeType, (msg) => setProgress(msg), engine);
       setResult(res);
     } catch (e) {
       setError(e instanceof Error ? e.message : "OCR 실패");
@@ -55,7 +57,7 @@ export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, clas
       setLoading(false);
       setProgress("");
     }
-  }, [buffer, engine, fileName, mimeType]);
+  }, [ocrBuffer, engine, fileName, mimeType]);
 
   const copyText = async () => {
     if (!result?.text) return;
@@ -145,7 +147,7 @@ export default function OcrTextPanel({ buffer, fileName, mimeType, onClose, clas
         )}
 
         {ddddocrOnline && supported && (
-          <DdddOcrToolsPanel imageBuffer={buffer} className="mt-4" />
+          <DdddOcrToolsPanel imageBuffer={ocrBuffer} className="mt-4" />
         )}
       </div>
     </div>

@@ -107,17 +107,24 @@ function HwpEditorContent() {
         fileName={fileName}
         onSave={handleSave}
         saving={saving}
-        minimal
+        onOpenFile={handleOpenFile}
         hwpEditMode
         viewerHref={id ? `/viewer/?id=${id}` : undefined}
         onHwpAi={() => router.push(id ? `/viewer/?id=${id}&tab=hwp-ai` : "/hwp-ai/")}
       >
-        <RhwpEditor
-          ref={editorRef}
-          buffer={buffer}
-          fileName={fileName}
-          onReady={setPageCount}
-        />
+        <div className="flex h-full min-h-0 flex-col">
+          <div className="min-h-0 flex-1">
+            <RhwpEditor
+              ref={editorRef}
+              buffer={buffer}
+              fileName={fileName}
+              onReady={setPageCount}
+            />
+          </div>
+          <p className="shrink-0 border-t border-amber-200 bg-amber-50 px-3 py-1.5 text-center text-[11px] text-amber-900">
+            파일 열기는 상단 <strong>로피스 리본 → 파일 → 열기</strong>를 사용하세요. (iframe 내 열기는 브라우저 보안 제한)
+          </p>
+        </div>
       </LoficeLayout>
       {pageCount > 0 && (
         <span className="sr-only">{pageCount}페이지</span>

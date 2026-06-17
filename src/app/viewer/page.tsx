@@ -12,6 +12,7 @@ import OcrTextPanel from "@/components/ocr/OcrTextPanel";
 import LoficeLayout from "@/components/office/LoficeLayout";
 import { saveFileLocal } from "@/lib/storage/local";
 import { ViewerToolbarProvider } from "@/components/office/ViewerToolbarContext";
+import ViewerDownloadBridge from "@/components/viewer/ViewerDownloadBridge";
 import type { DocumentType } from "@/types/document";
 
 function ViewerContent() {
@@ -82,6 +83,7 @@ function ViewerContent() {
 
   return (
     <ViewerToolbarProvider>
+      {buffer && <ViewerDownloadBridge buffer={buffer} fileName={fileName} mimeType={mimeType} />}
       <input
         ref={fileInputRef}
         type="file"

@@ -3,6 +3,7 @@
  * PDF: pdfjs 텍스트 → ddddocr / Tesseract OCR 폴백
  * 이미지: ddddocr (서버) 또는 Tesseract OCR
  */
+import { cloneArrayBuffer } from "@/lib/buffer";
 import { checkDdddOcrHealth } from "./ddddocr-api";
 import { isDdddOcrServerAvailable } from "./ddddocr-config";
 import * as ddddocrOcr from "./ddddocrOcr";
@@ -38,7 +39,8 @@ export async function extractDocumentTextClient(
   onProgress?: (message: string, percent?: number) => void,
   engine: OcrEngine = "auto",
 ): Promise<DocumentOcrResult> {
-  if (buffer.byteLength > MAX_OCR_BYTES) {
+  const workBuffer = cloneArrayBuffer(buffer);
+  if (workBuffer.byteLength > MAX_OCR_BYTES) {
     throw new Error("파일은 12MB 이하여야 합니다.");
   }
 
@@ -52,7 +54,7 @@ export async function extractDocumentTextClient(
     let pageCount = 0;
 
     try {
-      const extracted = await extractTextFromPdfBuffer(buffer);
+      const extracted = await extractTextFromPdfBuffer(workBuffer);
       text = extracted.text;
       pageCount = extracted.pageCount;
     } catch {
@@ -69,7 +71,7 @@ export async function extractDocumentTextClient(
     const ocrFn =
       resolvedEngine === "ddddocr" ? ddddocrOcr.ocrPdfBuffer : tesseractOcr.ocrPdfBuffer;
 
-    const ocrText = await ocrFn(buffer, (page, total) => {
+    const ocrText = await ocrFn(workBuffer, (page, total) => {
       onProgress?.(`OCR ${page}/${total} 페이지`, 30 + Math.round((page / total) * 60));
     });
 
@@ -93,7 +95,7 @@ export async function extractDocumentTextClient(
 
   if (isImageMime(mimeType, fileName)) {
     onProgress?.(`${ocrLabel} OCR 실행 중...`, 20);
-    const blob = new Blob([buffer], { type: mimeType.startsWith("image/") ? mimeType : "image/jpeg" });
+    const blob = new Blob([workBuffer], { type: mimeType.startsWith("image/") ? mimeType : "image/jpeg" });
 
     const text =
       resolvedEngine === "ddddocr"
