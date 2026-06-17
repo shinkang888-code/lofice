@@ -85,7 +85,7 @@ export default function LanguagePicker({ className = "", compact = false }: Prop
         type="button"
         onClick={() => setOpen((o) => !o)}
         onKeyDown={onKeyDown}
-        className={`inline-flex items-center gap-1.5 rounded-lg border border-border bg-white transition hover:bg-secondary dark:bg-card ${
+        className={`inline-flex items-center gap-1.5 rounded-lg border border-border bg-background transition hover:bg-secondary ${
           compact ? "px-2 py-1.5 text-xs" : "px-2.5 py-2 text-sm"
         }`}
         aria-haspopup="listbox"
@@ -98,17 +98,17 @@ export default function LanguagePicker({ className = "", compact = false }: Prop
       </button>
 
       {open && (
-        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-72 overflow-hidden rounded-xl border border-border bg-white shadow-lo-glow dark:bg-card sm:w-80">
-          <div className="border-b border-border p-2">
-            <div className="flex items-center gap-2 rounded-lg bg-secondary/60 px-2.5 py-2">
-              <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-72 overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-lo-glow sm:w-80">
+          <div className="border-b border-gray-200 p-2">
+            <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-2.5 py-2">
+              <Search className="h-4 w-4 shrink-0 text-gray-500" />
               <input
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={onKeyDown}
                 placeholder={t("common.searchLanguage")}
-                className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                className="w-full bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-500"
               />
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function LanguagePicker({ className = "", compact = false }: Prop
             aria-label={t("common.language")}
           >
             {filtered.length === 0 ? (
-              <li className="px-3 py-6 text-center text-sm text-muted-foreground">{t("common.noLanguageResults")}</li>
+              <li className="px-3 py-6 text-center text-sm text-gray-500">{t("common.noLanguageResults")}</li>
             ) : (
               filtered.map((item, i) => {
                 const active = item.code === locale;
@@ -131,14 +131,14 @@ export default function LanguagePicker({ className = "", compact = false }: Prop
                       type="button"
                       onMouseEnter={() => setHighlight(i)}
                       onClick={() => select(item.code)}
-                      className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition ${
-                        highlighted ? "bg-secondary" : "hover:bg-secondary/70"
+                      className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm text-gray-900 transition ${
+                        highlighted ? "bg-gray-100" : "hover:bg-gray-50"
                       } ${active ? "font-semibold text-primary" : ""}`}
                     >
                       <span className="text-base leading-none">{item.flag}</span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate">{item.nativeName}</span>
-                        <span className="block truncate text-[11px] text-muted-foreground">
+                        <span className="block truncate text-[11px] text-gray-500">
                           {item.region} · {item.englishName}
                         </span>
                       </span>
@@ -149,7 +149,7 @@ export default function LanguagePicker({ className = "", compact = false }: Prop
               })
             )}
           </ul>
-          <p className="border-t border-border px-3 py-1.5 text-[10px] text-muted-foreground">
+          <p className="border-t border-gray-200 px-3 py-1.5 text-[10px] text-gray-500">
             {LOCALE_DEFINITIONS.length} languages · ↑↓ Enter
           </p>
         </div>

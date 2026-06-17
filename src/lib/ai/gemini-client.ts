@@ -1,55 +1,46 @@
-/**
- * Google Gemini API 클라이언트 (브라우저 직접 호출)
- * NEXT_PUBLIC_GEMINI_API_KEY 필요
- */
+/** Google Gemini API 클라이언트 (브라우저) */
 
 export type GeminiMessage = { role: "user" | "model"; text: string };
 
-const MODEL = process.env.NEXT_PUBLIC_GEMINI_MODEL?.trim() || "gemini-2.0-flash";
+function getApiKey(): string | null {
+  return process.env.NEXT_PUBLIC_GEMINI_API_KEY?.trim() || null;
+}
 
 export function isGeminiConfigured(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_GEMINI_API_KEY?.trim());
+  return Boolean(getApiKey());
 }
 
 export async function chatWithGemini(
   messages: GeminiMessage[],
-  userPrompt: string,
+  systemPrompt?: string,
 ): Promise<string> {
-  const key = process.env.NEXT_PUBLIC_GEMINI_API_KEY?.trim();
+  const key = getApiKey();
   if (!key) {
-    return "Gemini API 키가 설정되지 않았습니다. 관리자에게 NEXT_PUBLIC_GEMINI_API_KEY 설정을 요청하세요.";
+    throw new Error("Gemini API 키가 설정되지 않았습니다. NEXT_PUBLIC_GEMINI_API_KEY를 확인하세요.");
   }
 
-  const contents = [
-    ...messages.map((m) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.text }],
-    })),
-    { role: "user", parts: [{ text: userPrompt }] },
-  ];
+  const model = process.env.NEXT_PUBLIC_GEMINI_MODEL?.trim() || "gemini-2.0-flash";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents,
-        systemInstruction: {
-          parts: [{
-            text:
-              "You are LOFFICE AI, a helpful document assistant for HWP, Office, and PDF workflows. " +
-              "Reply in the user's language. Be concise and practical.",
-          }],
-        },
-        generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
-      }),
-    },
-  );
+  const contents = messages.map((m) => ({
+    role: m.role === "user" ? "user" : "model",
+    parts: [{ text: m.text }],
+  }));
+
+  const body: Record<string, unknown> = { contents };
+  if (systemPrompt) {
+    body.systemInstruction = { parts: [{ text: systemPrompt }] };
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(err.slice(0, 200) || `Gemini 오류 ${res.status}`);
+    throw new Error(err.slice(0, 300) || `Gemini API 오류 (${res.status})`);
   }
 
   const json = (await res.json()) as {

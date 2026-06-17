@@ -9,9 +9,9 @@ export default function LofficePolarisFooter() {
   const { t } = useI18n();
 
   const links = [
-    { label: t("nav.docEdit"), href: "/doc-edit/" },
-    { label: t("nav.updatesFooter"), href: "/updates/" },
-    { label: t("nav.myPage"), href: "/mypage/" },
+    { label: t("nav.updatesFooter"), href: "#updates" },
+    { label: t("nav.blog"), href: "#blog" },
+    { label: t("nav.myDocs"), href: "/files/" },
     { label: t("nav.settings"), href: "/settings/" },
   ];
 

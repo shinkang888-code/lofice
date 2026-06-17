@@ -1,9 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { AuthProvider } from "@/components/auth/AuthProvider";
-import CapacitorProvider from "@/components/CapacitorProvider";
-import PdfWorkerPreload from "@/components/pwa/PdfWorkerPreload";
-import ThemeProvider from "@/components/settings/ThemeProvider";
-import { I18nProvider } from "@/i18n/I18nProvider";
+import ClientProviders from "./ClientProviders";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,9 +7,7 @@ export const metadata: Metadata = {
   description: "PDF, HWP, Word, Excel, Markdown, HTML, 이미지 등 거의 모든 문서를 브라우저에서 열람·편집",
   manifest: "/manifest.json",
   icons: {
-    icon: [
-      { url: "/lofice-icon.png", sizes: "512x512", type: "image/png" },
-    ],
+    icon: [{ url: "/lofice-icon.png", sizes: "512x512", type: "image/png" }],
     apple: "/lofice-icon.png",
   },
   appleWebApp: {
@@ -35,16 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body className="min-h-screen">
-        <CapacitorProvider>
-          <I18nProvider>
-            <AuthProvider>
-              <ThemeProvider>
-                <PdfWorkerPreload />
-                {children}
-              </ThemeProvider>
-            </AuthProvider>
-          </I18nProvider>
-        </CapacitorProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );
