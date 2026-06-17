@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import type { DocumentType, XlsxContent, PresentationContent } from "@/types/document";
 import { parseDocument } from "@/lib/parsers/document-router";
+import type { HwpPackageInfo } from "@/lib/hwp/extract-hwp-package";
 import { resolveDocumentType } from "@/lib/document-types";
 import dynamic from "next/dynamic";
 import HangulViewer from "./HangulViewer";
@@ -56,6 +57,7 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   const [udocPdfFallback, setUdocPdfFallback] = useState(false);
   const [udocDocxFallback, setUdocDocxFallback] = useState(false);
   const [rhwpFallback, setRhwpFallback] = useState(false);
+  const [hwpPackage, setHwpPackage] = useState<HwpPackageInfo | null>(null);
   const [microscopeFallback, setMicroscopeFallback] = useState(false);
   const [pptFallback, setPptFallback] = useState(false);
   const [unsupported, setUnsupported] = useState(false);
@@ -117,6 +119,7 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
       setUdocPdfFallback(false);
       setUdocDocxFallback(false);
       setRhwpFallback(false);
+      setHwpPackage(null);
       setMicroscopeFallback(false);
       setPptFallback(false);
       setHtml(null);
@@ -159,7 +162,10 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
             setOfficeBuffer(docBuffer);
             try {
               const result = await parseDocument(docBuffer, fileName, type);
-              if (!cancelled) setHtml(result.html ?? null);
+              if (!cancelled) {
+                setHtml(result.html ?? null);
+                setHwpPackage(result.hwpPackage ?? null);
+              }
             } catch { /* rhwp primary, html fallback optional */ }
             setLoading(false);
           }
@@ -310,6 +316,7 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
           html={html}
           fileName={fileName}
           formatLabel={resolvedType === "hwp" ? "HWP 문서" : "HWPX 문서"}
+          packageInfo={hwpPackage}
         />
       );
     }

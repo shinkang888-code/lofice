@@ -1,5 +1,6 @@
 import type { DocumentType, PresentationContent } from "@/types/document";
 import { parseHancomDocument } from "@/lib/parsers/hancom";
+import type { HwpPackageInfo } from "@/lib/hwp/extract-hwp-package";
 import { parseDocxToHtml } from "@/lib/parsers/docx";
 import { parseXlsx } from "@/lib/parsers/xlsx";
 import { parseMarkdownToHtml } from "@/lib/parsers/markdown";
@@ -21,6 +22,7 @@ export interface DocumentParseResult {
   code?: string;
   codeLanguage?: "json" | "xml" | "text";
   unsupported?: boolean;
+  hwpPackage?: HwpPackageInfo;
 }
 
 const IMAGE_MIME: Record<string, string> = {
@@ -57,7 +59,12 @@ export async function parseDocument(
     case "hwp":
     case "hwpx": {
       const result = await parseHancomDocument(buffer);
-      return { type: result.format, html: result.html, text: result.text };
+      return {
+        type: result.format,
+        html: result.html,
+        text: result.text,
+        hwpPackage: result.packageInfo,
+      };
     }
 
     case "docx":

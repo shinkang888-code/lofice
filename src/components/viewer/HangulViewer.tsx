@@ -1,14 +1,22 @@
 "use client";
 
 import ScrollCanvas from "@/components/document/ScrollCanvas";
+import HwpDocumentInfoPanel from "@/components/hwp/HwpDocumentInfoPanel";
+import type { HwpPackageInfo } from "@/lib/hwp/extract-hwp-package";
 
 interface Props {
   html: string;
   fileName: string;
   formatLabel?: string;
+  packageInfo?: HwpPackageInfo | null;
 }
 
-export default function HangulViewer({ html, fileName, formatLabel = "한글 문서" }: Props) {
+export default function HangulViewer({
+  html,
+  fileName,
+  formatLabel = "한글 문서",
+  packageInfo,
+}: Props) {
   return (
     <div className="hancom-viewer flex flex-col h-full">
       <ScrollCanvas>
@@ -25,6 +33,7 @@ export default function HangulViewer({ html, fileName, formatLabel = "한글 문
           />
         </div>
       </ScrollCanvas>
+      <HwpDocumentInfoPanel packageInfo={packageInfo} formatLabel={formatLabel} />
       <div className="shrink-0 px-4 py-1.5 bg-[#f0f0f0] border-t border-gray-300 text-xs text-gray-500 flex justify-between">
         <span>{formatLabel}</span>
         <span className="truncate ml-4">{fileName}</span>

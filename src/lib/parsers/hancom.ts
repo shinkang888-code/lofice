@@ -1,9 +1,12 @@
 import type { DocumentType } from "@/types/document";
+import type { HwpPackageInfo } from "@/lib/hwp/extract-hwp-package";
+import { extractHwpPackageInfo } from "@/lib/hwp/extract-hwp-package";
 
 export interface HancomParseResult {
   html: string;
   text: string;
   format: "hwp" | "hwpx";
+  packageInfo?: HwpPackageInfo;
 }
 
 function toBytes(buffer: ArrayBuffer): Uint8Array {
@@ -11,6 +14,8 @@ function toBytes(buffer: ArrayBuffer): Uint8Array {
 }
 
 export async function parseHancomDocument(buffer: ArrayBuffer): Promise<HancomParseResult> {
+  const packageInfo = await extractHwpPackageInfo(buffer);
+
   const {
     detectFormat,
     hwpToText,
@@ -37,7 +42,7 @@ export async function parseHancomDocument(buffer: ArrayBuffer): Promise<HancomPa
 
   if (detected === "hwpx") {
     const { html, text } = await extractHtmlFromHwpxBuffer(buffer);
-    return { html, text, format: "hwpx" };
+    return { html, text, format: "hwpx", packageInfo };
   }
 
   if (detected === "hwp") {
@@ -49,13 +54,19 @@ export async function parseHancomDocument(buffer: ArrayBuffer): Promise<HancomPa
         hwpxBytes.byteOffset + hwpxBytes.byteLength
       ) as ArrayBuffer;
       const { html } = await extractHtmlFromHwpxBuffer(ab);
-      return { html, text, format: "hwp" };
+      const hwpxPackage = await extractHwpPackageInfo(ab);
+      return {
+        html,
+        text,
+        format: "hwp",
+        packageInfo: { ...packageInfo, metadata: hwpxPackage.metadata, hwpmlPathsMapped: hwpxPackage.hwpmlPathsMapped },
+      };
     } catch {
       const html = `<div class="hancom-plain">${text
         .split("\n")
         .map((line) => `<p>${escapeHtml(line) || "&nbsp;"}</p>`)
         .join("")}</div>`;
-      return { html, text, format: "hwp" };
+      return { html, text, format: "hwp", packageInfo };
     }
   }
 

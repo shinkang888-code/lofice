@@ -9,6 +9,13 @@ export type ReleaseNote = {
 
 export const LOFFICE_RELEASE_NOTES: ReleaseNote[] = [
   {
+    version: "v2.25.0",
+    date: "2026-06",
+    messageKey: "updates.v225",
+    fallback:
+      "Hancom 설치폴더 분석 기반 HWP 업그레이드 — HWPML 메타데이터·패키지 검증·문서 정보 패널",
+  },
+  {
     version: "v2.22.0",
     date: "2026-06",
     messageKey: "updates.v222",
