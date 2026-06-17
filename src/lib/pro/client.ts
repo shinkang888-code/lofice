@@ -25,7 +25,7 @@ async function parseApiError(res: Response): Promise<string> {
 
 function requireBase(): string {
   const base = getProApiBase();
-  if (!base) throw new Error("Pro API URL이 설정되지 않았습니다. NEXT_PUBLIC_OFFICE_CONVERT_URL");
+  if (!base) throw new Error("Pro API URL을 /pro/ 화면에서 입력하세요.");
   return base;
 }
 

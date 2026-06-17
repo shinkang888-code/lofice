@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AlertCircle, CheckCircle2, Loader2, Server, WifiOff } from "lucide-react";
 import { fetchProHealth, getProApiBase, resolveEngineState } from "@/lib/pro/client";
+import { PRO_API_URL_CHANGED } from "@/lib/pro/settings";
 import type { ProEngineState, ProHealthResponse } from "@/lib/pro/types";
 
 const STATE_UI: Record<
@@ -17,13 +18,13 @@ const STATE_UI: Record<
   },
   degraded: {
     label: "API만 연결됨",
-    hint: "서버는 응답하지만 LibreOffice가 없습니다. Docker로 Pro API를 실행하세요.",
+    hint: "서버는 응답하지만 LibreOffice가 없습니다. Pro API URL·서버 설정을 확인하세요.",
     icon: AlertCircle,
     className: "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100",
   },
   offline: {
     label: "Pro 엔진 오프라인",
-    hint: "loficepro에서 docker compose up 또는 start-local-dev.ps1을 실행하세요.",
+    hint: "위 Pro API 연결에서 URL을 입력하고「연결 테스트」를 실행하세요.",
     icon: WifiOff,
     className: "border-red-200 bg-red-50 text-red-900 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-100",
   },
@@ -51,7 +52,12 @@ export default function ProEngineStatus({ onStateChange }: Props) {
   useEffect(() => {
     void refresh();
     const id = window.setInterval(() => void refresh(), 30_000);
-    return () => window.clearInterval(id);
+    const onUrlChange = () => void refresh();
+    window.addEventListener(PRO_API_URL_CHANGED, onUrlChange);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener(PRO_API_URL_CHANGED, onUrlChange);
+    };
   }, [refresh]);
 
   const ui = STATE_UI[state];

@@ -8,9 +8,10 @@ type Props = {
   files: File[];
   onFilesChange: (files: File[]) => void;
   disabled?: boolean;
+  acceptOverride?: string;
 };
 
-export default function ProDropZone({ files, onFilesChange, disabled }: Props) {
+export default function ProDropZone({ files, onFilesChange, disabled, acceptOverride }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -53,7 +54,7 @@ export default function ProDropZone({ files, onFilesChange, disabled }: Props) {
         ref={inputRef}
         type="file"
         multiple
-        accept={PRO_ACCEPT}
+        accept={acceptOverride ?? PRO_ACCEPT}
         className="sr-only"
         disabled={disabled}
         onChange={(e) => {
