@@ -3,9 +3,9 @@
 export type NavItem = { label: string; href: string; external?: boolean };
 
 export const LOFFICE_HEADER_NAV: NavItem[] = [
-  { label: "📚 로피스 오피스 툴즈", href: "#tools" },
-  { label: "📋 업데이트 노트", href: "#updates" },
-  { label: "✍️ 블로그", href: "#blog" },
+  { label: "오피스 툴즈", href: "#tools" },
+  { label: "업데이트", href: "#updates" },
+  { label: "블로그", href: "#blog" },
 ];
 
 export const LOFFICE_FOOTER_NAV: NavItem[] = [
@@ -52,6 +52,7 @@ export const LOFFICE_QUICK_CARDS = [
 ] as const;
 
 export const LOFFICE_UPDATES = [
+  { version: "v2.16.0", date: "2026-06", text: "랜딩 UI v2 — 검색+문서열기 인라인, Lucide 아이콘, 인기 도구, 간격·타이포 개선" },
   { version: "v2.12.0", date: "2026-06", text: "lofice-14291513 랜딩 UI를 메인 홈에 연동 · 파일 열기·도구 검색·퀵카드 라우트 연결" },
   { version: "v2.11.0", date: "2026-06", text: "TypeScript React typed CustomEvent · v2.4–v2.11 오픈소스 통합" },
   { version: "v2.10.0", date: "2026-06", text: "PptxGenJS 브라우저 PPT 생성 · 차트·테이블·HTML→PPT" },

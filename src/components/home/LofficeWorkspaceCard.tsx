@@ -3,6 +3,7 @@
 import { useRef, useState, useCallback, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { CloudUpload, FolderOpen, Upload } from "lucide-react";
 import { ACCEPT_EXTENSIONS } from "@/lib/document-types";
 import { openLocalDocument } from "@/lib/lofficeUi/routes";
 
@@ -27,31 +28,35 @@ export default function LofficeWorkspaceCard() {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) handleFile(file);
+    if (file) void handleFile(file);
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-6 shadow-lo-card">
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Workspace</p>
-      <h3 className="mt-2 text-xl font-bold text-foreground">편집부터 시작</h3>
-      <p className="mt-2 text-sm text-muted-foreground">
-        문서를 열고 바로 편집을 이어갑니다. 보기, 주석, 서식, 내보내기까지 한 화면에서.
+    <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-lo-card transition hover:border-primary/25 hover:shadow-lo-glow sm:p-6">
+      <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-primary/5 transition group-hover:bg-primary/10" />
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Workspace</p>
+      <h3 className="mt-1.5 text-lg font-bold tracking-tight text-foreground sm:text-xl">편집부터 시작</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+        문서를 열고 바로 편집을 이어갑니다. 보기, 주석, 서식,보내기까지 한 화면에서.
       </p>
       <button
         type="button"
         onClick={pick}
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
         disabled={busy}
-        className={`mt-5 flex h-44 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed text-sm transition ${
+        className={`mt-4 flex h-32 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed text-sm transition sm:h-36 ${
           dragOver
             ? "border-primary bg-primary/5 text-primary"
-            : "border-border bg-secondary/40 text-muted-foreground hover:border-primary/40 hover:bg-secondary/60"
+            : "border-border bg-secondary/30 text-muted-foreground hover:border-primary/35 hover:bg-secondary/50"
         }`}
       >
-        <span className="text-3xl">☁️</span>
-        <p className="mt-2">{busy ? "열는 중…" : "클릭하거나 드래그하여 업로드"}</p>
+        <CloudUpload className="h-7 w-7 opacity-80" strokeWidth={1.5} />
+        <p className="font-medium">{busy ? "열는 중…" : "클릭하거나 드래그하여 업로드"}</p>
       </button>
       <input
         ref={inputRef}
@@ -64,19 +69,21 @@ export default function LofficeWorkspaceCard() {
           e.target.value = "";
         }}
       />
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
           onClick={pick}
           disabled={busy}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-lo-glow transition hover:opacity-95 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-95 disabled:opacity-50"
         >
+          <FolderOpen className="h-4 w-4" />
           Loffice 열기
         </button>
         <Link
           href="#doc-edit"
-          className="rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-secondary"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium transition hover:bg-secondary"
         >
+          <Upload className="h-4 w-4 opacity-70" />
           편집 도구 보기
         </Link>
       </div>

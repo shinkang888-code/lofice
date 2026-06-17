@@ -53,6 +53,10 @@ const config: Config = {
         "lo-card": "var(--shadow-card)",
         "lo-glow": "var(--shadow-glow)",
       },
+      fontFamily: {
+        display: ["var(--font-display)", "var(--font-sans)", "Noto Sans KR", "sans-serif"],
+        sans: ["var(--font-sans)", "Noto Sans KR", "sans-serif"],
+      },
     },
   },
   plugins: [],

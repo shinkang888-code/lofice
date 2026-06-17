@@ -1,0 +1,10 @@
+[project]
+name = "lofice-hwpx-skill-api"
+version = "1.0.0"
+requires-python = ">=3.11"
+
+[tool.vercel]
+entrypoint = "main.py:app"
+
+[tool.vercel.scripts]
+build = "bash scripts/vercel-install.sh"

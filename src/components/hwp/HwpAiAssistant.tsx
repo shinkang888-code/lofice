@@ -174,10 +174,16 @@ export default function HwpAiAssistant({
       setError(null);
 
       try {
-        if (serverConfigured && health?.ai_enabled) {
+        let activeHealth = health;
+        if (serverConfigured && !activeHealth) {
+          activeHealth = await checkHwpxSkillHealth(true);
+          setHealth(activeHealth);
+        }
+
+        if (serverConfigured && activeHealth?.ai_enabled) {
           let documentText: string | undefined;
           if (buffer) {
-            documentText = health?.skill_ready
+            documentText = activeHealth?.skill_ready
               ? (await hwpxSkillExtract(buffer, fileName, "plain")).text
               : await extractHancomTextClient(buffer);
           }
@@ -198,7 +204,7 @@ export default function HwpAiAssistant({
           return;
         }
 
-        if (serverConfigured && health?.skill_ready && !health.ai_enabled) {
+        if (serverConfigured && activeHealth?.skill_ready && !activeHealth.ai_enabled) {
           const sampleMd = `# ${message.slice(0, 40)}\n\n${message}\n\n## 개요\n\n(내용을 보완하세요)\n\n## 본문\n\n${message}`;
           const res = await hwpxSkillCreateFromMarkdown(sampleMd, { template, title: "AI 초안" });
           saveResult(res.data_base64, res.file_name, "AI 서버 키 없이 마크다운 초안을 HWPX로 생성했습니다.");
@@ -251,12 +257,12 @@ export default function HwpAiAssistant({
         </label>
 
         {serverConfigured ? (
-          <p className={`text-[10px] ${health?.skill_ready ? "text-green-700" : "text-amber-700"}`}>
-            hwpx-skill: {health?.skill_ready ? "연결됨" : "스크립트 없음"}
-            {health?.ai_enabled ? " · AI 활성" : " · AI 비활성(OPENAI_API_KEY)"}
+          <p className={`text-[10px] ${health?.skill_ready ? "text-green-700" : health === null ? "text-gray-500" : "text-amber-700"}`}>
+            hwpx-skill: {health === null ? "연결 확인 중…" : health.skill_ready ? "연결됨" : "스크립트 없음"}
+            {health?.ai_enabled ? " · AI 활성" : health ? " · AI 비활성(OPENAI_API_KEY)" : ""}
           </p>
         ) : (
-          <p className="text-[10px] text-amber-700">NEXT_PUBLIC_HWPX_SKILL_URL 미설정 — 제한 모드</p>
+          <p className="text-[10px] text-amber-700">hwpx-skill 서버 URL 미설정</p>
         )}
 
         <div className="flex flex-wrap gap-1">

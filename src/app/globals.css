@@ -231,6 +231,33 @@ html[data-theme="light"] body {
   --shadow-glow: 0 20px 60px -20px color-mix(in oklab, var(--primary) 45%, transparent);
   color: var(--foreground);
   background: var(--background);
+  font-family: var(--font-sans), "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.loffice-site .font-display {
+  font-family: var(--font-display), var(--font-sans), "Noto Sans KR", sans-serif;
+}
+
+.lo-hero-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--primary) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--primary) 6%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@keyframes lo-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lo-card-enter {
+  animation: lo-fade-up 0.45s ease backwards;
 }
 
 .loffice-site.dark {
