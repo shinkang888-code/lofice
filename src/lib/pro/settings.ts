@@ -3,8 +3,9 @@
 export const PRO_API_STORAGE_KEY = "lofice-pro-api-url";
 
 export const PRO_API_PRESETS = [
+  { id: "render", label: "Render Pro API", url: "https://lofice-pro-api.onrender.com" },
   { id: "local", label: "로컬 Pro API", url: "http://localhost:8200" },
-  { id: "vercel", label: "Vercel Pro API", url: "https://lofice-office-convert.vercel.app" },
+  { id: "vercel", label: "Vercel Pro API (fallback)", url: "https://lofice-office-convert.vercel.app" },
 ] as const;
 
 export const PRO_API_URL_CHANGED = "lofice:proApiUrlChanged";

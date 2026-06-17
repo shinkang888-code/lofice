@@ -206,7 +206,8 @@ async def convert_libreoffice(
 
 def main() -> None:
     host = os.environ.get("OFFICE_CONVERT_HOST", "0.0.0.0")
-    port = int(os.environ.get("OFFICE_CONVERT_PORT", "8200"))
+    # Render/Heroku inject PORT; local default 8200
+    port = int(os.environ.get("PORT", os.environ.get("OFFICE_CONVERT_PORT", "8200")))
     print(f"office-convert API on http://{host}:{port} (libreoffice={has_libreoffice()})")
     uvicorn.run(app, host=host, port=port)
 
