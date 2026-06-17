@@ -7,6 +7,9 @@ import { getDocumentType } from "@/lib/utils";
 import { isHancomType } from "@/lib/parsers/hancom";
 import { parseHancomDocument, saveHancomAsHwpx } from "@/lib/parsers/hancom";
 import { parseXlsx } from "@/lib/parsers/xlsx";
+import { isOfficeCryptoFileName, isOfficeEncrypted } from "@/lib/msoffice/office-crypto";
+import OfficeDecryptGate from "@/components/msoffice/OfficeDecryptGate";
+import OfficeBatchPanel from "@/components/msoffice/OfficeBatchPanel";
 import DocxEditor from "@/components/editor/DocxEditor";
 import RhwpEditor, { type RhwpEditorHandle } from "@/components/hwp/RhwpEditor";
 import EigenpalDocxEditor, { type EigenpalDocxEditorHandle } from "@/components/editor/EigenpalDocxEditor";
@@ -35,6 +38,7 @@ function EditorContent() {
   const [editedXlsx, setEditedXlsx] = useState<XlsxContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [needsOfficePassword, setNeedsOfficePassword] = useState(false);
 
   const isEigenpalDoc =
     fileType === "docx" || fileType === "doc" || fileName.match(/\.docm$/i);
@@ -47,6 +51,16 @@ function EditorContent() {
       setFileBuffer(file.data);
       const type = getDocumentType(file.name);
       setFileType(type);
+
+      if (isOfficeCryptoFileName(file.name)) {
+        try {
+          if (await isOfficeEncrypted(file.data)) {
+            setNeedsOfficePassword(true);
+            setLoading(false);
+            return;
+          }
+        } catch { /* continue */ }
+      }
 
       if (isHancomType(type)) {
         const result = await parseHancomDocument(file.data);
@@ -112,6 +126,24 @@ function EditorContent() {
     return <div className="flex items-center justify-center h-screen text-gray-400 bg-[#f3f3f3]">불러오는 중...</div>;
   }
 
+  if (needsOfficePassword && fileBuffer) {
+    return (
+      <OfficeDecryptGate
+        buffer={fileBuffer}
+        fileName={fileName}
+        onDecrypted={(data, name) => {
+          void (async () => {
+            if (id) await updateFileLocal(id, data, name);
+            setFileBuffer(data);
+            setFileName(name);
+            setFileType(getDocumentType(name));
+            setNeedsOfficePassword(false);
+          })();
+        }}
+      />
+    );
+  }
+
   const isSpreadsheet = fileType === "xlsx" || fileType === "xls" || fileType === "csv" || fileType === "ods";
   const isRichText = isHancomType(fileType);
   const isRhwpEditor = isRichText && fileBuffer;
@@ -146,6 +178,11 @@ function EditorContent() {
           {fileType === "html" && <HtmlEditor initial={plainText} onChange={setPlainText} />}
           {(fileType === "json" || fileType === "xml") && (
             <CodeEditor initial={plainText} onChange={setPlainText} language={fileType === "json" ? "json" : "xml"} />
+          )}
+          {fileBuffer && (isSpreadsheet || fileType === "presentation") && (
+            <div className="border-t border-gray-100 p-2 shrink-0">
+              <OfficeBatchPanel buffer={fileBuffer} fileName={fileName} fileType={fileType} />
+            </div>
           )}
         </div>
       </LoficeLayout>

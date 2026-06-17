@@ -17,7 +17,7 @@
     "test:parsers": "node scripts/create-test-fixtures.mjs && node scripts/test-parsers.mjs",
     "test:hwp": "node scripts/create-test-fixtures.mjs && node scripts/test-hwp-parsers.mjs",
     "test:dvc": "node scripts/create-test-fixtures.mjs && node scripts/dvc-validate.mjs",
-    "test:office": "node scripts/test-office-crypto.mjs && node scripts/ooxml-validate.mjs",
+    "test:office": "node scripts/create-office-fixtures.mjs && node scripts/test-office-crypto.mjs && node scripts/ooxml-validate.mjs",
     "package:releases": "powershell -ExecutionPolicy Bypass -File scripts/package-releases.ps1",
     "assets:generate": "npx capacitor-assets generate --android",
     "build:electron": "next build",
