@@ -1,0 +1,44 @@
+name: Deploy python-office-api (scheduled)
+
+# Vercel 무료 플랜 일일 배포 한도(100회) 리셋 후 자동 재배포
+# 2026-06-19 01:10 UTC (KST 10:10) — 한도 초과(2026-06-17) 기준 24h+ 여유
+on:
+  schedule:
+    - cron: "10 1 19 6 *"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-python-office-api
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/python-office-api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Deploy to Vercel (production)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: team_iqF07oRNVoofJGj4ypBtucPn
+          VERCEL_PROJECT_ID: prj_CXG7DhBelzjT2vBeMIceAv1Ye1ku
+        run: npx vercel@54 deploy --prod --yes --token="$VERCEL_TOKEN"
+
+      - name: Verify /health
+        run: |
+          for i in 1 2 3 4 5; do
+            body=$(curl -fsS "https://lofice-python-office.vercel.app/health" || true)
+            echo "$body"
+            echo "$body" | grep -q '"pptx-reportlab-fallback"' && exit 0
+            echo "$body" | grep -q 'excel-split' && exit 0
+            sleep 15
+          done
+          echo "Health check: new deployment not yet live (may need a few minutes)"
+          exit 0
