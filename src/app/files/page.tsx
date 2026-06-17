@@ -16,11 +16,12 @@ export default function FilesPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen pb-20">
+    <div className="flex flex-col min-h-[100dvh] bg-[#f2f2f7] pb-20">
       <AppHeader />
-      <main className="flex-1 px-4 py-6 max-w-lg mx-auto w-full">
-        <h1 className="text-xl font-bold text-gray-900 mb-4">내 문서</h1>
-        <div className="mb-6">
+      <main className="flex-1 px-4 py-5 max-w-lg mx-auto w-full">
+        <h1 className="text-[1.375rem] font-bold tracking-tight text-gray-900 mb-1">내 문서</h1>
+        <p className="text-sm text-gray-500 mb-5">열기 · 미리보기 · 편집</p>
+        <div className="mb-5">
           <FilePicker onFileSelect={handleFile} />
         </div>
         <FileList />

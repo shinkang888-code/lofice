@@ -416,3 +416,259 @@ html[data-theme="light"] body {
 .lo-float-delay-1 { animation-delay: 0.5s; }
 .lo-float-delay-2 { animation-delay: 1s; }
 .lo-float-delay-3 { animation-delay: 1.5s; }
+
+/* ── Mobile UI (Apple-style) ── */
+.lo-mobile-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 3rem;
+  padding: 0 0.5rem 0 0.25rem;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.lo-mobile-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #1c1c1e;
+  text-align: center;
+}
+
+.lo-mobile-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  color: #1c1c1e;
+  transition: background 0.15s;
+}
+
+.lo-mobile-icon-btn:active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.lo-mobile-bottom {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.lo-mobile-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  min-height: 3.25rem;
+}
+
+.lo-mobile-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  color: #1c1c1e;
+}
+
+.lo-mobile-action:active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.lo-mobile-action-primary {
+  background: #003377;
+  color: #fff;
+}
+
+.lo-mobile-action-primary:active {
+  opacity: 0.85;
+}
+
+.lo-mobile-page-pill {
+  min-width: 4.5rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-align: center;
+  color: #1c1c1e;
+  font-variant-numeric: tabular-nums;
+}
+
+.lo-mobile-segment {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.lo-mobile-segment button {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #636366;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lo-mobile-segment-active {
+  background: #003377 !important;
+  color: #fff !important;
+}
+
+.lo-mobile-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.lo-mobile-sheet {
+  width: 100%;
+  max-width: 32rem;
+  max-height: 70dvh;
+  overflow-y: auto;
+  background: #f2f2f7;
+  border-radius: 1.25rem 1.25rem 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  animation: lo-sheet-up 0.28s ease;
+}
+
+@keyframes lo-sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.lo-mobile-sheet-handle {
+  width: 2.25rem;
+  height: 0.25rem;
+  margin: 0.5rem auto 0.75rem;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.lo-mobile-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding: 0 1rem 1.25rem;
+}
+
+.lo-mobile-sheet-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.75rem 0.25rem;
+  border-radius: 0.875rem;
+  background: #fff;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #1c1c1e;
+}
+
+.lo-mobile-sheet-btn:active {
+  background: #e5e5ea;
+}
+
+.lo-mobile-sheet-btn-active {
+  background: rgba(0, 51, 119, 0.1);
+  color: #003377;
+}
+
+.lo-mobile-preview-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  background: #1c1c1e;
+}
+
+.lo-mobile-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 0.5rem;
+  height: 3rem;
+  background: rgba(28, 28, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.lo-mobile-preview-header .lo-mobile-title {
+  color: #fff;
+  text-align: left;
+  font-size: 0.9375rem;
+}
+
+.lo-mobile-preview-header .lo-mobile-icon-btn {
+  color: #fff;
+}
+
+.lo-mobile-file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.625rem 0.75rem;
+  background: #fff;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.lo-mobile-file-row-active {
+  border-color: rgba(0, 51, 119, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 51, 119, 0.12);
+}
+
+.lo-mobile-touch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+}
+
+.lo-mobile-touch-btn:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.lo-mobile-open-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 1.25rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+  background: var(--card);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.lo-mobile-open-card:active {
+  transform: scale(0.98);
+}
+
+.lo-mobile-search-pill {
+  box-shadow: 0 2px 16px rgba(0, 51, 119, 0.08);
+}

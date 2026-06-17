@@ -10,6 +10,7 @@ import DocumentViewer from "@/components/viewer/DocumentViewer";
 import HwpAiAssistant from "@/components/hwp/HwpAiAssistant";
 import OcrTextPanel from "@/components/ocr/OcrTextPanel";
 import LoficeLayout from "@/components/office/LoficeLayout";
+import MobileViewerSplit from "@/components/mobile/MobileViewerSplit";
 import { saveFileLocal } from "@/lib/storage/local";
 import { ViewerToolbarProvider } from "@/components/office/ViewerToolbarContext";
 import ViewerDownloadBridge from "@/components/viewer/ViewerDownloadBridge";
@@ -45,6 +46,7 @@ function ViewerContent() {
   const canEdit = isEditableType(fileType);
   const ocrAvailable = buffer ? isOcrSupported(mimeType, fileName) : false;
   const hwpAiAvailable = fileType === "hwp" || fileType === "hwpx";
+  const showSide = (showOcr && ocrAvailable) || (showHwpAi && hwpAiAvailable);
 
   const handleShare = async () => {
     if (!buffer) return;
@@ -60,7 +62,6 @@ function ViewerContent() {
   const handleOpenFile = useCallback(() => fileInputRef.current?.click(), []);
 
   const handleNewFile = async (file: File) => {
-    const { saveFileLocal } = await import("@/lib/storage/local");
     const newId = await saveFileLocal(file);
     router.push(`/viewer/?id=${newId}`);
   };
@@ -80,6 +81,26 @@ function ViewerContent() {
       </div>
     );
   }
+
+  const sidePanel = showOcr && ocrAvailable && buffer ? (
+    <OcrTextPanel
+      buffer={buffer}
+      fileName={fileName}
+      mimeType={mimeType}
+      onClose={() => setShowOcr(false)}
+    />
+  ) : showHwpAi && hwpAiAvailable && buffer ? (
+    <HwpAiAssistant
+      buffer={buffer}
+      fileName={fileName}
+      onClose={() => setShowHwpAi(false)}
+      onDocumentCreated={async (data, name) => {
+        const blob = new Blob([data], { type: "application/vnd.hancom.hwpx" });
+        const newId = await saveFileLocal(new File([blob], name));
+        router.push(`/hwp-editor/?id=${newId}`);
+      }}
+    />
+  ) : null;
 
   return (
     <ViewerToolbarProvider>
@@ -109,37 +130,17 @@ function ViewerContent() {
         hwpEditHref={(fileType === "hwp" || fileType === "hwpx") && id ? `/hwp-editor/?id=${id}` : undefined}
         pptEditHref={fileType === "presentation" && id ? `/ppt-editor/?id=${id}` : undefined}
       >
-        <div className="flex h-full min-h-0">
-          <div className={`flex-1 min-w-0 min-h-0 ${showOcr || showHwpAi ? "hidden md:block" : ""}`}>
-            {buffer && (
+        <MobileViewerSplit
+          showSide={!!showSide}
+          sideLabel={showOcr ? "OCR" : "한글 AI"}
+          document={
+            buffer ? (
               <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
-            )}
-          </div>
-          {showOcr && ocrAvailable && buffer && (
-            <div className="w-full md:w-[380px] shrink-0 min-h-0">
-              <OcrTextPanel
-                buffer={buffer}
-                fileName={fileName}
-                mimeType={mimeType}
-                onClose={() => setShowOcr(false)}
-              />
-            </div>
-          )}
-          {showHwpAi && hwpAiAvailable && buffer && (
-            <div className="w-full md:w-[400px] shrink-0 min-h-0">
-              <HwpAiAssistant
-                buffer={buffer}
-                fileName={fileName}
-                onClose={() => setShowHwpAi(false)}
-                onDocumentCreated={async (data, name) => {
-                  const blob = new Blob([data], { type: "application/vnd.hancom.hwpx" });
-                  const id = await saveFileLocal(new File([blob], name));
-                  router.push(`/hwp-editor/?id=${id}`);
-                }}
-              />
-            </div>
-          )}
-        </div>
+            ) : null
+          }
+          side={sidePanel}
+          sideWidthClass={showHwpAi ? "md:w-[400px]" : "md:w-[380px]"}
+        />
       </LoficeLayout>
     </ViewerToolbarProvider>
   );

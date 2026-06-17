@@ -59,24 +59,24 @@ export default function LofficeHeroSearch({ search, onSearchChange, resultCount,
       )}
 
       {isPolaris ? (
-        <div className="lo-polaris-pill flex flex-col overflow-hidden rounded-full bg-card sm:flex-row sm:items-stretch">
-          <div className="flex min-h-[52px] flex-1 items-center gap-2 border-b border-border/60 px-4 sm:border-b-0 sm:border-r sm:px-5">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+        <div className="lo-mobile-search-pill lo-polaris-pill flex flex-col overflow-hidden rounded-2xl bg-card sm:rounded-full sm:flex-row sm:items-stretch">
+          <div className="flex min-h-[52px] flex-1 items-center gap-3 px-4 sm:border-b-0 sm:border-r sm:px-5">
+            <Search className="h-[18px] w-[18px] shrink-0 text-muted-foreground" strokeWidth={2} />
             <input
               id="lo-search"
               type="search"
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={t("hero.searchPlaceholder")}
-              className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/70 sm:text-base"
+              className="w-full bg-transparent text-base outline-none placeholder:text-muted-foreground/70 sm:text-base"
             />
           </div>
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 bg-gold px-6 text-sm font-bold text-gold-foreground transition hover:brightness-105 sm:h-auto sm:min-h-[52px] sm:px-8"
+            className="group inline-flex min-h-[52px] shrink-0 items-center justify-center gap-2 bg-gold px-6 text-base font-bold text-gold-foreground transition active:brightness-95 sm:min-h-[52px] sm:px-8"
           >
-            <FolderOpen className="h-4 w-4 transition group-hover:scale-110" strokeWidth={2.25} />
+            <FolderOpen className="h-5 w-5" strokeWidth={2.25} />
             <span className="whitespace-nowrap">{t("common.openDocument")}</span>
           </button>
         </div>
@@ -105,6 +105,16 @@ export default function LofficeHeroSearch({ search, onSearchChange, resultCount,
         </div>
       )}
 
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="lo-mobile-open-card mt-3 w-full sm:hidden"
+      >
+        <FolderOpen className="h-5 w-5 text-primary" />
+        <span className="font-semibold">{t("common.openDocument")}</span>
+        <span className="text-xs text-muted-foreground">{t("hero.formats")}</span>
+      </button>
+
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -118,7 +128,7 @@ export default function LofficeHeroSearch({ search, onSearchChange, resultCount,
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
         }}
-        className={`${isPolaris ? "mt-3" : "mt-2.5"} flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed px-4 py-2.5 text-xs transition sm:text-sm ${
+        className={`${isPolaris ? "mt-3" : "mt-2.5"} hidden cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed px-4 py-2.5 text-xs transition sm:flex sm:text-sm ${
           dragOver
             ? "border-gold bg-gold/15 text-foreground"
             : "border-border/80 bg-card/60 text-muted-foreground hover:border-primary/30 hover:bg-card"

@@ -26,11 +26,13 @@ export function openFilePreview(payload: PreviewPayload, tab?: string): void {
   if (typeof window === "undefined") return;
   sessionStorage.setItem(PREVIEW_STORAGE_KEY, JSON.stringify(payload));
   const qs = tab ? `&tab=${tab}` : "";
-  window.open(
-    `/preview/?id=${encodeURIComponent(payload.id)}${qs}`,
-    "_blank",
-    "noopener,noreferrer,width=960,height=820"
-  );
+  const url = `/preview/?id=${encodeURIComponent(payload.id)}${qs}`;
+  const isMobile = window.matchMedia("(max-width: 767px)").matches;
+  if (isMobile) {
+    window.location.href = url;
+    return;
+  }
+  window.open(url, "_blank", "noopener,noreferrer,width=960,height=820");
 }
 
 export function openFilePreviewById(id: string, fileName: string, mimeType = "", tab?: string): void {

@@ -96,6 +96,7 @@ const en: Messages = {
   },
   updates: {
     title: "Release notes",
+    v219: "Mobile UI — Apple-style search, open, preview sheet, compact viewer/editor chrome",
     v218: "Polaris-style landing v3 — image-centric bento, global & news sections, Navy+Gold brand",
     v217: "Global i18n — 90+ locale search picker, 35 message packs, full landing translation",
     v216: "Landing UI v2 — inline search + open, Lucide icons, popular tools",

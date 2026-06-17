@@ -53,8 +53,8 @@ const QUICK_KEYS = [
   ["quick.convertTag", "quick.convertTitle", "quick.convertDesc", "quick.convertCta"],
 ] as const;
 
-const UPDATE_KEYS = ["updates.v218", "updates.v217", "updates.v216", "updates.v212", "updates.v211", "updates.v210"] as const;
-const UPDATE_VERSIONS = ["v2.18.0", "v2.17.0", "v2.16.0", "v2.12.0", "v2.11.0", "v2.10.0"] as const;
+const UPDATE_KEYS = ["updates.v219", "updates.v218", "updates.v217", "updates.v216", "updates.v212", "updates.v211"] as const;
+const UPDATE_VERSIONS = ["v2.19.0", "v2.18.0", "v2.17.0", "v2.16.0", "v2.12.0", "v2.11.0"] as const;
 const UPDATE_DATES = ["2026-06", "2026-06", "2026-06", "2026-06", "2026-06", "2026-06"] as const;
 
 export default function LofficeLandingPage() {

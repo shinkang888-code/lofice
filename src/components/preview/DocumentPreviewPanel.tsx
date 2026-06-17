@@ -11,10 +11,11 @@ import type { DocumentType } from "@/types/document";
 interface Props {
   fileId: string | null;
   className?: string;
+  mobile?: boolean;
 }
 
 /** LawyGo DocumentPreviewPanel — lofice IndexedDB + DocumentViewer */
-export default function DocumentPreviewPanel({ fileId, className = "" }: Props) {
+export default function DocumentPreviewPanel({ fileId, className = "", mobile = false }: Props) {
   const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
   const [fileName, setFileName] = useState("");
   const [fileType, setFileType] = useState<DocumentType>("unknown");
@@ -86,17 +87,19 @@ export default function DocumentPreviewPanel({ fileId, className = "" }: Props) 
 
   return (
     <div className={`flex flex-col min-h-0 h-full bg-[#525659] ${className}`}>
-      <div className="px-3 py-1.5 border-b border-black/20 flex items-center justify-between gap-2 shrink-0 bg-[#2b579a] text-white">
-        <p className="text-[11px] font-medium truncate flex-1">{fileName}</p>
-        <button
-          type="button"
-          onClick={() => openFilePreviewById(fileId, fileName, mimeType)}
-          className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded hover:bg-white/15"
-        >
-          <ExternalLink className="w-3 h-3" />
-          새 창
-        </button>
-      </div>
+      {!mobile && (
+        <div className="px-3 py-1.5 border-b border-black/20 flex items-center justify-between gap-2 shrink-0 bg-[#2b579a] text-white">
+          <p className="text-[11px] font-medium truncate flex-1">{fileName}</p>
+          <button
+            type="button"
+            onClick={() => openFilePreviewById(fileId, fileName, mimeType)}
+            className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded hover:bg-white/15"
+          >
+            <ExternalLink className="w-3 h-3" />
+            새 창
+          </button>
+        </div>
+      )}
       <div className="flex-1 min-h-0">
         <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
       </div>

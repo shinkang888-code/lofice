@@ -8,6 +8,7 @@ import { isOcrSupported } from "@/lib/documentOcr/types";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
 import OcrTextPanel from "@/components/ocr/OcrTextPanel";
 import LoficeLayout from "@/components/office/LoficeLayout";
+import MobileViewerSplit from "@/components/mobile/MobileViewerSplit";
 import { ViewerToolbarProvider } from "@/components/office/ViewerToolbarContext";
 import type { DocumentType } from "@/types/document";
 
@@ -57,25 +58,23 @@ function PreviewContent() {
   return (
     <ViewerToolbarProvider>
       <LoficeLayout
-        fileName={`미리보기: ${fileName}`}
+        fileName={fileName}
         onOcr={ocrAvailable ? () => setShowOcr((v) => !v) : undefined}
         ocrActive={showOcr}
       >
-        <div className="flex h-full min-h-0">
-          <div className={`flex-1 min-w-0 min-h-0 ${showOcr ? "hidden md:block" : ""}`}>
-            <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
-          </div>
-          {showOcr && ocrAvailable && (
-            <div className="w-full md:w-[380px] shrink-0 border-l border-gray-200 min-h-0">
-              <OcrTextPanel
-                buffer={buffer}
-                fileName={fileName}
-                mimeType={mimeType}
-                onClose={() => setShowOcr(false)}
-              />
-            </div>
-          )}
-        </div>
+        <MobileViewerSplit
+          showSide={showOcr && ocrAvailable}
+          sideLabel="OCR"
+          document={<DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />}
+          side={
+            <OcrTextPanel
+              buffer={buffer}
+              fileName={fileName}
+              mimeType={mimeType}
+              onClose={() => setShowOcr(false)}
+            />
+          }
+        />
       </LoficeLayout>
     </ViewerToolbarProvider>
   );

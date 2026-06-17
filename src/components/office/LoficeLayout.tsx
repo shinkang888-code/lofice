@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useViewerToolbarOptional } from "./ViewerToolbarContext";
 import { useEditorToolbarOptional } from "./EditorToolbarContext";
 import { copySelectionToClipboard, printDocument } from "@/lib/office/ribbon-defaults";
+import { MobileDocChromeTop, MobileDocChromeBottom, MobileDocChromeMenu, useMobileDocMenu, type MobileDocChromeProps } from "@/components/mobile/MobileDocChrome";
 
 type RibbonTab = "file" | "home" | "insert" | "view" | "pdf";
 type PdfEditorMode = "tools" | "stirling" | "split";
@@ -113,6 +114,25 @@ export default function LoficeLayout({
   const isHwp = state?.docType === "hwp";
   const isPpt = state?.docType === "presentation";
   const zoomPct = Math.round((state?.zoom ?? 1) * 100);
+  const [mobileMenuOpen, setMobileMenuOpen] = useMobileDocMenu();
+
+  const mobileChromeProps: MobileDocChromeProps = {
+    fileName,
+    canEdit,
+    editHref,
+    onShare,
+    onSave,
+    saving,
+    onOpenFile,
+    onOcr,
+    ocrActive,
+    onHwpAi,
+    hwpAiActive,
+    pdfEditHref,
+    hwpEditHref,
+    pptEditHref,
+    minimal,
+  };
 
   const tabs: { id: RibbonTab; label: string }[] = pdfEditMode
     ? [
@@ -129,8 +149,13 @@ export default function LoficeLayout({
 
   return (
     <div className="flex flex-col h-[100dvh] bg-[#f3f3f3] select-none">
-      {/* 타이틀 바 — 폴라리스 오피스 웹 스타일 */}
-      <div className="h-9 bg-[#2b579a] flex items-center px-3 text-white text-xs shrink-0 safe-top">
+      {/* 모바일 — Apple 스타일 상단 바 */}
+      <div className="md:hidden">
+        <MobileDocChromeTop fileName={fileName} onMenu={() => setMobileMenuOpen(true)} />
+      </div>
+
+      {/* 데스크톱 — 타이틀 바 */}
+      <div className="hidden md:flex h-9 bg-[#2b579a] items-center px-3 text-white text-xs shrink-0 safe-top">
         <Image src="/lofice-icon.png" alt="lofice" width={18} height={18} className="w-[18px] h-[18px] rounded-sm mr-2" />
         <span className="font-semibold tracking-wide">lofice</span>
         <span className="mx-2 opacity-40">|</span>
@@ -138,8 +163,8 @@ export default function LoficeLayout({
         <span className="text-[10px] opacity-60 hidden sm:inline">로피스 웹 오피스</span>
       </div>
 
-      {/* 리본 탭 */}
-      <div className="bg-[#2b579a] shrink-0 border-b border-[#1e3f6f]">
+      {/* 데스크톱 — 리본 탭 */}
+      <div className="hidden md:block bg-[#2b579a] shrink-0 border-b border-[#1e3f6f]">
         <div className="flex items-center px-1 h-8 gap-0.5 overflow-x-auto scrollbar-thin">
           <button onClick={() => router.back()} className="p-1.5 text-white/80 hover:bg-white/10 rounded shrink-0" title="뒤로">
             <ArrowLeft className="w-4 h-4" />
@@ -208,9 +233,9 @@ export default function LoficeLayout({
         </div>
       </div>
 
-      {/* 리본 패널 */}
+      {/* 데스크톱 — 리본 패널 */}
       {!minimal && (
-      <div className="bg-[#f3f3f3] border-b border-gray-300 px-2 py-1.5 shrink-0 min-h-[76px] overflow-x-auto ribbon-panel">
+      <div className="hidden md:block bg-[#f3f3f3] border-b border-gray-300 px-2 py-1.5 shrink-0 min-h-[76px] overflow-x-auto ribbon-panel">
         {tab === "file" && (
           <div className="flex gap-4 text-xs min-w-max">
             <RibbonGroup label="파일">
@@ -334,8 +359,13 @@ export default function LoficeLayout({
 
       <main className="flex-1 overflow-hidden min-h-0">{children}</main>
 
-      {/* 상태 표시줄 — 폴라리스 스타일 */}
-      <footer className="shrink-0 h-6 bg-[#2b579a] text-white text-[10px] flex items-center px-3 justify-between border-t border-[#1e3f6f]">
+      <div className="md:hidden">
+        <MobileDocChromeBottom minimal={minimal} canEdit={canEdit} editHref={editHref} />
+        <MobileDocChromeMenu open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} props={mobileChromeProps} />
+      </div>
+
+      {/* 데스크톱 — 상태 표시줄 */}
+      <footer className="hidden md:flex shrink-0 h-6 bg-[#2b579a] text-white text-[10px] items-center px-3 justify-between border-t border-[#1e3f6f]">
         <div className="flex items-center gap-3">
           {isPdf && state && (
             <span>
