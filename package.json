@@ -1,13 +1,13 @@
 {
   "name": "lofice",
-  "version": "2.16.0",
+  "version": "2.17.0",
   "description": "lofice(로피스) - 웹 기반 통합 문서 뷰어 & 편집기",
   "author": "lofice",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/generate-i18n-packs.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "cap:sync": "npx cap sync android",

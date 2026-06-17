@@ -4,10 +4,12 @@ import { useRef, useState, useCallback, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CloudUpload, FolderOpen, Upload } from "lucide-react";
+import { useI18n } from "@/i18n/I18nProvider";
 import { ACCEPT_EXTENSIONS } from "@/lib/document-types";
 import { openLocalDocument } from "@/lib/lofficeUi/routes";
 
 export default function LofficeWorkspaceCard() {
+  const { t } = useI18n();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -34,11 +36,9 @@ export default function LofficeWorkspaceCard() {
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-lo-card transition hover:border-primary/25 hover:shadow-lo-glow sm:p-6">
       <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-primary/5 transition group-hover:bg-primary/10" />
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Workspace</p>
-      <h3 className="mt-1.5 text-lg font-bold tracking-tight text-foreground sm:text-xl">편집부터 시작</h3>
-      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-        문서를 열고 바로 편집을 이어갑니다. 보기, 주석, 서식,보내기까지 한 화면에서.
-      </p>
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{t("workspace.label")}</p>
+      <h3 className="mt-1.5 text-lg font-bold tracking-tight text-foreground sm:text-xl">{t("workspace.title")}</h3>
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{t("workspace.desc")}</p>
       <button
         type="button"
         onClick={pick}
@@ -56,7 +56,7 @@ export default function LofficeWorkspaceCard() {
         }`}
       >
         <CloudUpload className="h-7 w-7 opacity-80" strokeWidth={1.5} />
-        <p className="font-medium">{busy ? "열는 중…" : "클릭하거나 드래그하여 업로드"}</p>
+        <p className="font-medium">{busy ? t("workspace.uploading") : t("workspace.upload")}</p>
       </button>
       <input
         ref={inputRef}
@@ -77,14 +77,14 @@ export default function LofficeWorkspaceCard() {
           className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition hover:opacity-95 disabled:opacity-50"
         >
           <FolderOpen className="h-4 w-4" />
-          Loffice 열기
+          {t("workspace.openLoffice")}
         </button>
         <Link
           href="#doc-edit"
           className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium transition hover:bg-secondary"
         >
           <Upload className="h-4 w-4 opacity-70" />
-          편집 도구 보기
+          {t("workspace.viewTools")}
         </Link>
       </div>
     </div>
