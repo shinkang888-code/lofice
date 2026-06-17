@@ -7,6 +7,7 @@ import { parsePresentation } from "@/lib/parsers/pptx";
 import { parseOdtToHtml, parseOdsToSheets } from "@/lib/parsers/odf";
 import { parseMhtml } from "@/lib/parsers/mhtml";
 import { parseRtfFromBuffer } from "@/lib/parsers/rtf";
+import { parseEmailMessage } from "@/lib/parsers/outlook";
 
 export interface DocumentParseResult {
   type: DocumentType;
@@ -43,6 +44,12 @@ export async function parseDocument(
   fileName: string,
   fileType: DocumentType
 ): Promise<DocumentParseResult> {
+  const ext = fileName.split(".").pop()?.toLowerCase() ?? "";
+  if (ext === "eml" || ext === "msg") {
+    const email = parseEmailMessage(buffer, fileName);
+    return { type: "html", html: email.html, text: email.subject };
+  }
+
   switch (fileType) {
     case "unsupported":
       return { type: "unsupported", unsupported: true };

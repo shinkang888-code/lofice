@@ -2,12 +2,17 @@
 
 import { useEffect, useState, Suspense, useRef, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getFileLocal } from "@/lib/storage/local";
+import { getFileLocal, updateFileLocal } from "@/lib/storage/local";
 import { resolveDocumentType } from "@/lib/utils";
 import { isEditableType, ACCEPT_EXTENSIONS } from "@/lib/document-types";
 import { isOcrSupported } from "@/lib/documentOcr/types";
+import { detectHwpSecurityHint } from "@/lib/document/hwp-detect";
+import { detectOfficeSecurityHint, isOfficeFormatName } from "@/lib/document/office-detect";
+import { ingestDocument } from "@/lib/document/pipeline";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
 import HwpAiAssistant from "@/components/hwp/HwpAiAssistant";
+import HwpPasswordGate from "@/components/hwp/HwpPasswordGate";
+import OfficeDecryptGate from "@/components/msoffice/OfficeDecryptGate";
 import OcrTextPanel from "@/components/ocr/OcrTextPanel";
 import LoficeLayout from "@/components/office/LoficeLayout";
 import MobileViewerSplit from "@/components/mobile/MobileViewerSplit";
@@ -30,17 +35,42 @@ function ViewerContent() {
   const [error, setError] = useState<string | null>(null);
   const [showOcr, setShowOcr] = useState(params.get("tab") === "ocr");
   const [showHwpAi, setShowHwpAi] = useState(params.get("tab") === "hwp-ai");
+  const [needsPassword, setNeedsPassword] = useState(false);
+  const [officeEncrypted, setOfficeEncrypted] = useState(false);
 
   useEffect(() => {
     if (!id) { setError("문서 ID가 없습니다."); setLoading(false); return; }
-    getFileLocal(id).then((file) => {
+    void (async () => {
+      const file = await getFileLocal(id);
       if (!file) { setError("문서를 찾을 수 없습니다."); setLoading(false); return; }
+      const type = resolveDocumentType(file.name, file.data);
+      if ((type === "hwp" || type === "hwpx") && detectHwpSecurityHint(file.data, file.name) === "encrypted") {
+        setNeedsPassword(true);
+        setBuffer(file.data);
+        setFileName(file.name);
+        setFileType(type);
+        setMimeType(file.type);
+        setLoading(false);
+        return;
+      }
+      if (isOfficeFormatName(file.name)) {
+        const hint = await detectOfficeSecurityHint(file.data, file.name);
+        if (hint === "encrypted") {
+          setOfficeEncrypted(true);
+          setBuffer(file.data);
+          setFileName(file.name);
+          setFileType(type);
+          setMimeType(file.type);
+          setLoading(false);
+          return;
+        }
+      }
       setBuffer(file.data);
       setFileName(file.name);
       setMimeType(file.type);
-      setFileType(resolveDocumentType(file.name, file.data));
+      setFileType(type);
       setLoading(false);
-    });
+    })();
   }, [id]);
 
   const canEdit = isEditableType(fileType);
@@ -62,8 +92,18 @@ function ViewerContent() {
   const handleOpenFile = useCallback(() => fileInputRef.current?.click(), []);
 
   const handleNewFile = async (file: File) => {
-    const newId = await saveFileLocal(file);
-    router.push(`/viewer/?id=${newId}`);
+    const result = await ingestDocument(file);
+    router.push(result.route);
+  };
+
+  const handleDecrypted = async (data: ArrayBuffer, name: string) => {
+    if (!id) return;
+    await updateFileLocal(id, data, name);
+    setBuffer(data);
+    setFileName(name);
+    setFileType(resolveDocumentType(name, data));
+    setNeedsPassword(false);
+    setOfficeEncrypted(false);
   };
 
   if (loading) {
@@ -71,6 +111,27 @@ function ViewerContent() {
       <div className="flex items-center justify-center h-screen text-gray-400 bg-[#f3f3f3]">
         불러오는 중...
       </div>
+    );
+  }
+
+  if (officeEncrypted && buffer) {
+    return (
+      <OfficeDecryptGate
+        buffer={buffer}
+        fileName={fileName}
+        onDecrypted={handleDecrypted}
+      />
+    );
+  }
+
+  if (needsPassword && buffer) {
+    return (
+      <HwpPasswordGate
+        buffer={buffer}
+        fileName={fileName}
+        onDecrypted={handleDecrypted}
+        onCancel={() => router.push("/files/")}
+      />
     );
   }
 

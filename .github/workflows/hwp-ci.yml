@@ -1,0 +1,48 @@
+name: HWP Pipeline CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "src/lib/document/**"
+      - "src/lib/hwpxSkill/**"
+      - "src/lib/parsers/hancom.ts"
+      - "scripts/test-hwp-parsers.mjs"
+      - "scripts/dvc-validate.mjs"
+      - "services/hwpx-skill-api/**"
+  pull_request:
+    paths:
+      - "src/lib/document/**"
+      - "src/lib/hwpxSkill/**"
+      - "scripts/**"
+      - "services/**"
+
+jobs:
+  hwp-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Create HWP/HWPX fixtures
+        run: node scripts/create-test-fixtures.mjs
+
+      - name: HWP parser regression
+        run: npm run test:hwp
+
+      - name: DVC-lite validation
+        run: node scripts/dvc-validate.mjs
+
+      - name: hwpx-skill API syntax check
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r services/hwpx-skill-api/requirements.txt
+      - run: python -m py_compile services/hwpx-skill-api/main.py

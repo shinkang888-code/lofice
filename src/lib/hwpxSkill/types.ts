@@ -29,6 +29,26 @@ export type HwpxExtractResult = {
   format: "plain" | "markdown";
 };
 
+export type HwpxDvcResult = {
+  score: number;
+  passed: boolean;
+  report: Record<string, unknown>;
+  issues: string[];
+};
+
+export type HwpxDecryptResult = {
+  ok: boolean;
+  file_name?: string;
+  data_base64?: string;
+  message?: string;
+};
+
+export type HwpxOwpmlPatchResult = {
+  file_name: string;
+  data_base64: string;
+  patches_applied: number;
+};
+
 export const TEMPLATE_LABEL: Record<HwpxTemplateId, string> = {
   report: "보고서",
   gonmun: "공문",

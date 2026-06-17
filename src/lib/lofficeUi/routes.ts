@@ -1,5 +1,5 @@
 import { getDocumentType, isSupportedFile } from "@/lib/document-types";
-import { saveFileLocal } from "@/lib/storage/local";
+import { ingestDocumentWithNavigate } from "@/lib/document/pipeline";
 
 /** 저장된 파일 id로 적절한 편집·뷰어 라우트 반환 */
 export function getEditorRouteForSavedFile(fileName: string, id: string): string {
@@ -10,7 +10,7 @@ export function getEditorRouteForSavedFile(fileName: string, id: string): string
   return `/viewer/?id=${id}`;
 }
 
-/** 로컬 저장 후 해당 편집기로 이동 */
+/** 로컬 저장 + 파이프라인(정규화·Supabase) 후 편집기로 이동 */
 export async function openLocalDocument(
   file: File,
   navigate: (path: string) => void,
@@ -19,7 +19,5 @@ export async function openLocalDocument(
     alert("지원하지 않는 형식입니다.");
     return false;
   }
-  const id = await saveFileLocal(file);
-  navigate(getEditorRouteForSavedFile(file.name, id));
-  return true;
+  return ingestDocumentWithNavigate(file, navigate);
 }

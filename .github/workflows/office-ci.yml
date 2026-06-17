@@ -1,0 +1,53 @@
+name: Office Pipeline CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "src/lib/document/**"
+      - "src/lib/msoffice/**"
+      - "src/lib/convert/**"
+      - "src/lib/parsers/outlook.ts"
+      - "scripts/test-office-crypto.mjs"
+      - "scripts/ooxml-validate.mjs"
+      - "services/office-convert-api/**"
+      - "services/python-office-api/**"
+      - "services/excel-convert-api/**"
+  pull_request:
+    paths:
+      - "src/lib/**"
+      - "scripts/**"
+      - "services/**"
+
+jobs:
+  office-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Office crypto & parser regression
+        run: npm run test:office
+
+      - name: OOXML-lite validation
+        run: node scripts/ooxml-validate.mjs
+
+      - name: HWP regression
+        run: npm run test:hwp
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r services/office-convert-api/requirements.txt
+      - run: python -m py_compile services/office-convert-api/main.py
+      - run: pip install -r services/excel-convert-api/requirements.txt
+      - run: python -m py_compile services/excel-convert-api/main.py
+      - run: pip install -r services/python-office-api/requirements.txt
+      - run: python -m py_compile services/python-office-api/main.py

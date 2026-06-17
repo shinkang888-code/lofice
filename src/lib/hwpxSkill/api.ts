@@ -132,15 +132,6 @@ export async function hwpxSkillCloneForm(
   return (await res.json()) as HwpxSkillFileResult;
 }
 
-export async function hwpxSkillAnalyze(buffer: ArrayBuffer, fileName: string): Promise<{ analysis: string; texts: string[] }> {
-  const form = new FormData();
-  form.append("file", new Blob([buffer]), fileName);
-
-  const res = await fetch(`${requireBase()}/analyze`, { method: "POST", body: form });
-  if (!res.ok) throw new Error(await parseError(res));
-  return (await res.json()) as { analysis: string; texts: string[] };
-}
-
 export async function hwpxSkillAiChat(params: {
   message: string;
   template?: HwpxTemplateId;
@@ -166,4 +157,55 @@ export async function hwpxSkillAiChat(params: {
   });
   if (!res.ok) throw new Error(await parseError(res));
   return (await res.json()) as HwpxAiChatResult;
+}
+
+export async function hwpxSkillAnalyze(buffer: ArrayBuffer, fileName: string): Promise<{ analysis: string; texts: string[] }> {
+  const form = new FormData();
+  form.append("file", new Blob([buffer]), fileName);
+
+  const res = await fetch(`${requireBase()}/analyze`, { method: "POST", body: form });
+  if (!res.ok) throw new Error(await parseError(res));
+  return (await res.json()) as { analysis: string; texts: string[] };
+}
+
+/** Phase 1 — DVC-lite 적합성 검증 */
+export async function hwpxSkillValidateDvc(buffer: ArrayBuffer, fileName: string): Promise<import("./types").HwpxDvcResult> {
+  const form = new FormData();
+  form.append("file", new Blob([buffer]), fileName);
+  const res = await fetch(`${requireBase()}/validate/dvc`, { method: "POST", body: form });
+  if (!res.ok) throw new Error(await parseError(res));
+  return (await res.json()) as import("./types").HwpxDvcResult;
+}
+
+/** Phase 2 — 암호 HWP 복호화 시도 */
+export async function hwpxSkillDecryptHwp(
+  buffer: ArrayBuffer,
+  fileName: string,
+  password: string,
+): Promise<import("./types").HwpxDecryptResult> {
+  const form = new FormData();
+  form.append("file", new Blob([buffer]), fileName);
+  form.append("password", password);
+  const res = await fetch(`${requireBase()}/decrypt`, { method: "POST", body: form });
+  if (!res.ok) throw new Error(await parseError(res));
+  return (await res.json()) as import("./types").HwpxDecryptResult;
+}
+
+/** Phase 2 — OWPML 텍스트 치환 (누름틀/필드) */
+export async function hwpxSkillOwpmlPatch(
+  buffer: ArrayBuffer,
+  fileName: string,
+  replacements: Record<string, string>,
+): Promise<import("./types").HwpxOwpmlPatchResult> {
+  const res = await fetch(`${requireBase()}/owpml/patch`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      file_base64: arrayBufferToBase64(buffer),
+      file_name: fileName,
+      replacements,
+    }),
+  });
+  if (!res.ok) throw new Error(await parseError(res));
+  return (await res.json()) as import("./types").HwpxOwpmlPatchResult;
 }

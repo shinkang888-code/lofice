@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import zipfile
+import xml.etree.ElementTree as ET
 import base64
 import json
 import os
@@ -26,7 +28,7 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
 OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
 OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 
-app = FastAPI(title="hwpx-skill API", version="1.0.0")
+app = FastAPI(title="hwpx-skill API", version="2.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -101,14 +103,58 @@ class CloneFormRequest(BaseModel):
     file_name: str = "template.hwpx"
 
 
+class OwpmlPatchRequest(BaseModel):
+    replacements: dict[str, str] = Field(default_factory=dict)
+    file_base64: str
+    file_name: str = "document.hwpx"
+
+
+def validate_hwpx_dvc_lite(hwpx_path: Path) -> dict[str, Any]:
+    """hancom-io/dvc 대체 — 필수 OWPML 구조 점검 (경량)"""
+    issues: list[str] = []
+    score = 100.0
+    required = {"mimetype", "META-INF/container.xml", "Contents/content.hpf"}
+    try:
+        with zipfile.ZipFile(hwpx_path, "r") as zf:
+            names = set(zf.namelist())
+            for req in required:
+                if not any(n.endswith(req.split("/")[-1]) or n == req for n in names):
+                    if req not in names and not any(req in n for n in names):
+                        issues.append(f"missing:{req}")
+                        score -= 15
+            if "Contents/section0.xml" not in names and not any("section" in n for n in names):
+                issues.append("missing:section xml")
+                score -= 20
+            for name in names:
+                if name.endswith(".xml"):
+                    try:
+                        data = zf.read(name)
+                        ET.fromstring(data)
+                    except ET.ParseError:
+                        issues.append(f"xml_parse:{name}")
+                        score -= 10
+    except zipfile.BadZipFile:
+        issues.append("bad_zip")
+        score = 0
+    score = max(0.0, min(100.0, score))
+    return {
+        "score": round(score, 1),
+        "passed": score >= 70,
+        "issues": issues,
+        "report": {"validator": "dvc-lite", "required_checked": list(required)},
+    }
+
+
 @app.get("/health")
 def health() -> dict[str, Any]:
     return {
         "status": "ok" if skill_ready() else "degraded",
+        "version": "2.0.0",
         "skill_dir": str(SKILL_DIR),
         "skill_ready": skill_ready(),
         "ai_enabled": bool(OPENAI_API_KEY),
         "workflows": ["A", "B", "C", "E", "F", "G", "H", "I", "J"],
+        "features": ["normalize", "dvc-lite", "owpml-patch", "decrypt-stub"],
     }
 
 
@@ -202,6 +248,109 @@ async def clone_form(body: CloneFormRequest) -> dict[str, str]:
             "file_name": f"{base}_edited.hwpx",
             "data_base64": base64.b64encode(read_bytes(out)).decode(),
         }
+
+
+@app.post("/normalize")
+async def normalize_document(file: UploadFile = File(...)) -> dict[str, str]:
+    """HWP→HWPX 정규화 (Phase 1) — HWPX는 passthrough"""
+    suffix = Path(file.filename or "doc").suffix.lower()
+    if suffix not in {".hwp", ".hwpx"}:
+        raise HTTPException(status_code=400, detail="only .hwp or .hwpx")
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        src = tmp_path / f"input{suffix}"
+        await save_upload(file, src)
+        if suffix == ".hwpx":
+            out = src
+        else:
+            require_skill()
+            out = tmp_path / "normalized.hwpx"
+            run_cmd([str(SCRIPTS / "convert_hwp.py"), str(src), "-o", str(out)])
+        finalize_hwpx(out)
+        base = Path(file.filename or "document").stem
+        return {
+            "file_name": f"{base}.hwpx",
+            "data_base64": base64.b64encode(read_bytes(out)).decode(),
+        }
+
+
+@app.post("/validate/dvc")
+async def validate_dvc(file: UploadFile = File(...)) -> dict[str, Any]:
+    suffix = Path(file.filename or "doc.hwpx").suffix.lower()
+    if suffix not in {".hwpx", ".hwp"}:
+        raise HTTPException(status_code=400, detail="only .hwpx or .hwp")
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        src = tmp_path / f"input{suffix}"
+        hwpx_path = tmp_path / "check.hwpx"
+        await save_upload(file, src)
+        if suffix == ".hwp":
+            require_skill()
+            run_cmd([str(SCRIPTS / "convert_hwp.py"), str(src), "-o", str(hwpx_path)])
+        else:
+            hwpx_path = src
+        result = validate_hwpx_dvc_lite(hwpx_path)
+        return result
+
+
+@app.post("/owpml/patch")
+async def owpml_patch(body: OwpmlPatchRequest) -> dict[str, Any]:
+    """Phase 2 — clone_form 기반 필드 치환"""
+    cloned = await clone_form(
+        CloneFormRequest(
+            file_base64=body.file_base64,
+            file_name=body.file_name,
+            replacements=body.replacements,
+        )
+    )
+    return {
+        **cloned,
+        "patches_applied": len(body.replacements),
+    }
+
+
+@app.post("/decrypt")
+async def decrypt_hwp(
+    file: UploadFile = File(...),
+    password: str = Form(""),
+) -> dict[str, Any]:
+    """Phase 2 — 암호 HWP: skill convert 시도, 실패 시 안내"""
+    suffix = Path(file.filename or "doc.hwp").suffix.lower()
+    if suffix != ".hwp":
+        return {"ok": False, "message": "only .hwp supported for decrypt"}
+    if not password:
+        return {"ok": False, "message": "password required"}
+    if not skill_ready():
+        return {"ok": False, "message": "hwpx-skill not configured; encrypted HWP requires server worker"}
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        src = tmp_path / "encrypted.hwp"
+        out = tmp_path / "decrypted.hwpx"
+        await save_upload(file, src)
+        env = os.environ.copy()
+        env["HWP_PASSWORD"] = password
+        try:
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPTS / "convert_hwp.py"), str(src), "-o", str(out)],
+                cwd=str(SKILL_DIR),
+                capture_output=True,
+                text=True,
+                check=False,
+                env=env,
+            )
+            if proc.returncode != 0 or not out.is_file():
+                return {
+                    "ok": False,
+                    "message": (proc.stderr or proc.stdout or "decrypt failed")[:500],
+                }
+            finalize_hwpx(out)
+            return {
+                "ok": True,
+                "file_name": Path(file.filename or "doc.hwp").stem + ".hwpx",
+                "data_base64": base64.b64encode(read_bytes(out)).decode(),
+            }
+        except Exception as e:
+            return {"ok": False, "message": str(e)[:500]}
 
 
 @app.post("/analyze")

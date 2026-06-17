@@ -106,7 +106,8 @@ export const MS_OFFICE_FORMATS: FormatEntry[] = [
   { ext: "mdb", type: "unsupported", app: "access", label: "Access", support: "metadata" },
   { ext: "accdb", type: "unsupported", app: "access", label: "Access", support: "metadata" },
   { ext: "one", type: "unsupported", app: "onenote", label: "OneNote", support: "metadata" },
-  { ext: "msg", type: "unsupported", app: "outlook", label: "Outlook 메일", support: "metadata" },
+  { ext: "msg", type: "unsupported", app: "outlook", label: "Outlook 메일", support: "partial" },
+  { ext: "eml", type: "mhtml", app: "outlook", label: "이메일 (EML)", support: "partial" },
 ];
 
 export const EXT_TO_FORMAT = Object.fromEntries(

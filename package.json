@@ -1,6 +1,6 @@
 {
   "name": "lofice",
-  "version": "2.19.0",
+  "version": "2.21.0",
   "description": "lofice(로피스) - 웹 기반 통합 문서 뷰어 & 편집기",
   "author": "lofice",
   "private": true,
@@ -15,6 +15,9 @@
     "android:build": "npm run build && npx cap sync android",
     "android:apk": "scripts\\build-android.bat",
     "test:parsers": "node scripts/create-test-fixtures.mjs && node scripts/test-parsers.mjs",
+    "test:hwp": "node scripts/create-test-fixtures.mjs && node scripts/test-hwp-parsers.mjs",
+    "test:dvc": "node scripts/create-test-fixtures.mjs && node scripts/dvc-validate.mjs",
+    "test:office": "node scripts/test-office-crypto.mjs && node scripts/ooxml-validate.mjs",
     "package:releases": "powershell -ExecutionPolicy Bypass -File scripts/package-releases.ps1",
     "assets:generate": "npx capacitor-assets generate --android",
     "build:electron": "next build",
