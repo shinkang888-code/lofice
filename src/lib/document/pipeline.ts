@@ -82,7 +82,13 @@ export async function ingestDocumentWithNavigate(
   }
 
   if (result.securityHint === "legacy") {
-    /* 백그라운드 정규화 — 즉시 열기 허용 */
+    const usePro = confirm(
+      "레거시 Office 문서(.doc / .xls / .ppt)입니다.\n\nlofice Pro에서 LibreOffice 변환 후 사용하는 것을 권장합니다.\n\n[확인] Pro 변환 화면으로 이동\n[취소] 그대로 뷰어에서 열기",
+    );
+    if (usePro) {
+      navigate(`/pro/?from=${encodeURIComponent(result.localId)}`);
+      return true;
+    }
   }
 
   navigate(result.route);

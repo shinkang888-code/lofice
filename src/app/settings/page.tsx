@@ -3,8 +3,9 @@ import BottomNav from "@/components/layout/BottomNav";
 import DefaultAppGuide from "@/components/settings/DefaultAppGuide";
 import AppearanceSettings from "@/components/settings/AppearanceSettings";
 import SettingsIoPanel from "@/components/settings/SettingsIoPanel";
+import ProSettingsSection from "@/components/settings/ProSettingsSection";
 import Link from "next/link";
-import { Shield, Smartphone, Cloud, Ban, RefreshCw, Hash, Lock, ArrowRightLeft } from "lucide-react";
+import { Shield, Smartphone, Cloud, Ban, RefreshCw, Hash, Lock, ArrowRightLeft, Sparkles } from "lucide-react";
 import { OTP_NAV } from "@/lib/officeTool/strings-ko";
 import { DEFAULT_PREFERENCES } from "@/lib/officeTool/preferences";
 
@@ -17,6 +18,7 @@ export default function SettingsPage() {
   ];
 
   const tools = [
+    { href: "/pro/", icon: Sparkles, label: "lofice Pro" },
     { href: "/migrate/", icon: ArrowRightLeft, label: "Office → lofice" },
     { href: "/convert/", icon: RefreshCw, label: OTP_NAV.convert },
     { href: "/office-crypto/", icon: Lock, label: "Office 암·복호화" },
@@ -29,6 +31,7 @@ export default function SettingsPage() {
       <main className="flex-1 px-4 py-6 max-w-lg mx-auto w-full space-y-6">
         <h1 className="text-xl font-bold text-gray-900">{OTP_NAV.settings}</h1>
         <AppearanceSettings />
+        <ProSettingsSection />
         <SettingsIoPanel />
         <DefaultAppGuide />
         <section>

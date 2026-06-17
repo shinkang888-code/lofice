@@ -2,13 +2,28 @@
 
 import { AlertCircle } from "lucide-react";
 import { EXT_TO_FORMAT } from "@/lib/msoffice/format-registry";
+import { getProRecommendReason } from "@/lib/pro/detect";
+import ProSuggestBanner from "@/components/pro/ProSuggestBanner";
 
 interface Props {
   fileName: string;
   ext: string;
+  localId?: string;
 }
 
-export default function UnsupportedViewer({ fileName, ext }: Props) {
+export default function UnsupportedViewer({ fileName, ext, localId }: Props) {
+  const proReason = getProRecommendReason(fileName);
+  if (proReason) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-4 px-6 bg-[#f3f3f3]">
+        <ProSuggestBanner fileName={fileName} localId={localId} className="max-w-md w-full" />
+        <p className="text-xs text-gray-500 text-center">
+          변환 후 다시 열면 뷰어·편집기에서 사용할 수 있습니다.
+        </p>
+      </div>
+    );
+  }
+
   const info = EXT_TO_FORMAT[ext.toLowerCase()];
   const app = info?.app ?? "viewer";
   const label = info?.label ?? ext.toUpperCase();

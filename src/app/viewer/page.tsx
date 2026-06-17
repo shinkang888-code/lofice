@@ -10,6 +10,8 @@ import { detectHwpSecurityHint } from "@/lib/document/hwp-detect";
 import { detectOfficeSecurityHint, isOfficeFormatName } from "@/lib/document/office-detect";
 import { ingestDocument } from "@/lib/document/pipeline";
 import DocumentViewer from "@/components/viewer/DocumentViewer";
+import ProSuggestBanner from "@/components/pro/ProSuggestBanner";
+import { shouldSuggestPro } from "@/lib/pro/detect";
 import HwpAiAssistant from "@/components/hwp/HwpAiAssistant";
 import HwpPasswordGate from "@/components/hwp/HwpPasswordGate";
 import OfficeDecryptGate from "@/components/msoffice/OfficeDecryptGate";
@@ -196,7 +198,19 @@ function ViewerContent() {
           sideLabel={showOcr ? "OCR" : "한글 AI"}
           document={
             buffer ? (
-              <DocumentViewer buffer={buffer} fileName={fileName} fileType={fileType} />
+              <>
+                {id && fileName && shouldSuggestPro(fileName) && (
+                  <div className="px-2 pt-2">
+                    <ProSuggestBanner fileName={fileName} localId={id} compact />
+                  </div>
+                )}
+                <DocumentViewer
+                  buffer={buffer}
+                  fileName={fileName}
+                  fileType={fileType}
+                  localId={id ?? undefined}
+                />
+              </>
             ) : null
           }
           side={sidePanel}

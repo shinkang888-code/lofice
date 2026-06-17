@@ -32,6 +32,7 @@ interface Props {
   buffer: ArrayBuffer;
   fileName: string;
   fileType: DocumentType;
+  localId?: string;
 }
 
 function toArrayBuffer(data: ArrayBuffer | ArrayBufferView): ArrayBuffer {
@@ -40,7 +41,7 @@ function toArrayBuffer(data: ArrayBuffer | ArrayBufferView): ArrayBuffer {
   return view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength) as ArrayBuffer;
 }
 
-export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }: Props) {
+export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType, localId }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [html, setHtml] = useState<string | null>(null);
@@ -279,7 +280,7 @@ export default function DocumentViewer({ buffer: rawBuffer, fileName, fileType }
   }
 
   if (unsupported || resolvedType === "unsupported") {
-    return <UnsupportedViewer fileName={fileName} ext={ext} />;
+    return <UnsupportedViewer fileName={fileName} ext={ext} localId={localId} />;
   }
 
   if (resolvedType === "pdf" && pdfBuffer) {
