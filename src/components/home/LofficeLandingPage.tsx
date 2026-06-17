@@ -16,18 +16,8 @@ import LofficePolarisUseCases from "@/components/home/polaris/LofficePolarisUseC
 import LofficePolarisGlobal from "@/components/home/polaris/LofficePolarisGlobal";
 import LofficePolarisCta from "@/components/home/polaris/LofficePolarisCta";
 import LofficePolarisFooter from "@/components/home/polaris/LofficePolarisFooter";
-import LofficeToolSection from "@/components/home/LofficeToolSection";
 import LofficeWorkspaceCard from "@/components/home/LofficeWorkspaceCard";
 import { useI18n } from "@/i18n/I18nProvider";
-import {
-  ALL_LOFFICE_TOOLS,
-  LOFFICE_DOC_TOOLS,
-  LOFFICE_AI_TOOLS,
-  LOFFICE_CONVERT_TOOLS,
-  LOFFICE_ANALYZE_TOOLS,
-} from "@/lib/lofficeUi/tools";
-import { POPULAR_TOOL_NAMES, getToolIconStyle } from "@/lib/lofficeUi/tool-icons";
-import { useToolLabeler } from "@/lib/lofficeUi/useLocalizedTool";
 import { LOFFICE_QUICK_CARDS } from "@/lib/lofficeUi/nav";
 
 const display = Plus_Jakarta_Sans({
@@ -52,10 +42,7 @@ const QUICK_KEYS = [
 
 export default function LofficeLandingPage() {
   const { t, ready } = useI18n();
-  const labelTool = useToolLabeler();
   const [dark, setDark] = useState(false);
-
-  const popularTools = POPULAR_TOOL_NAMES.map((id) => ALL_LOFFICE_TOOLS.find((tool) => tool.id === id)).filter(Boolean);
 
   if (!ready) {
     return (
@@ -80,7 +67,7 @@ export default function LofficeLandingPage() {
             <p className="mt-0.5 text-sm text-muted-foreground">{t("start.desc")}</p>
           </div>
           <Link
-            href="#tools"
+            href="/doc-edit/"
             className="hidden items-center gap-1 text-sm font-medium text-primary hover:underline sm:inline-flex"
           >
             {t("start.more")}
@@ -119,70 +106,6 @@ export default function LofficeLandingPage() {
 
       <LofficePolarisFeatureBento />
       <LofficePolarisUseCases />
-
-      {popularTools.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 sm:pt-10">
-          <div className="mb-4">
-            <div className="mb-2 h-1 w-10 rounded-full bg-gradient-to-r from-gold/80 to-primary/80" />
-            <h2 className="font-display text-xl font-bold tracking-tight sm:text-2xl">{t("popular.title")}</h2>
-            <p className="mt-0.5 text-sm text-muted-foreground">{t("popular.desc")}</p>
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {popularTools.map((tool) => {
-              if (!tool) return null;
-              const { Icon, bg, fg } = getToolIconStyle(tool);
-              const label = labelTool(tool);
-              return (
-                <Link
-                  key={tool.id}
-                  href={tool.href}
-                  className="lo-polaris-card group relative overflow-hidden p-5"
-                >
-                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${bg}`}>
-                    <Icon className={`h-6 w-6 ${fg}`} strokeWidth={2} />
-                  </div>
-                  <h3 className="font-display text-base font-bold text-foreground">{label.name}</h3>
-                  <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{label.desc}</p>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      <div id="tools" className="scroll-mt-20" />
-      <LofficeToolSection
-        id="doc-edit"
-        category="doc"
-        title={t("sections.docTitle")}
-        description={t("sections.docDesc")}
-        tools={LOFFICE_DOC_TOOLS}
-      />
-      <LofficeToolSection
-        id="ai"
-        category="ai"
-        title={t("sections.aiTitle")}
-        description={t("sections.aiDesc")}
-        tools={LOFFICE_AI_TOOLS}
-        delay={40}
-      />
-      <LofficeToolSection
-        id="convert"
-        category="convert"
-        title={t("sections.convertTitle")}
-        description={t("sections.convertDesc")}
-        tools={LOFFICE_CONVERT_TOOLS}
-        delay={80}
-      />
-      <LofficeToolSection
-        id="analyze"
-        category="analyze"
-        title={t("sections.analyzeTitle")}
-        description={t("sections.analyzeDesc")}
-        tools={LOFFICE_ANALYZE_TOOLS}
-        delay={120}
-      />
-
       <LofficePolarisGlobal />
       <LofficePolarisCta />
       <LofficePolarisFooter />

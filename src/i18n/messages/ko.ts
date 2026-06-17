@@ -45,6 +45,9 @@ const ko: Messages = {
     desc: "지금 하려는 작업을 고르면 가장 알맞은 화면으로 바로 이동합니다.",
     more: "더 보기",
   },
+  docEdit: {
+    pageDesc: "문서 편집·AI·변환·분석 도구를 카테고리별로 모았습니다.",
+  },
   nova: {
     label: "Loffice AI",
     title: "통합 문서 허브",
@@ -88,6 +91,7 @@ const ko: Messages = {
   },
   nav: {
     tools: "오피스 툴즈",
+    docEdit: "문서편집",
     updates: "업데이트",
     blog: "블로그",
     myDocs: "내 문서",

@@ -45,6 +45,9 @@ const en: Messages = {
     desc: "Pick a task and go straight to the right screen — no need to know tool names.",
     more: "See more",
   },
+  docEdit: {
+    pageDesc: "Document editing, AI, conversion, and analysis tools by category.",
+  },
   nova: {
     label: "Loffice AI",
     title: "Document hub",
@@ -88,6 +91,7 @@ const en: Messages = {
   },
   nav: {
     tools: "Office tools",
+    docEdit: "Document editing",
     updates: "Updates",
     blog: "Blog",
     myDocs: "My documents",

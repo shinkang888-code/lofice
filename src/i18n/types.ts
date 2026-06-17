@@ -50,6 +50,9 @@ export type Messages = {
     desc: string;
     more: string;
   };
+  docEdit: {
+    pageDesc: string;
+  };
   nova: {
     label: string;
     title: string;
@@ -93,6 +96,7 @@ export type Messages = {
   };
   nav: {
     tools: string;
+    docEdit: string;
     updates: string;
     blog: string;
     myDocs: string;

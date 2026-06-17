@@ -21,7 +21,7 @@ export default function LofficePolarisHeader({ dark, onToggleDark, onLoginClick 
   const [authOpen, setAuthOpen] = useState(false);
 
   const nav = [
-    { label: t("nav.tools"), href: "/#tools" },
+    { label: t("nav.docEdit"), href: "/doc-edit/" },
     { label: t("nav.updates"), href: "/updates/" },
     { label: t("nav.myPage"), href: "/mypage/" },
   ];

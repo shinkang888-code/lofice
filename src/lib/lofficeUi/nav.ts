@@ -3,7 +3,7 @@
 export type NavItem = { label: string; href: string; external?: boolean };
 
 export const LOFFICE_HEADER_NAV: NavItem[] = [
-  { label: "오피스 툴즈", href: "/#tools" },
+  { label: "문서편집", href: "/doc-edit/" },
   { label: "업데이트", href: "/updates/" },
   { label: "마이페이지", href: "/mypage/" },
 ];
