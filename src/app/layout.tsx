@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import CapacitorProvider from "@/components/CapacitorProvider";
 import PdfWorkerPreload from "@/components/pwa/PdfWorkerPreload";
 import ThemeProvider from "@/components/settings/ThemeProvider";
@@ -36,10 +37,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen">
         <CapacitorProvider>
           <I18nProvider>
-            <ThemeProvider>
-              <PdfWorkerPreload />
-              {children}
-            </ThemeProvider>
+            <AuthProvider>
+              <ThemeProvider>
+                <PdfWorkerPreload />
+                {children}
+              </ThemeProvider>
+            </AuthProvider>
           </I18nProvider>
         </CapacitorProvider>
       </body>

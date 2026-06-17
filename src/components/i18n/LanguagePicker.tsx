@@ -85,7 +85,7 @@ export default function LanguagePicker({ className = "", compact = false }: Prop
         type="button"
         onClick={() => setOpen((o) => !o)}
         onKeyDown={onKeyDown}
-        className={`inline-flex items-center gap-1.5 rounded-lg border border-border bg-background transition hover:bg-secondary ${
+        className={`inline-flex items-center gap-1.5 rounded-lg border border-border bg-white transition hover:bg-secondary dark:bg-card ${
           compact ? "px-2 py-1.5 text-xs" : "px-2.5 py-2 text-sm"
         }`}
         aria-haspopup="listbox"
@@ -98,7 +98,7 @@ export default function LanguagePicker({ className = "", compact = false }: Prop
       </button>
 
       {open && (
-        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-72 overflow-hidden rounded-xl border border-border bg-popover shadow-lo-glow sm:w-80">
+        <div className="absolute right-0 top-[calc(100%+6px)] z-50 w-72 overflow-hidden rounded-xl border border-border bg-white shadow-lo-glow dark:bg-card sm:w-80">
           <div className="border-b border-border p-2">
             <div className="flex items-center gap-2 rounded-lg bg-secondary/60 px-2.5 py-2">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />

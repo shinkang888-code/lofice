@@ -96,11 +96,41 @@ export type Messages = {
     updates: string;
     blog: string;
     myDocs: string;
+    myPage: string;
     settings: string;
     updatesFooter: string;
   };
+  auth: {
+    title: string;
+    subtitle: string;
+    google: string;
+    privacy: string;
+    notConfigured: string;
+    failed: string;
+  };
+  aiChat: {
+    placeholder: string;
+    send: string;
+    thinking: string;
+    error: string;
+    demoHint: string;
+  };
+  mypage: {
+    title: string;
+    subtitle: string;
+    displayName: string;
+    email: string;
+    save: string;
+    saved: string;
+    saveFailed: string;
+    signOut: string;
+    goFiles: string;
+  };
   updates: {
     title: string;
+    pageDesc: string;
+    v222: string;
+    v221: string;
     v219: string;
     v218: string;
     v217: string;
@@ -123,6 +153,9 @@ export type Messages = {
     post4: string;
   };
   polaris: {
+    aiBadge: string;
+    aiTitle: string;
+    aiSubtitle: string;
     novaBadge: string;
     novaTitle: string;
     novaSubtitle: string;
