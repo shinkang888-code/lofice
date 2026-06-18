@@ -13,9 +13,18 @@ type Props = {
   tools: LofficeTool[];
   category: LofficeTool["category"];
   delay?: number;
+  hideHeader?: boolean;
 };
 
-export default function LofficeToolSection({ id, title, description, tools, category, delay = 0 }: Props) {
+export default function LofficeToolSection({
+  id,
+  title,
+  description,
+  tools,
+  category,
+  delay = 0,
+  hideHeader,
+}: Props) {
   const labelTool = useToolLabeler();
   if (tools.length === 0) return null;
 
@@ -24,16 +33,18 @@ export default function LofficeToolSection({ id, title, description, tools, cate
   return (
     <section
       id={id}
-      className="mx-auto max-w-7xl px-6 pt-12 sm:pt-14"
+      className={`mx-auto max-w-7xl px-6 ${hideHeader ? "pt-0" : "pt-12 sm:pt-14"}`}
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="mb-5 flex items-end justify-between gap-4">
-        <div>
-          <div className={`mb-2 h-1 w-10 rounded-full bg-gradient-to-r ${accent}`} />
-          <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{title}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+      {!hideHeader && (
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div>
+            <div className={`mb-2 h-1 w-10 rounded-full bg-gradient-to-r ${accent}`} />
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{title}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
         {tools.map((t, i) => {

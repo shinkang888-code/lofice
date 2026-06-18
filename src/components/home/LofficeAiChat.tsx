@@ -7,11 +7,9 @@ import { chatWithGemini, isGeminiConfigured, type GeminiMessage } from "@/lib/ai
 
 type ChatItem = { role: "user" | "model"; text: string };
 
-type Props = {
-  onSuggest?: (text: string) => void;
-};
+type Props = Record<string, never>;
 
-export default function LofficeAiChat({ onSuggest }: Props) {
+export default function LofficeAiChat(_props: Props) {
   const { t } = useI18n();
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatItem[]>([]);
@@ -49,8 +47,6 @@ export default function LofficeAiChat({ onSuggest }: Props) {
       setLoading(false);
     }
   };
-
-  const suggests = [t("polaris.suggest1"), t("polaris.suggest2"), t("polaris.suggest3")];
 
   return (
     <div className="mx-auto w-full max-w-3xl text-left">
@@ -143,23 +139,6 @@ export default function LofficeAiChat({ onSuggest }: Props) {
             {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
           </button>
         </form>
-      </div>
-
-      <div className="mt-3 flex flex-wrap justify-center gap-2">
-        {suggests.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => {
-              const text = s.replace(/^[^\s]+\s/, "");
-              onSuggest?.(text);
-              void send(text);
-            }}
-            className="lo-polaris-chip"
-          >
-            {s}
-          </button>
-        ))}
       </div>
     </div>
   );

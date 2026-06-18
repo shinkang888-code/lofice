@@ -1,0 +1,79 @@
+.documents-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.documents-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  background: #003377;
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.documents-upload-btn:hover {
+  background: #002a5c;
+}
+
+.documents-panels {
+  margin-bottom: 20px;
+}
+
+.documents-drop,
+.documents-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.documents-panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.documents-panel-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #64748b;
+  flex: 1;
+}
+
+.documents-panel-btn {
+  margin-top: 8px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.documents-panel-btn:hover {
+  background: #f1f5f9;
+}
+
+.documents-panel-link {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a73e8;
+}
+
+.documents-list-wrap {
+  padding-top: 16px;
+}
+
+.documents-list-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+}

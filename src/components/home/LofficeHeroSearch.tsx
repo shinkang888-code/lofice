@@ -140,11 +140,6 @@ export default function LofficeHeroSearch({ search, onSearchChange, resultCount,
         <span className="hidden text-[11px] text-muted-foreground/80 sm:inline">{t("hero.formats")}</span>
       </div>
 
-      <p className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-        <CloudUpload className="h-3 w-3" />
-        {t("hero.cloudNote")}
-      </p>
-
       <input
         ref={inputRef}
         type="file"

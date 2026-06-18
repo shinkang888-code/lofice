@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, Moon, Sun } from "lucide-react";
 import LanguagePicker from "@/components/i18n/LanguagePicker";
 import { useI18n } from "@/i18n/I18nProvider";
+import { LOFFICE_HEADER_NAV } from "@/lib/lofficeUi/nav";
 
 type Props = {
   dark: boolean;
@@ -14,11 +15,7 @@ type Props = {
 export default function LofficePolarisHeader({ dark, onToggleDark }: Props) {
   const { t } = useI18n();
 
-  const nav = [
-    { label: t("nav.tools"), href: "#tools" },
-    { label: t("nav.updates"), href: "#updates" },
-    { label: t("nav.blog"), href: "#blog" },
-  ];
+  const nav = LOFFICE_HEADER_NAV.filter((item) => item.href !== "/files/");
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/80 backdrop-blur-xl safe-top">

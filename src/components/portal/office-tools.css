@@ -1,0 +1,97 @@
+.office-tools-hero {
+  margin-bottom: 16px;
+}
+
+.office-tools-chat {
+  margin-top: 0;
+}
+
+.office-tools-chat-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  border-radius: 14px;
+  border: 1px solid #dadce0;
+  background: #f8fafc;
+  padding: 12px 14px;
+}
+
+.office-tools-chat-input {
+  flex: 1;
+  min-height: 44px;
+  resize: none;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.office-tools-chat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 10px;
+  background: #1a73e8;
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.office-tools-chat-btn:hover {
+  background: #1557b0;
+}
+
+.office-tools-links {
+  margin-top: 14px;
+}
+
+.office-tools-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a73e8;
+}
+
+.office-tools-link:hover {
+  text-decoration: underline;
+}
+
+.office-tools-search {
+  margin-bottom: 8px;
+}
+
+.office-tools-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 10px 14px;
+}
+
+.office-tools-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
+}
+
+.office-tools-sections section {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.office-tools-sections .mx-auto {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}

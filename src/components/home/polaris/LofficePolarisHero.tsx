@@ -15,17 +15,10 @@ type Props = {
   search: string;
   onSearchChange: (value: string) => void;
   resultCount?: number;
-  onSuggest: (value: string) => void;
 };
 
-export default function LofficePolarisHero({ search, onSearchChange, resultCount, onSuggest }: Props) {
+export default function LofficePolarisHero({ search, onSearchChange, resultCount }: Props) {
   const { t } = useI18n();
-
-  const suggests = [
-    t("polaris.suggest1"),
-    t("polaris.suggest2"),
-    t("polaris.suggest3"),
-  ];
 
   return (
     <section className="lo-polaris-hero relative overflow-hidden">
@@ -59,19 +52,6 @@ export default function LofficePolarisHero({ search, onSearchChange, resultCount
             onSearchChange={onSearchChange}
             resultCount={resultCount}
           />
-        </div>
-
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
-          {suggests.map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => onSuggest(s.replace(/^[^\s]+\s/, ""))}
-              className="lo-polaris-chip"
-            >
-              {s}
-            </button>
-          ))}
         </div>
       </div>
     </section>

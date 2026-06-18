@@ -81,11 +81,6 @@ export default function LofficeOpenDocumentButton() {
         </div>
       </div>
 
-      <p className="mt-2 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-        <CloudUpload className="h-3 w-3" />
-        {t("hero.cloudNote")}
-      </p>
-
       <input
         ref={inputRef}
         type="file"

@@ -46,7 +46,7 @@ const ko: Messages = {
     more: "더 보기",
   },
   nova: {
-    label: "Loffice Nova",
+    label: "Loffice AI",
     title: "통합 문서 허브",
     desc: "더 많은 문서·업무 기능을 한 곳에서 바로 시작할 수 있습니다.",
     openDocs: "내 문서 열기 →",
@@ -118,7 +118,7 @@ const ko: Messages = {
     post4: "PDF 병합·분할·회전 (Stirling-PDF)",
   },
   polaris: {
-    novaBadge: "Loffice Nova",
+    novaBadge: "Loffice AI",
     novaTitle: "브라우저 하나로 모든 문서 업무를",
     novaSubtitle: "HWP · Office · PDF · AI — 설치 없이 바로 시작하는 글로벌 오피스",
     suggest1: "📄 PDF 병합하기",

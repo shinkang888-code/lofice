@@ -3,15 +3,16 @@
 export type NavItem = { label: string; href: string; external?: boolean };
 
 export const LOFFICE_HEADER_NAV: NavItem[] = [
-  { label: "오피스 툴즈", href: "#tools" },
-  { label: "업데이트", href: "#updates" },
-  { label: "블로그", href: "#blog" },
+  { label: "내 문서", href: "/files/" },
+  { label: "오피스 툴즈", href: "/office-tools/" },
+  { label: "업데이트", href: "/updates/" },
+  { label: "블로그", href: "/blog/" },
 ];
 
 export const LOFFICE_FOOTER_NAV: NavItem[] = [
-  { label: "업데이트 노트", href: "#updates" },
-  { label: "블로그", href: "#blog" },
+  { label: "블로그", href: "/blog/" },
   { label: "내 문서", href: "/files/" },
+  { label: "오피스 툴즈", href: "/office-tools/" },
   { label: "설정", href: "/settings/" },
 ];
 

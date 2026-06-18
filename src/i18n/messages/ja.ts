@@ -38,6 +38,7 @@ const patch = {
     more: "もっと見る"
   },
   nova: {
+    label: "Loffice AI",
     title: "統合ドキュメントハブ",
     desc: "より多くの文書機能を一か所から開始。",
     openDocs: "マイドキュメントを開く →",
@@ -77,6 +78,9 @@ const patch = {
   blog: {
     title: "ブログ",
     desc: "loficeガイドとヒント"
+  },
+  polaris: {
+    novaBadge: "Loffice AI",
   }
 } as Partial<import("../types").Messages>;
 

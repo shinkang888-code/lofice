@@ -46,7 +46,7 @@ const en: Messages = {
     more: "See more",
   },
   nova: {
-    label: "Loffice Nova",
+    label: "Loffice AI",
     title: "Document hub",
     desc: "Start more document workflows from one place.",
     openDocs: "Open my documents →",
@@ -118,7 +118,7 @@ const en: Messages = {
     post4: "Merge, split & rotate PDFs",
   },
   polaris: {
-    novaBadge: "Loffice Nova",
+    novaBadge: "Loffice AI",
     novaTitle: "Every document task, one browser",
     novaSubtitle: "HWP · Office · PDF · AI — your global office, no install",
     suggest1: "📄 Merge PDFs",

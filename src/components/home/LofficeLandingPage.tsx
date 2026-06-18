@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import LofficePolarisHeader from "@/components/home/polaris/LofficePolarisHeader";
 import LofficePolarisHero from "@/components/home/polaris/LofficePolarisHero";
-import LofficePolarisIntegrations from "@/components/home/polaris/LofficePolarisIntegrations";
 import LofficePolarisFeatureBento from "@/components/home/polaris/LofficePolarisFeatureBento";
 import LofficePolarisUseCases from "@/components/home/polaris/LofficePolarisUseCases";
 import LofficePolarisGlobal from "@/components/home/polaris/LofficePolarisGlobal";
@@ -103,10 +102,7 @@ export default function LofficeLandingPage() {
         search={search}
         onSearchChange={setSearch}
         resultCount={filtered.length}
-        onSuggest={setSearch}
       />
-
-      <LofficePolarisIntegrations />
 
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8">
         <div className="flex items-end justify-between gap-4">
