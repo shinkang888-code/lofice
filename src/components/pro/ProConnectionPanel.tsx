@@ -6,6 +6,7 @@ import { resolveEngineState } from "@/lib/pro/client";
 import {
   normalizeProApiUrl,
   PRO_API_PRESETS,
+  PRO_API_URL_CHANGED,
 } from "@/lib/pro/settings";
 import { useProApiUrl } from "@/lib/pro/useProApiUrl";
 import type { ProEngineState } from "@/lib/pro/types";
