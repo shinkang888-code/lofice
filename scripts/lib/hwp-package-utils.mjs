@@ -1,5 +1,5 @@
 /**
- * Node test helpers — mirrors src/lib/hwp/extract-hwp-package.ts (no TS compile in scripts).
+ * Node test helpers ï¿½ mirrors src/lib/hwp/extract-hwp-package.ts (no TS compile in scripts).
  */
 import JSZip from "jszip";
 import { XMLParser } from "fast-xml-parser";

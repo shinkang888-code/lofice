@@ -1,6 +1,6 @@
 # Hancom Office Format Study (lofice v2.25)
 
-Read-only analysis of Hancom Office 2022 install layout — **format and UI structure only**.
+Read-only analysis of Hancom Office 2022 install layout ï¿½ **format and UI structure only**.
 License bypass, DLL patching, and install-folder modification are out of scope.
 
 ## Applicable to lofice
@@ -15,9 +15,9 @@ License bypass, DLL patching, and install-folder modification are out of scope.
 
 ## Not applicable
 
-- `HncCertMngr.dll`, `HncTrialUtil.dll` — commercial license; lofice is free OSS
-- Registry `ProductID` — SaaS products use server-side entitlements instead
-- Binary HNCFilter — use `@ssabrojs/hwpxjs` and `@rhwp/core`
+- `HncCertMngr.dll`, `HncTrialUtil.dll` ï¿½ commercial license; lofice is free OSS
+- Registry `ProductID` ï¿½ SaaS products use server-side entitlements instead
+- Binary HNCFilter ï¿½ use `@ssabrojs/hwpxjs` and `@rhwp/core`
 
 ## Full upgrade spec
 
