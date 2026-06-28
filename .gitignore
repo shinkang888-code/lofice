@@ -22,5 +22,5 @@ releases/windows-package/
 .vercel
 __pycache__/
 *.pyc
-services/hwpx-skill-api/hwpx-skill/
+# hwpx-skill vendored via git submodule (services/hwpx-skill-api/hwpx-skill)
 _import-lofice-ui/

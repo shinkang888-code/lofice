@@ -1,0 +1,3 @@
+[submodule "services/hwpx-skill-api/hwpx-skill"]
+	path = services/hwpx-skill-api/hwpx-skill
+	url = https://github.com/shinkang888-code/hwpx-skill.git

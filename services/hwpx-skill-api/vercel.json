@@ -1,8 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "pip install -r requirements.txt && (bash scripts/vercel-install.sh || true)",
+  "installCommand": "pip install -r requirements.txt && bash scripts/vercel-install.sh",
   "builds": [
-    { "src": "api/index.py", "use": "@vercel/python", "config": { "maxLambdaSize": "50mb" } }
+    {
+      "src": "api/index.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "includeFiles": "hwpx-skill/**,main.py,scripts/**"
+      }
+    }
   ],
   "routes": [
     { "src": "/(.*)", "dest": "api/index.py" }
