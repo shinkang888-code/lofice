@@ -4,6 +4,8 @@ import DefaultAppGuide from "@/components/settings/DefaultAppGuide";
 import AppearanceSettings from "@/components/settings/AppearanceSettings";
 import SettingsIoPanel from "@/components/settings/SettingsIoPanel";
 import ProSettingsSection from "@/components/settings/ProSettingsSection";
+import EngineSettingsSection from "@/components/settings/EngineSettingsSection";
+import LegalNoticesSection from "@/components/settings/LegalNoticesSection";
 import Link from "next/link";
 import { Shield, Smartphone, Cloud, Ban, RefreshCw, Hash, Lock, ArrowRightLeft, Sparkles } from "lucide-react";
 import { OTP_NAV } from "@/lib/officeTool/strings-ko";
@@ -31,6 +33,7 @@ export default function SettingsPage() {
       <main className="flex-1 px-4 py-6 max-w-lg mx-auto w-full space-y-6">
         <h1 className="text-xl font-bold text-gray-900">{OTP_NAV.settings}</h1>
         <AppearanceSettings />
+        <EngineSettingsSection />
         <ProSettingsSection />
         <SettingsIoPanel />
         <DefaultAppGuide />
@@ -60,9 +63,10 @@ export default function SettingsPage() {
             </div>
           ))}
         </div>
+        <LegalNoticesSection />
         <div className="text-center text-xs text-gray-400">
-          <p>lofice v{DEFAULT_PREFERENCES.version}</p>
-          <p className="mt-1">웹 기반 통합 문서 뷰어 & 편집기 · Office Tool Plus 패턴</p>
+          <p>Loffice v{DEFAULT_PREFERENCES.version}</p>
+          <p className="mt-1">LibreOffice 엔진 + 웹 통합 문서 뷰어 · © LoBooK AI Studio</p>
         </div>
       </main>
       <BottomNav />

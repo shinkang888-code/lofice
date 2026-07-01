@@ -25,6 +25,12 @@ export function LofficePortalNav({ active }: LofficePortalNavProps) {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/mypage/"
+            className={`portal-nav-link ${active === "mypage" ? "portal-nav-link--active" : ""}`}
+          >
+            마이페이지
+          </Link>
         </nav>
       </div>
     </header>

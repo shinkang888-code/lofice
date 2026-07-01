@@ -3,6 +3,7 @@
   "version": "2.25.0",
   "description": "Loffice - Document viewer and editor",
   "author": "Loffice",
+  "license": "MIT",
   "private": true,
   "main": "electron/main.js",
   "scripts": {

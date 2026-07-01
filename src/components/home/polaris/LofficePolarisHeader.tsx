@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import LanguagePicker from "@/components/i18n/LanguagePicker";
 import { useI18n } from "@/i18n/I18nProvider";
 import { LOFFICE_HEADER_NAV } from "@/lib/lofficeUi/nav";
@@ -14,6 +15,7 @@ type Props = {
 
 export default function LofficePolarisHeader({ dark, onToggleDark }: Props) {
   const { t } = useI18n();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const nav = LOFFICE_HEADER_NAV.filter((item) => item.href !== "/files/");
 
@@ -66,7 +68,7 @@ export default function LofficePolarisHeader({ dark, onToggleDark }: Props) {
           <LanguagePicker compact />
 
           <Link
-            href="/files/"
+            href="/mypage/"
             className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-md transition hover:opacity-90"
           >
             {t("polaris.login")}
@@ -74,13 +76,54 @@ export default function LofficePolarisHeader({ dark, onToggleDark }: Props) {
 
           <button
             type="button"
+            onClick={() => setMobileOpen((v) => !v)}
             className="inline-flex rounded-full border border-border/80 p-2.5 text-foreground/70 lg:hidden"
             aria-label="Menu"
+            aria-expanded={mobileOpen}
           >
-            <Menu className="h-4 w-4" />
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
       </div>
+
+      {mobileOpen ? (
+        <nav
+          className="border-t border-border/50 bg-background/95 px-4 py-3 lg:hidden"
+          aria-label="모바일 메뉴"
+        >
+          <ul className="flex flex-col gap-1">
+            <li>
+              <Link
+                href="/files/"
+                className="block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-secondary"
+                onClick={() => setMobileOpen(false)}
+              >
+                {t("polaris.myFiles")}
+              </Link>
+            </li>
+            {nav.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-secondary"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link
+                href="/mypage/"
+                className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-primary hover:bg-secondary"
+                onClick={() => setMobileOpen(false)}
+              >
+                {t("polaris.login")}
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      ) : null}
     </header>
   );
 }
