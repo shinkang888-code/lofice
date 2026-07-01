@@ -112,7 +112,7 @@ async function createWindow() {
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    title: "lofice",
+    title: "Loffice",
     icon: path.join(__dirname, "../public/lofice-icon.png"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),

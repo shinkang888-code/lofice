@@ -1,8 +1,8 @@
 {
   "name": "lofice",
   "version": "2.25.0",
-  "description": "lofice(로피스) - 웹 기반 통합 문서 뷰어 & 편집기",
-  "author": "lofice",
+  "description": "Loffice - Document viewer and editor",
+  "author": "Loffice",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "build:electron": "next build",
     "prebuild:win": "node scripts/generate-icon.js",
     "electron:dev": "concurrently -k \"npm run dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "build:win": "npm run build:electron && electron-builder --win",
+    "build:win": "powershell -ExecutionPolicy Bypass -File scripts/build-win.ps1",
     "build:win:portable": "npm run build:electron && electron-builder --win portable",
     "postinstall": "node scripts/copy-native-assets.js"
   },
@@ -104,9 +104,9 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "com.lofice.app",
-    "productName": "lofice",
-    "copyright": "Copyright © 2026 lofice",
+    "appId": "com.loffice.app",
+    "productName": "Loffice",
+    "copyright": "Copyright © 2026 Loffice",
     "directories": {
       "output": "dist",
       "buildResources": "build"
@@ -128,7 +128,7 @@
         }
       ],
       "icon": "build/icon.ico",
-      "artifactName": "lofice-Setup-${version}.${ext}",
+      "artifactName": "Loffice-Setup-${version}.${ext}",
       "signAndEditExecutable": false
     },
     "nsis": {
@@ -140,7 +140,7 @@
       "installerHeaderIcon": "build/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "lofice",
+      "shortcutName": "Loffice",
       "installerLanguages": [
         "ko_KR",
         "en_US"

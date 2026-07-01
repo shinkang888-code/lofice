@@ -2,6 +2,8 @@ node_modules/
 .next/
 out/
 dist/
+.electron-cache/
+.tmp/
 android/app/build/
 android/.gradle/
 android/capacitor-cordova-android-plugins/build/
