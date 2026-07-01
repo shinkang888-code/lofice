@@ -129,7 +129,8 @@
       ],
       "icon": "build/icon.ico",
       "artifactName": "Loffice-Setup-${version}.${ext}",
-      "signAndEditExecutable": false
+      "signAndEditExecutable": true,
+      "legalTrademarks": "Loffice"
     },
     "nsis": {
       "oneClick": false,
